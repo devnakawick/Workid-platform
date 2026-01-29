@@ -1,0 +1,70 @@
+from pydantic import BaseModel, Field, validator
+from typing import Optional
+from datetime import datetime
+import re
+
+class SendOTPRequest(BaseModel):
+    """Request schema for sending OTP"""
+    phone_number: str = Field(..., min_length=10, max_length=15)
+    
+    @validator('phone_number')
+    def validate_phone(cls, v):
+        # Remove spaces and dashes
+        v = v.replace(' ', '').replace('-', '')
+        # Check if it's numeric
+        if not v.isdigit():
+            raise ValueError('Phone number must contain only digits')
+        # Check length (adjust based on your country)
+        if len(v) < 10 or len(v) > 15:
+            raise ValueError('Phone number must be between 10 and 15 digits')
+        return v
+
+class VerifyOTPRequest(BaseModel):
+    """Request schema for verifying OTP"""
+    phone_number: str = Field(..., min_length=10, max_length=15)
+    otp: str = Field(..., min_length=4, max_length=6)
+
+class SignupRequest(BaseModel):
+    """Base signup request schema"""
+    phone_number: str = Field(..., min_length=10, max_length=15)
+    full_name: str = Field(..., min_length=2, max_length=100)
+    email: Optional[str] = None
+    
+    @validator('email')
+    def validate_email(cls, v):
+        if v:
+            pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+            if not re.match(pattern, v):
+                raise ValueError('Invalid email format')
+        return v
+
+class WorkerSignupRequest(SignupRequest):
+    """Worker signup request"""
+    city: Optional[str] = None
+    skills: Optional[list[str]] = []
+
+class EmployerSignupRequest(SignupRequest):
+    """Employer signup request"""
+    company_name: Optional[str] = None
+    city: Optional[str] = None
+
+class TokenResponse(BaseModel):
+    """Token response schema"""
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
+    user_id: str
+    user_type: str
+    expires_in: int
+
+class UserResponse(BaseModel):
+    """User response schema"""
+    id: str
+    phone_number: str
+    user_type: str
+    is_verified: bool
+    is_active: bool
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
