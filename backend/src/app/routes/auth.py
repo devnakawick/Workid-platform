@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 import logging
 
 from app.database import get_db
-from app.schemas.auth import (OTPSendRequest, VerifyOTPRequest, WorkerSignupRequest, EmployerSignupRequest, TokenResponse, UserResponse)
+from app.schemas.auth import (SendOTPRequest, VerifyOTPRequest, WorkerSignupRequest, EmployerSignupRequest, TokenResponse, UserResponse)
 
 from app.services.auth_service import AuthService
 from app.utils.dependencies import get_current_user

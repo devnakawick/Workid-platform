@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Boolean, DateTime, Enum as SQLEnum
+from sqlalchemy import Column, String, Boolean, DateTime, Enum as SQLEnum, Integer
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from datetime import datetime
@@ -24,7 +24,7 @@ class User(Base):
     user_type = Column(SQLEnum(UserType), nullable=False)
     preferred_language = Column(String(5), default='en')  # 'en', 'si', 'ta'
 
-    
+
     # Status
     is_verified = Column(Boolean, default=False)
     is_active = Column(Boolean, default=True)

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, validator, EmailStr
 from typing import Optional
 from datetime import datetime
 import re
@@ -40,11 +40,19 @@ class SignupRequest(BaseModel):
 
 class WorkerSignupRequest(SignupRequest):
     """Worker signup request"""
+    full_name: str
+    email: Optional[str] = None
+    phone_number: str
+    password: str
     city: Optional[str] = None
     skills: Optional[list[str]] = []
 
 class EmployerSignupRequest(SignupRequest):
     """Employer signup request"""
+    company_name: str
+    email: EmailStr
+    phone_number: str
+    password: str
     company_name: Optional[str] = None
     city: Optional[str] = None
 
