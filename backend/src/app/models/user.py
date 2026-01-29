@@ -22,6 +22,8 @@ class User(Base):
     # Authentication
     phone_number = Column(String(15), unique=True, nullable=False, index=True)
     user_type = Column(SQLEnum(UserType), nullable=False)
+    preferred_language = Column(String(5), default='en')  # 'en', 'si', 'ta'
+
     
     # Status
     is_verified = Column(Boolean, default=False)

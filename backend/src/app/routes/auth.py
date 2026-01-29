@@ -1,10 +1,11 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
-router = APIRouter(
-    prefix="/api/auth",
-    tags=["auth"]
+routes = APIRouter(
+    prefix="/auth",
+    tags=["Auth"]
 )
 
-@router.get("/send-otp")
+@routes.post("/send-otp")
 def send_otp():
-    return {"message": "OTP route working"}
+    return {"message": "OTP sent"}
