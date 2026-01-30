@@ -5,4 +5,5 @@ psycopg2-binary
 python-dotenv
 alembic
 passlib[bcrypt]
-PyJWT
+python-jose[cryptography]
+pydantic
