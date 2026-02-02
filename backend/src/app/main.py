@@ -1,11 +1,14 @@
+from app.wallet.routes import router as wallet_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+
 import logging
 
 from app.config import settings
 from app.database import create_tables
 from app.routes import auth, dashboard
+
 
 # Configure logging
 logging.basicConfig(
@@ -22,6 +25,8 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc"
 )
+app.include_router(wallet_router)
+
 
 # CORS Configuration
 app.add_middleware(
