@@ -4,7 +4,8 @@ from datetime import datetime
 
 from app.database import Base
 
-
+jhhxx
+ocjwq
 class Wallet(Base):
     __tablename__ = "wallets"
 
