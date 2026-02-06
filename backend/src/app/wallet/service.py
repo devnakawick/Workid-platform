@@ -71,3 +71,9 @@ def debit_wallet(db: Session, user_id: int, amount: float) -> Wallet:
     db.refresh(wallet)
 
     return wallet
+def get_wallet_transactions(db: Session, user_id: int):
+    """
+    Return all transactions for a user's wallet.
+    """
+    wallet = get_or_create_wallet(db, user_id)
+    return wallet.transactions
