@@ -21,6 +21,25 @@ def get_wallet(user_id: int, db: Session = Depends(get_db)):
         "balance": balance
     }
 
+@router.post("/topup")
+def topup_wallet(user_id: int, amount: float, db: Session = Depends(get_db)):
+    if amount <= 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Top-up amount must be positive"
+        )
+
+    wallet = service.credit_wallet(db, user_id, amount)
+    return {
+        "message": "Wallet topped up successfully",
+        "balance": wallet.balance
+    }
+
+
+@router.get("/transactions")
+def get_transactions(user_id: int, db: Session = Depends(get_db)):
+    transactions = service.get_wallet_transactions(db, user_id)
+    return transactions
 
 @router.post("/credit")
 def credit_wallet(user_id: int, amount: float, db: Session = Depends(get_db)):
@@ -38,6 +57,35 @@ def credit_wallet(user_id: int, amount: float, db: Session = Depends(get_db)):
         "message": "Wallet credited successfully",
         "balance": wallet.balance
     }
+
+@router.post("/topup")
+def topup_wallet(user_id: int, amount: float, db: Session = Depends(get_db)):
+    if amount <= 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Top-up amount must be positive"
+        )
+
+    wallet = service.credit_wallet(db, user_id, amount)
+    return {
+        "message": "Wallet topped up successfully",
+        "balance": wallet.balance
+    }
+
+
+@router.post("/withdraw")
+def withdraw_wallet(user_id: int, amount: float, db: Session = Depends(get_db)):
+    try:
+        wallet = service.debit_wallet(db, user_id, amount)
+        return {
+            "message": "Withdrawal successful",
+            "balance": wallet.balance
+        }
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
 
 
 @router.post("/debit")
