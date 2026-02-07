@@ -14,7 +14,7 @@ from app.schemas.auth import (
     WorkerSignupRequest, EmployerSignupRequest
 )
 from app.utils.security import create_access_token, create_refresh_token
-from app.services.sms_service import send_otp_sms
+from app.services.sms_service import send_otp
 
 logger = logging.getLogger(__name__)
 
