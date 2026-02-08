@@ -33,8 +33,8 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
-app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
+app.include_router(auth.routes, prefix="/api/auth", tags=["Authentication"])
+app.include_router(dashboard.routes, prefix="/api/dashboard", tags=["Dashboard"])
 
 # Member 2: Include worker and jobs routers here
 
