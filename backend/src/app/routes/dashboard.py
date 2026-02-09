@@ -11,8 +11,8 @@ from app.models.worker import Worker
 from app.models.employer import Employer
 from app.models.job import Job, JobStatus
 from app.models.application import Application, ApplicationStatus
-from app.models.wallet import Wallet
-from app.models.transaction import Transaction
+#from app.models.wallet import Wallet
+#from app.models.transaction import Transaction
 
 routes = APIRouter()
 logger = logging.getLogger(__name__)
