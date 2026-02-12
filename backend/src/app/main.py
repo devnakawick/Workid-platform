@@ -6,6 +6,7 @@ import logging
 from app.config import settings
 from app.database import create_tables
 from app.routes import auth, dashboard
+from app.routes import worker
 
 # Configure logging
 logging.basicConfig(
@@ -34,10 +35,9 @@ app.add_middleware(
 
 # Include routers
 app.include_router(auth.routes, prefix="/api/auth", tags=["Authentication"])
-
-
-# Member 2: Include worker and jobs routers here
 app.include_router(dashboard.routes, prefix="/api/dashboard", tags=["Dashboard"])
+
+app.include_router(worker.router)
 
 # Member 3: Include payment, messaging, admin routers here
 
