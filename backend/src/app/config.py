@@ -8,7 +8,6 @@ class Settings(BaseSettings):
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = True
     ENVIRONMENT: str = "development"
-    JWT_SECRET_KEY: str
     
     # Database
     DATABASE_URL: str
