@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional
 from datetime import date, datetime
 from uuid import UUID
@@ -32,7 +32,8 @@ class WorkerProfileCreate(BaseModel):
     # Profile
     bio: Optional[str] = Field(None, max_length=500, description="Short bio/description")
 
-    @validator('nic_number')
+    @field_validator('nic_number')
+    @classmethod
     def validate_nic(cls, v):
         """Validate NIC format (basic check)"""
         v = v.strip()
