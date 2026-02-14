@@ -1,16 +1,35 @@
-# React + Vite
+# Worker Features Portal
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is a standalone worker portal for job seekers and workers.
 
-Currently, two official plugins are available:
+## Getting Started
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Prerequisites
 
-## React Compiler
+1. Clone the repository
+2. Navigate to the project directory
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+4. Create an `.env.local` file with the following content:
+   ```
+   VITE_API_BASE_URL=http://localhost:3000
+   ```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Running Locally
 
-## Expanding the ESLint configuration
+To start the development server:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+npm run dev
+```
+
+The application will be available at `http://localhost:5173`.
+
+## Features
+
+- Browse and search for jobs
+- Document management and upload
+- Course enrollment and progress tracking
+- Badge and achievement system
