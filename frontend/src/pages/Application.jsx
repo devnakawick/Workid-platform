@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import { mockApplications } from '@/lib/mockData';
 
 const STATUS_COLORS = {
@@ -16,12 +17,13 @@ const STATUS_COLORS = {
 };
 
 export default function Applications() {
+    const { t, i18n } = useTranslation();
     const [applications, setApplications] = useState(mockApplications);
     const [activeTab, setActiveTab] = useState('all');
 
     const handleWithdraw = (id) => {
         setApplications(applications.filter(app => app.id !== id));
-        toast.success('Application withdrawn successfully');
+        toast.success(t('applications.withdraw_success'));
     };
 
     const filteredApplications = applications.filter(app => {
@@ -42,8 +44,8 @@ export default function Applications() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">My Applications</h1>
-                    <p className="text-gray-600">Track your job application status</p>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('applications.title')}</h1>
+                    <p className="text-gray-600">{t('applications.subtitle')}</p>
                 </div>
 
                 {/* Stats */}
@@ -52,7 +54,9 @@ export default function Applications() {
                         <Card key={status} className="shadow-sm border-gray-200">
                             <CardContent className="p-5 text-center">
                                 <p className="text-3xl font-bold text-gray-900">{stats[status]}</p>
-                                <p className="text-sm font-medium text-gray-600 capitalize mt-1">{status}</p>
+                                <p className="text-sm font-medium text-gray-600 capitalize mt-1">
+                                    {t(`applications.${status}`)}
+                                </p>
                             </CardContent>
                         </Card>
                     ))}
@@ -61,11 +65,11 @@ export default function Applications() {
                 {/* Tabs */}
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
                     <TabsList className="bg-white border border-gray-200">
-                        <TabsTrigger value="all">All ({stats.all})</TabsTrigger>
-                        <TabsTrigger value="pending">Pending ({stats.pending})</TabsTrigger>
-                        <TabsTrigger value="reviewed">Reviewed ({stats.reviewed})</TabsTrigger>
-                        <TabsTrigger value="accepted">Accepted ({stats.accepted})</TabsTrigger>
-                        <TabsTrigger value="rejected">Rejected ({stats.rejected})</TabsTrigger>
+                        <TabsTrigger value="all">{t('applications.all')} ({stats.all})</TabsTrigger>
+                        <TabsTrigger value="pending">{t('applications.pending')} ({stats.pending})</TabsTrigger>
+                        <TabsTrigger value="reviewed">{t('applications.reviewed')} ({stats.reviewed})</TabsTrigger>
+                        <TabsTrigger value="accepted">{t('applications.accepted')} ({stats.accepted})</TabsTrigger>
+                        <TabsTrigger value="rejected">{t('applications.rejected')} ({stats.rejected})</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value={activeTab}>
@@ -73,8 +77,8 @@ export default function Applications() {
                             <Card>
                                 <CardContent className="py-20 text-center">
                                     <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No applications found</h3>
-                                    <p className="text-gray-600">Start applying to jobs to see them here</p>
+                                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('applications.noApps')}</h3>
+                                    <p className="text-gray-600">{t('applications.startApplying')}</p>
                                 </CardContent>
                             </Card>
                         ) : (
@@ -90,22 +94,22 @@ export default function Applications() {
                                             <CardHeader>
                                                 <div className="flex items-start justify-between">
                                                     <div>
-                                                        <h3 className="text-xl font-bold text-gray-900">{app.job_title}</h3>
-                                                        <p className="text-sm text-gray-600 mt-1">{app.company}</p>
+                                                        <h3 className="text-xl font-bold text-gray-900">{t(`mock.jobs.${app.job_title}`, app.job_title)}</h3>
+                                                        <p className="text-sm text-gray-600 mt-1">{t(`mock.companies.${app.company}`, app.company)}</p>
                                                     </div>
                                                     <Badge className={STATUS_COLORS[app.status]} variant="outline">
-                                                        {app.status}
+                                                        {t(`applications.${app.status}`)}
                                                     </Badge>
                                                 </div>
                                             </CardHeader>
                                             <CardContent>
                                                 <p className="text-sm text-gray-600 mb-2">
-                                                    Applied: {new Date(app.applied_date).toLocaleDateString()}
+                                                    {t('applications.appliedDate', { date: new Date(app.applied_date).toLocaleDateString(i18n.language) })}
                                                 </p>
                                                 {app.cover_message && (
                                                     <div className="mt-3">
-                                                        <p className="text-sm font-medium text-gray-700 mb-1">Cover Message:</p>
-                                                        <p className="text-sm text-gray-600 line-clamp-2">{app.cover_message}</p>
+                                                        <p className="text-sm font-medium text-gray-700 mb-1">{t('applications.coverMessage')}</p>
+                                                        <p className="text-sm text-gray-600 line-clamp-2">{t(`mock.coverMessages.${app.cover_message}`, app.cover_message)}</p>
                                                     </div>
                                                 )}
                                             </CardContent>
@@ -117,7 +121,7 @@ export default function Applications() {
                                                     disabled={app.status === 'accepted' || app.status === 'rejected'}
                                                 >
                                                     <Trash2 className="w-4 h-4 mr-2" />
-                                                    Withdraw
+                                                    {t('applications.withdraw')}
                                                 </Button>
                                             </CardFooter>
                                         </Card>

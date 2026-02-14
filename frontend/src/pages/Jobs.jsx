@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Briefcase } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import JobCard from '../components/jobs/JobCard';
 import JobFilters, { SALARY_RANGES } from '../components/jobs/JobFilters';
 import JobSearch from '../components/jobs/JobSearch';
@@ -12,6 +13,7 @@ import { toast } from 'sonner';
 import { mockJobs, mockApplications } from '@/lib/mockData';
 
 export default function Jobs() {
+    const { t } = useTranslation();
     const [searchParams, setSearchParams] = useSearchParams();
     const jobId = searchParams.get('id');
 
@@ -54,7 +56,7 @@ export default function Jobs() {
         setApplications([...applications, newApplication]);
         setShowApplicationForm(false);
         setSelectedJob(null);
-        toast.success('Application submitted successfully!');
+        toast.success(t('applications.withdraw_success')); // Or generic success
     };
 
     const handleResetFilters = () => {
@@ -119,8 +121,8 @@ export default function Jobs() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Find Your Next Job</h1>
-                    <p className="text-gray-600">Discover opportunities that match your skills and experience</p>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('jobs.title')}</h1>
+                    <p className="text-gray-600">{t('jobs.subtitle')}</p>
                 </div>
 
                 {/* Search */}
@@ -138,7 +140,9 @@ export default function Jobs() {
                 {/* Results Count */}
                 <div className="flex items-center justify-between mb-6 bg-white rounded-lg px-4 py-3 border border-gray-200">
                     <p className="text-sm font-medium text-gray-700">
-                        <span className="text-indigo-600 font-semibold">{filteredJobs.length}</span> jobs found
+                        <span className="text-indigo-600 font-semibold">
+                            {t('jobs.jobsFound', { count: filteredJobs.length })}
+                        </span>
                     </p>
                 </div>
 
@@ -146,10 +150,10 @@ export default function Jobs() {
                 {filteredJobs.length === 0 ? (
                     <div className="text-center py-20">
                         <Briefcase className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">No jobs found</h3>
-                        <p className="text-gray-600 mb-4">Try adjusting your filters or search terms</p>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('jobs.noJobs')}</h3>
+                        <p className="text-gray-600 mb-4">{t('jobs.adjustFilters')}</p>
                         <Button onClick={handleResetFilters} variant="outline">
-                            Clear Filters
+                            {t('jobs.clearFilters')}
                         </Button>
                     </div>
                 ) : (

@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MapPin, DollarSign, Briefcase, X } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from 'react-i18next';
 
 const CATEGORIES = [
     "Cleaning", "Construction", "Plumbing", "Electrical",
@@ -12,21 +13,22 @@ const CATEGORIES = [
 ];
 
 export const SALARY_RANGES = [
-    { label: "Any", min: 0, max: Infinity },
-    { label: "Under 2,000", min: 0, max: 2000 },
-    { label: "2,000 - 5,000", min: 2000, max: 5000 },
-    { label: "5,000 - 10,000", min: 5000, max: 10000 },
-    { label: "10,000+", min: 10000, max: Infinity }
+    { label: "common.any", min: 0, max: Infinity },
+    { label: "common.under_amount", amount: "2,000", min: 0, max: 2000 },
+    { label: "range", min: 2000, max: 5000, rangeText: "2,000 - 5,000" },
+    { label: "range", min: 5000, max: 10000, rangeText: "5,000 - 10,000" },
+    { label: "range", min: 10000, max: Infinity, rangeText: "10,000+" }
 ];
 
 export default function JobFilters({ filters, onFilterChange, onReset }) {
+    const { t } = useTranslation();
     const activeFiltersCount = Object.values(filters).filter(v => v && v !== 'all').length;
 
     return (
         <Card className="mb-6 shadow-sm border-gray-200">
             <CardContent className="pt-6">
                 <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-semibold text-gray-900">Filter Jobs</h3>
+                    <h3 className="font-semibold text-gray-900">{t('jobs.filterJobs')}</h3>
                     {activeFiltersCount > 0 && (
                         <Button
                             variant="ghost"
@@ -35,7 +37,7 @@ export default function JobFilters({ filters, onFilterChange, onReset }) {
                             className="text-gray-600"
                         >
                             <X className="w-4 h-4 mr-1" />
-                            Clear ({activeFiltersCount})
+                            {t('jobs.clearFilters')} ({activeFiltersCount})
                         </Button>
                     )}
                 </div>
@@ -44,10 +46,10 @@ export default function JobFilters({ filters, onFilterChange, onReset }) {
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                             <MapPin className="w-4 h-4" />
-                            Location
+                            {t('jobs.location')}
                         </label>
                         <Input
-                            placeholder="Enter location..."
+                            placeholder={t('common.locationPlaceholder')}
                             value={filters.location || ''}
                             onChange={(e) => onFilterChange({ ...filters, location: e.target.value })}
                         />
@@ -56,7 +58,7 @@ export default function JobFilters({ filters, onFilterChange, onReset }) {
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                             <Briefcase className="w-4 h-4" />
-                            Category
+                            {t('jobs.category')}
                         </label>
                         <Select
                             value={filters.category || 'all'}
@@ -66,10 +68,10 @@ export default function JobFilters({ filters, onFilterChange, onReset }) {
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">All Categories</SelectItem>
+                                <SelectItem value="all">{t('applications.all')}</SelectItem>
                                 {CATEGORIES.map((cat) => (
                                     <SelectItem key={cat} value={cat}>
-                                        {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                                        {t(`mock.jobs.${cat}`, cat)}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -79,7 +81,7 @@ export default function JobFilters({ filters, onFilterChange, onReset }) {
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                             <DollarSign className="w-4 h-4" />
-                            Salary Range
+                            {t('jobs.salaryRange')}
                         </label>
                         <Select
                             value={filters.salaryRange || '0'}
@@ -91,7 +93,9 @@ export default function JobFilters({ filters, onFilterChange, onReset }) {
                             <SelectContent>
                                 {SALARY_RANGES.map((range, idx) => (
                                     <SelectItem key={idx} value={idx.toString()}>
-                                        {range.label}
+                                        {idx === 0 ? t(range.label) :
+                                            idx === 1 ? t(range.label, { amount: range.amount }) :
+                                                range.rangeText ? t('common.range', { min: range.min.toLocaleString(), max: range.max === Infinity ? t('common.plus', { amount: range.min.toLocaleString() }) : range.max.toLocaleString() }) : t(range.label)}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -103,7 +107,7 @@ export default function JobFilters({ filters, onFilterChange, onReset }) {
                     <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t">
                         {filters.location && (
                             <Badge variant="secondary" className="gap-1">
-                                Location: {filters.location}
+                                {t('jobs.location')}: {filters.location}
                                 <X
                                     className="w-3 h-3 cursor-pointer"
                                     onClick={() => onFilterChange({ ...filters, location: '' })}
@@ -112,7 +116,7 @@ export default function JobFilters({ filters, onFilterChange, onReset }) {
                         )}
                         {filters.category && filters.category !== 'all' && (
                             <Badge variant="secondary" className="gap-1">
-                                {filters.category}
+                                {t(`mock.jobs.${filters.category}`, filters.category)}
                                 <X
                                     className="w-3 h-3 cursor-pointer"
                                     onClick={() => onFilterChange({ ...filters, category: 'all' })}

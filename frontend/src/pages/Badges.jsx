@@ -4,9 +4,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BadgeCard from '@/components/worker/BadgeCard';
 import { Card, CardContent } from "@/components/ui/card";
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { mockBadges, mockWorkerBadges } from '@/lib/mockData';
 
 export default function Badges() {
+    const { t } = useTranslation();
     const earnedBadgeIds = new Set(mockWorkerBadges.map(eb => eb.badge_id));
     const earned = mockBadges.filter(b => earnedBadgeIds.has(b.id));
     const locked = mockBadges.filter(b => !earnedBadgeIds.has(b.id));
@@ -16,8 +18,8 @@ export default function Badges() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Badges & Achievements</h1>
-                    <p className="text-gray-600">Showcase your professional accomplishments</p>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('badges.title')}</h1>
+                    <p className="text-gray-600">{t('badges.subtitle')}</p>
                 </div>
 
                 {/* Stats */}
@@ -28,7 +30,7 @@ export default function Badges() {
                             <Card key={rarity} className="shadow-sm border-gray-200">
                                 <CardContent className="p-5 text-center">
                                     <p className="text-3xl font-bold text-gray-900">{count}</p>
-                                    <p className="text-sm font-medium text-gray-600 capitalize mt-1">{rarity}</p>
+                                    <p className="text-sm font-medium text-gray-600 capitalize mt-1">{t(`badges.rarity.${rarity}`)}</p>
                                 </CardContent>
                             </Card>
                         );
@@ -39,10 +41,10 @@ export default function Badges() {
                 <Tabs defaultValue="earned" className="space-y-6">
                     <TabsList className="bg-white border border-gray-200">
                         <TabsTrigger value="earned">
-                            Earned ({earned.length})
+                            {t('badges.earned')} ({earned.length})
                         </TabsTrigger>
                         <TabsTrigger value="locked">
-                            Locked ({locked.length})
+                            {t('badges.locked')} ({locked.length})
                         </TabsTrigger>
                     </TabsList>
 
@@ -51,8 +53,8 @@ export default function Badges() {
                             <Card>
                                 <CardContent className="py-20 text-center">
                                     <Award className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No badges yet</h3>
-                                    <p className="text-gray-600">Complete jobs and courses to earn badges</p>
+                                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('badges.noBadges')}</h3>
+                                    <p className="text-gray-600">{t('badges.completeToEarn')}</p>
                                 </CardContent>
                             </Card>
                         ) : (

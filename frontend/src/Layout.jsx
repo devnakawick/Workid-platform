@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 import {
     Briefcase, ClipboardList, FileText, GraduationCap, Award,
     Settings, Menu, X, LogOut
@@ -16,17 +17,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { mockUser } from '@/lib/mockData';
 
-const navigation = [
-    { name: 'Find Jobs', href: 'Jobs', icon: Briefcase },
-    { name: 'My Applications', href: 'Applications', icon: ClipboardList },
-    { name: 'Documents', href: 'Documents', icon: FileText },
-    { name: 'Learning', href: 'Learning', icon: GraduationCap },
-    { name: 'Badges', href: 'Badges', icon: Award },
-];
-
 export default function Layout({ children, currentPageName }) {
+    const { t } = useTranslation();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const user = mockUser;
+
+    const navigation = [
+        { name: t('nav.findJobs'), href: 'Jobs', icon: Briefcase },
+        { name: t('nav.myApplications'), href: 'Applications', icon: ClipboardList },
+        { name: t('nav.documents'), href: 'Documents', icon: FileText },
+        { name: t('nav.learning'), href: 'Learning', icon: GraduationCap },
+        { name: t('nav.badges'), href: 'Badges', icon: Award },
+    ];
 
     const handleLogout = () => {
         // Logout placeholder - standalone mode
@@ -94,13 +96,13 @@ export default function Layout({ children, currentPageName }) {
                                     <DropdownMenuItem asChild>
                                         <Link to={createPageUrl('Settings')} className="flex items-center cursor-pointer">
                                             <Settings className="w-4 h-4 mr-2" />
-                                            Settings
+                                            {t('settings.title')}
                                         </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem onClick={handleLogout} className="text-red-600 cursor-pointer">
                                         <LogOut className="w-4 h-4 mr-2" />
-                                        Logout
+                                        {t('nav.logout')}
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
@@ -160,28 +162,28 @@ export default function Layout({ children, currentPageName }) {
                                 <span className="text-lg font-bold text-gray-900">WorkID</span>
                             </div>
                             <p className="text-sm text-gray-600">
-                                Empowering workers with verified digital identities and job opportunities.
+                                {t('footer.description')}
                             </p>
                         </div>
                         <div>
-                            <h4 className="font-semibold text-gray-900 mb-3">Quick Links</h4>
+                            <h4 className="font-semibold text-gray-900 mb-3">{t('footer.quickLinks')}</h4>
                             <ul className="space-y-2 text-sm text-gray-600">
-                                <li><Link to={createPageUrl('Jobs')} className="hover:text-indigo-600">Find Jobs</Link></li>
-                                <li><Link to={createPageUrl('Learning')} className="hover:text-indigo-600">Learning Center</Link></li>
-                                <li><Link to={createPageUrl('Documents')} className="hover:text-indigo-600">Verification</Link></li>
+                                <li><Link to={createPageUrl('Jobs')} className="hover:text-indigo-600">{t('nav.findJobs')}</Link></li>
+                                <li><Link to={createPageUrl('Learning')} className="hover:text-indigo-600">{t('learning.allCourses')}</Link></li>
+                                <li><Link to={createPageUrl('Documents')} className="hover:text-indigo-600">{t('documents.title')}</Link></li>
                             </ul>
                         </div>
                         <div>
-                            <h4 className="font-semibold text-gray-900 mb-3">Support</h4>
+                            <h4 className="font-semibold text-gray-900 mb-3">{t('footer.support')}</h4>
                             <ul className="space-y-2 text-sm text-gray-600">
-                                <li>Help Center</li>
-                                <li>Privacy Policy</li>
-                                <li>Terms of Service</li>
+                                <li>{t('footer.helpCenter')}</li>
+                                <li>{t('footer.privacyPolicy')}</li>
+                                <li>{t('footer.termsOfService')}</li>
                             </ul>
                         </div>
                     </div>
                     <div className="border-t border-gray-200 mt-8 pt-6 text-center text-sm text-gray-600">
-                        <p>© 2026 WorkID. All rights reserved.</p>
+                        <p>© 2026 WorkID. {t('footer.allRightsReserved')}</p>
                     </div>
                 </div>
             </footer>

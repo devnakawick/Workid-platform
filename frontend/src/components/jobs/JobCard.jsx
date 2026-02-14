@@ -6,6 +6,7 @@ import { MapPin, DollarSign, Clock, Briefcase, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 const categoryColors = {
     cleaning: "bg-blue-100 text-blue-700",
@@ -29,6 +30,7 @@ const urgencyColors = {
 };
 
 export default function JobCard({ job, onApply }) {
+    const { t } = useTranslation();
     const {
         id, title, description, urgency, category,
         skills_required = [], location, duration,
@@ -49,14 +51,14 @@ export default function JobCard({ job, onApply }) {
                     <div className="flex justify-between items-start gap-4">
                         <div className="flex-1">
                             <Link to={jobUrl} className="hover:text-indigo-600 transition-colors">
-                                <h3 className="text-lg font-bold text-gray-900 mb-2">{title}</h3>
+                                <h3 className="text-lg font-bold text-gray-900 mb-2">{t(`mock.jobs.${title}`, title)}</h3>
                             </Link>
-                            <p className="text-sm text-gray-600 line-clamp-2">{description}</p>
+                            <p className="text-sm text-gray-600 line-clamp-2">{t(`mock.jobDescriptions.${description}`, description)}</p>
                         </div>
                         {urgency === 'urgent' && (
                             <Badge className="bg-red-500 text-white flex items-center gap-1">
                                 <TrendingUp className="w-3 h-3" />
-                                Urgent
+                                {t('common.urgent')}
                             </Badge>
                         )}
                     </div>
@@ -65,18 +67,22 @@ export default function JobCard({ job, onApply }) {
                 <CardContent className="space-y-4">
                     <div className="flex flex-wrap gap-2">
                         <Badge className={categoryColors[category] || categoryColors.other}>
-                            {category.replace('_', ' ')}
+                            {t(`mock.jobs.${category}`, category.replace('_', ' '))}
+                        </Badge>
+
+                        <Badge variant="secondary">
+                            {t(`common.${job.job_type.toLowerCase().replace('-', '').replace(' ', '')}`, job.job_type)}
                         </Badge>
 
                         {skills_required.slice(0, 2).map((skill, idx) => (
                             <Badge key={idx} variant="outline" className="text-xs">
-                                {skill}
+                                {t(`mock.skills.${skill}`, skill)}
                             </Badge>
                         ))}
 
                         {skills_required.length > 2 && (
                             <Badge variant="outline" className="text-xs">
-                                +{skills_required.length - 2} more
+                                {t('common.more', { count: skills_required.length - 2 })}
                             </Badge>
                         )}
                     </div>
@@ -84,19 +90,19 @@ export default function JobCard({ job, onApply }) {
                     <div className="grid grid-cols-2 gap-3 text-sm text-gray-600">
                         <div className="flex items-center gap-2">
                             <MapPin className="w-4 h-4" />
-                            <span>{location}</span>
+                            <span>{t(`mock.locations.${location}`, location)}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Clock className="w-4 h-4" />
-                            <span>{duration}</span>
+                            <span>{t(`mock.durations.${duration}`, duration)}</span>
                         </div>
                         <div className="flex items-center gap-2 text-green-600 font-semibold">
                             <DollarSign className="w-4 h-4" />
-                            <span>LKR {salary?.toLocaleString()}</span>
+                            <span>{t('common.currency')} {salary?.toLocaleString()}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Briefcase className="w-4 h-4" />
-                            <span>{applications_count} applied</span>
+                            <span>{t('jobs.applied', { count: applications_count })}</span>
                         </div>
                     </div>
 
@@ -105,10 +111,10 @@ export default function JobCard({ job, onApply }) {
                             onClick={() => onApply(job)}
                             className="flex-1 bg-indigo-600 hover:bg-indigo-700"
                         >
-                            Quick Apply
+                            {t('jobs.quickApply')}
                         </Button>
                         <Button asChild variant="outline">
-                            <Link to={jobUrl}>Details</Link>
+                            <Link to={jobUrl}>{t('jobs.details')}</Link>
                         </Button>
                     </div>
                 </CardContent>

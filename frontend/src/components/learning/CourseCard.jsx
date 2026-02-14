@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Clock, BookOpen } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function CourseCard({ course, enrollment, onEnroll }) {
+    const { t } = useTranslation();
     const { title, description, category, duration, instructor, image_url, lesson_count } = course || {};
     const isEnrolled = !!enrollment;
     const progress = enrollment?.progress || 0;
@@ -17,7 +19,7 @@ export default function CourseCard({ course, enrollment, onEnroll }) {
                 {image_url ? (
                     <img
                         src={image_url}
-                        alt={title}
+                        alt={t(`mock.courses.${title}`, title)}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                 ) : (
@@ -27,31 +29,31 @@ export default function CourseCard({ course, enrollment, onEnroll }) {
                 )}
                 {category && (
                     <Badge variant="secondary" className="absolute top-3 right-3 shadow-sm bg-white/90 backdrop-blur-sm">
-                        {category.replace('_', ' ')}
+                        {t(`learning.categories.${category}`, category.replace('_', ' '))}
                     </Badge>
                 )}
             </div>
 
             <CardContent className="flex-1 p-4 pt-5 space-y-3">
                 <h3 className="font-bold text-lg leading-tight text-slate-900 line-clamp-2">
-                    {title || "Untitled Course"}
+                    {t(`mock.courses.${title}`, title || "Untitled Course")}
                 </h3>
 
                 <p className="text-sm text-slate-500 line-clamp-2">
-                    {description || "No description available for this course."}
+                    {t(`mock.courses.${title}_desc`, description || "No description available for this course.")}
                 </p>
 
                 <div className="flex items-center gap-4 text-xs text-slate-500 pt-1">
                     {duration && (
                         <div className="flex items-center gap-1">
                             <Clock className="w-3.5 h-3.5" />
-                            <span>{duration}</span>
+                            <span>{t(`mock.durations.${duration}`, duration)}</span>
                         </div>
                     )}
                     {lesson_count && (
                         <div className="flex items-center gap-1">
                             <BookOpen className="w-3.5 h-3.5" />
-                            <span>{lesson_count} lessons</span>
+                            <span>{t('learning.lessons', { count: lesson_count })}</span>
                         </div>
                     )}
                 </div>
@@ -61,7 +63,7 @@ export default function CourseCard({ course, enrollment, onEnroll }) {
                 {isEnrolled ? (
                     <div className="w-full space-y-2 pt-3">
                         <div className="flex justify-between text-xs font-medium text-slate-700">
-                            <span>{isCompleted ? 'Completed' : 'In Progress'}</span>
+                            <span>{isCompleted ? t('learning.completed') : t('learning.inProgress')}</span>
                             <span>{progress}%</span>
                         </div>
                         <Progress value={progress} className="h-2" />
@@ -72,7 +74,7 @@ export default function CourseCard({ course, enrollment, onEnroll }) {
                             className="w-full"
                             onClick={() => onEnroll(course)}
                         >
-                            Enroll Now
+                            {t('learning.enrollNow')}
                         </Button>
                     </div>
                 )}

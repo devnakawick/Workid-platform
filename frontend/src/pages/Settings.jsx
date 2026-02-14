@@ -8,16 +8,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import { mockUser } from '@/lib/mockData';
 
 export default function Settings() {
+    const { t, i18n } = useTranslation();
     const [formData, setFormData] = useState({
         full_name: mockUser.name || '',
         email: mockUser.email || '',
         phone: mockUser.phone || '',
         location: mockUser.location || '',
         bio: mockUser.bio || '',
-        language_preference: 'english',
+        language_preference: i18n.language || 'en',
         notification_preferences: {
             email_notifications: true,
             sms_notifications: true,
@@ -28,7 +30,13 @@ export default function Settings() {
 
     const handleSave = () => {
         // Local storage mock - in standalone mode
-        toast.success('Settings updated successfully!');
+        toast.success(t('settings.saveChanges') + ' ✓');
+    };
+
+    const handleLanguageChange = (value) => {
+        i18n.changeLanguage(value);
+        setFormData({ ...formData, language_preference: value });
+        toast.success(t('settings.languageUpdated'));
     };
 
     return (
@@ -36,27 +44,27 @@ export default function Settings() {
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Settings</h1>
-                    <p className="text-gray-600">Manage your account and preferences</p>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('settings.title')}</h1>
+                    <p className="text-gray-600">{t('settings.subtitle')}</p>
                 </div>
 
                 <Tabs defaultValue="account" className="space-y-6">
                     <TabsList className="bg-white border border-gray-200">
                         <TabsTrigger value="account" className="gap-2">
                             <User className="w-4 h-4" />
-                            Account
+                            {t('settings.account')}
                         </TabsTrigger>
                         <TabsTrigger value="notifications" className="gap-2">
                             <Bell className="w-4 h-4" />
-                            Notifications
+                            {t('settings.notifications')}
                         </TabsTrigger>
                         <TabsTrigger value="language" className="gap-2">
                             <Globe className="w-4 h-4" />
-                            Language
+                            {t('settings.language')}
                         </TabsTrigger>
                         <TabsTrigger value="privacy" className="gap-2">
                             <Shield className="w-4 h-4" />
-                            Privacy
+                            {t('settings.privacy')}
                         </TabsTrigger>
                     </TabsList>
 
@@ -64,12 +72,12 @@ export default function Settings() {
                     <TabsContent value="account">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Account Information</CardTitle>
+                                <CardTitle>{t('settings.accountInfo')}</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label htmlFor="name">Full Name</Label>
+                                        <Label htmlFor="name">{t('settings.fullName')}</Label>
                                         <Input
                                             id="name"
                                             value={formData.full_name}
@@ -77,7 +85,7 @@ export default function Settings() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="email">Email</Label>
+                                        <Label htmlFor="email">{t('settings.email')}</Label>
                                         <Input
                                             id="email"
                                             type="email"
@@ -89,7 +97,7 @@ export default function Settings() {
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label htmlFor="phone">Phone Number</Label>
+                                        <Label htmlFor="phone">{t('settings.phone')}</Label>
                                         <Input
                                             id="phone"
                                             value={formData.phone}
@@ -97,10 +105,10 @@ export default function Settings() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="location">Location</Label>
+                                        <Label htmlFor="location">{t('settings.location')}</Label>
                                         <Input
                                             id="location"
-                                            placeholder="e.g., Colombo, Western Province"
+                                            placeholder={t('settings.locationPlaceholder')}
                                             value={formData.location}
                                             onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                                         />
@@ -108,17 +116,17 @@ export default function Settings() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="bio">Bio</Label>
+                                    <Label htmlFor="bio">{t('settings.bio')}</Label>
                                     <Input
                                         id="bio"
-                                        placeholder="Tell employers about yourself..."
+                                        placeholder={t('settings.bioPlaceholder')}
                                         value={formData.bio}
                                         onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                                     />
                                 </div>
 
                                 <Button onClick={handleSave} className="bg-indigo-600 hover:bg-indigo-700">
-                                    Save Changes
+                                    {t('settings.saveChanges')}
                                 </Button>
                             </CardContent>
                         </Card>
@@ -128,14 +136,14 @@ export default function Settings() {
                     <TabsContent value="notifications">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Notification Preferences</CardTitle>
+                                <CardTitle>{t('settings.notifications')}</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 {[
-                                    { key: 'email_notifications', label: 'Email Notifications', desc: 'Receive updates via email' },
-                                    { key: 'sms_notifications', label: 'SMS Notifications', desc: 'Receive SMS alerts' },
-                                    { key: 'job_alerts', label: 'Job Alerts', desc: 'Get notified about new job postings' },
-                                    { key: 'application_updates', label: 'Application Updates', desc: 'Updates on your applications' }
+                                    { key: 'email_notifications', label: t('settings.emailNotifications'), desc: t('settings.emailNotificationsDesc') },
+                                    { key: 'sms_notifications', label: t('settings.smsNotifications'), desc: t('settings.smsNotificationsDesc') },
+                                    { key: 'job_alerts', label: t('settings.jobAlerts'), desc: t('settings.jobAlertsDesc') },
+                                    { key: 'application_updates', label: t('settings.applicationUpdates'), desc: t('settings.applicationUpdatesDesc') }
                                 ].map((pref) => (
                                     <div key={pref.key} className="flex items-center justify-between">
                                         <div>
@@ -158,7 +166,7 @@ export default function Settings() {
                                 ))}
 
                                 <Button onClick={handleSave} className="bg-indigo-600 hover:bg-indigo-700">
-                                    Save Preferences
+                                    {t('settings.savePreferences')}
                                 </Button>
                             </CardContent>
                         </Card>
@@ -168,31 +176,31 @@ export default function Settings() {
                     <TabsContent value="language">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Language Preference</CardTitle>
+                                <CardTitle>{t('settings.languagePreference')}</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label>Select Language</Label>
+                                    <Label>{t('settings.selectLanguage')}</Label>
                                     <Select
-                                        value={formData.language_preference}
-                                        onValueChange={(value) => setFormData({ ...formData, language_preference: value })}
+                                        value={i18n.language}
+                                        onValueChange={handleLanguageChange}
                                     >
                                         <SelectTrigger>
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="english">English</SelectItem>
-                                            <SelectItem value="spanish">Spanish (Español)</SelectItem>
-                                            <SelectItem value="french">French (Français)</SelectItem>
+                                            <SelectItem value="en">{t('languages.english')}</SelectItem>
+                                            <SelectItem value="si">{t('languages.sinhala')}</SelectItem>
+                                            <SelectItem value="ta">{t('languages.tamil')}</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <p className="text-sm text-gray-500">
-                                        The platform interface will display in your selected language
+                                        {t('settings.languageDescription')}
                                     </p>
                                 </div>
 
                                 <Button onClick={handleSave} className="bg-indigo-600 hover:bg-indigo-700">
-                                    Save Language
+                                    {t('settings.saveLanguage')}
                                 </Button>
                             </CardContent>
                         </Card>
@@ -202,24 +210,24 @@ export default function Settings() {
                     <TabsContent value="privacy">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Privacy & Security</CardTitle>
+                                <CardTitle>{t('settings.privacyAndSecurity')}</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
                                     <p className="text-sm text-blue-900">
-                                        <strong>Your data is secure.</strong> We use industry-standard encryption to protect your personal information.
+                                        <strong>{t('settings.dataSecure')}</strong> {t('settings.encryptionInfo')}
                                     </p>
                                 </div>
 
                                 <div className="space-y-3 pt-4">
-                                    <h4 className="font-semibold text-gray-900">Data Privacy</h4>
+                                    <h4 className="font-semibold text-gray-900">{t('settings.dataPrivacy')}</h4>
                                     <p className="text-sm text-gray-600">
-                                        Your profile is only visible to verified employers. You control what information is shared.
+                                        {t('settings.profileVisibility')}
                                     </p>
 
-                                    <h4 className="font-semibold text-gray-900 pt-4">Account Security</h4>
+                                    <h4 className="font-semibold text-gray-900 pt-4">{t('settings.accountSecurity')}</h4>
                                     <p className="text-sm text-gray-600">
-                                        We recommend enabling two-factor authentication for additional security.
+                                        {t('settings.2faRecommendation')}
                                     </p>
                                 </div>
                             </CardContent>

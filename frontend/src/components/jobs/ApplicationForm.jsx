@@ -5,12 +5,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Send } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function ApplicationForm({ job, isOpen, onClose, onSubmit, isLoading }) {
-    if (!job) return null;
-
+    const { t } = useTranslation();
     const [coverMessage, setCoverMessage] = useState('');
-    const [proposedRate, setProposedRate] = useState(job.salary || '');
+    const [proposedRate, setProposedRate] = useState(job?.salary || '');
+
+    if (!job) return null;
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -21,16 +23,16 @@ export default function ApplicationForm({ job, isOpen, onClose, onSubmit, isLoad
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-xl">
                 <DialogHeader>
-                    <DialogTitle className="text-xl">Apply for {job.title}</DialogTitle>
-                    <p className="text-sm text-gray-600 mt-1">{job.employer_name} • {job.location}</p>
+                    <DialogTitle className="text-xl">{t('jobs.applyNow')} - {t(`mock.jobs.${job.title}`, job.title)}</DialogTitle>
+                    <p className="text-sm text-gray-600 mt-1">{t(`mock.companies.${job.company}`, job.company)} • {t(`mock.locations.${job.location}`, job.location)}</p>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-5 mt-4">
                     <div className="space-y-2">
-                        <Label htmlFor="message">Why are you a good fit for this job?</Label>
+                        <Label htmlFor="message">{t('jobs.description')}</Label>
                         <Textarea
                             id="message"
-                            placeholder="Tell the employer about your experience..."
+                            placeholder={t('applications.coverMessage')}
                             value={coverMessage}
                             onChange={(e) => setCoverMessage(e.target.value)}
                             rows={4}
@@ -39,22 +41,22 @@ export default function ApplicationForm({ job, isOpen, onClose, onSubmit, isLoad
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="rate">Your Proposed Rate (LKR)</Label>
+                        <Label htmlFor="rate">{t('jobs.rate')} ({t('common.currency')})</Label>
                         <Input
                             id="rate"
                             type="number"
-                            placeholder={job.salary ? `Employer offers: ${job.salary}` : 'Enter your rate'}
+                            placeholder={job.salary ? `${t('jobs.overview')}: ${job.salary.toLocaleString()}` : t('jobs.rate')}
                             value={proposedRate}
                             onChange={(e) => setProposedRate(e.target.value)}
                         />
                         <p className="text-xs text-gray-500">
-                            You can propose your own rate or accept the employer's offer
+                            {t('jobs.subtitle')}
                         </p>
                     </div>
 
                     <DialogFooter>
                         <Button type="button" variant="outline" onClick={onClose}>
-                            Cancel
+                            {t('common.cancel')}
                         </Button>
                         <Button
                             type="submit"
@@ -62,9 +64,9 @@ export default function ApplicationForm({ job, isOpen, onClose, onSubmit, isLoad
                             className="bg-indigo-600 hover:bg-indigo-700"
                         >
                             {isLoading ? (
-                                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</>
+                                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> {t('applications.pending')}...</>
                             ) : (
-                                <><Send className="w-4 h-4 mr-2" /> Submit Application</>
+                                <><Send className="w-4 h-4 mr-2" /> {t('jobs.applyNow')}</>
                             )}
                         </Button>
                     </DialogFooter>
@@ -73,3 +75,4 @@ export default function ApplicationForm({ job, isOpen, onClose, onSubmit, isLoad
         </Dialog>
     );
 }
+

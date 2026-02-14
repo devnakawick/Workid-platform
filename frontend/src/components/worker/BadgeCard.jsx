@@ -1,8 +1,9 @@
 import React from 'react';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Shield, Medal, Trophy, Star, Zap, Crown, Award } from 'lucide-react';
+import { Calendar, Shield, Medal, Trophy, Star, Zap, Crown } from 'lucide-react';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
 
 const rarityColors = {
     common: "bg-slate-100 text-slate-700 border-slate-200",
@@ -30,6 +31,7 @@ const badgeGradients = {
 };
 
 export default function BadgeCard({ badge, earned_date }) {
+    const { t, i18n } = useTranslation();
     const { name, description, rarity } = badge || {};
 
     // Get the icon component or default
@@ -53,17 +55,17 @@ export default function BadgeCard({ badge, earned_date }) {
                     <Badge
                         className={`absolute top-3 right-3 ${rarityColors[rarity] || rarityColors.common} capitalize border shadow-sm`}
                     >
-                        {rarity}
+                        {t(`badges.rarity.${rarity}`, rarity)}
                     </Badge>
                 )}
             </div>
 
             <CardContent className="flex-1 p-5 text-center space-y-2">
                 <h3 className="font-bold text-lg leading-tight text-slate-900">
-                    {name || "Unknown Badge"}
+                    {t(`mock.badges.${name}`, name || "Unknown Badge")}
                 </h3>
                 <p className="text-sm text-slate-500 line-clamp-2">
-                    {description || "No description available."}
+                    {t(`mock.badges.${name}_desc`, description || "No description available.")}
                 </p>
             </CardContent>
 
@@ -71,7 +73,7 @@ export default function BadgeCard({ badge, earned_date }) {
                 <CardFooter className="p-4 pt-0 border-t bg-slate-50/50 mt-auto justify-center">
                     <div className="w-full pt-3 flex items-center justify-center gap-2 text-xs text-slate-500 font-medium">
                         <Calendar className="w-3.5 h-3.5" />
-                        <span>Earned {moment(earned_date).format('MMM D, YYYY')}</span>
+                        <span>{t('badges.earned')} {new Date(earned_date).toLocaleDateString(i18n.language)}</span>
                     </div>
                 </CardFooter>
             )}
