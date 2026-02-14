@@ -187,7 +187,7 @@ class EmployerBasicInfo(BaseModel):
     city: str
     rating: float
     is_verified: bool
-    total_job_posted: int
+    total_jobs_posted: int
 
     class Config:
         from_attributes = True 

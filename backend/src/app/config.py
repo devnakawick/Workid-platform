@@ -14,7 +14,8 @@ class Settings(BaseSettings):
     DATABASE_ECHO: bool = False
     
     # JWT
-    SECRET_KEY: str
+    SECRET_KEY: str = ""
+    JWT_SECRET_KEY: str = ""  # Alternative name for environment variables
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
@@ -40,6 +41,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = True
+        extra = "allow"  # Allow extra fields like JWT_SECRET_KEY
 
 
 @lru_cache()

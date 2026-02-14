@@ -106,7 +106,7 @@ class JobService:
         db.refresh(job)
         return job
     
-    staticmethod
+    @staticmethod
     def delete_job(db: Session, job_id: int, employer_id: int) -> bool:
         """
         Delete a job 

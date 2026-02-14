@@ -2,12 +2,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi import Request
+from fastapi.staticfiles import StaticFiles
 import logging
+import os
 
 from app.config import settings
 from app.database import create_tables
 from app.routes import auth, dashboard
-from app.routes import worker
+from app.routes import worker, jobs, employer
 
 # Configure logging
 logging.basicConfig(
@@ -34,11 +36,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Serve uploaded files as static files
+os.makedirs("uploads", exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
 # Include routers
 app.include_router(auth.routes, prefix="/api/auth", tags=["Authentication"])
 app.include_router(dashboard.routes, prefix="/api/dashboard", tags=["Dashboard"])
 
 app.include_router(worker.router)
+app.include_router(jobs.router)
+app.include_router(employer.router)
 
 
 # Member 3: Include payment, messaging, admin routers here
