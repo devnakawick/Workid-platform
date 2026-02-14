@@ -100,7 +100,7 @@ export default function Settings() {
                                         <Label htmlFor="location">Location</Label>
                                         <Input
                                             id="location"
-                                            placeholder="e.g., San Francisco, CA"
+                                            placeholder="e.g., Colombo, Western Province"
                                             value={formData.location}
                                             onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                                         />
