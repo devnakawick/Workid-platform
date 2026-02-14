@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Briefcase } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
