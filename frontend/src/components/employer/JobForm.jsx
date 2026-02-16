@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FileText } from 'lucide-react';
+import { FileText, Wallet, MapPin, Banknote, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { categories } from '../../mocks/jobData';
 
@@ -36,7 +36,7 @@ const JobForm = ({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       
-      {/* CARD 1: JOB BASICS */}
+      {/* CARD 1: JOB BASICS (keep from Commit 2) */}
       <div className="bg-white rounded-xl shadow-md p-8 hover:shadow-lg transition-shadow">
         <div className="flex items-center mb-6 pb-4 border-b-2 border-gray-100">
           <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mr-4">
@@ -52,11 +52,8 @@ const JobForm = ({
         </div>
 
         <div className="space-y-5">
-          {/* Job Title */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Job Title *
-            </label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Job Title *</label>
             <input
               type="text"
               name="title"
@@ -68,11 +65,8 @@ const JobForm = ({
             />
           </div>
 
-          {/* Category */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Category *
-            </label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Category *</label>
             <select
               name="category"
               value={formData.category}
@@ -85,12 +79,9 @@ const JobForm = ({
               ))}
             </select>
             
-            {/* Custom Category */}
             {formData.category === 'Other' && (
               <div className="mt-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Custom Category *
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Custom Category *</label>
                 <input
                   type="text"
                   name="customCategory"
@@ -104,11 +95,8 @@ const JobForm = ({
             )}
           </div>
 
-          {/* Description */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Job Description *
-            </label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Job Description *</label>
             <textarea
               name="description"
               value={formData.description}
@@ -119,10 +107,92 @@ const JobForm = ({
               maxLength={1000}
             />
             <div className="flex justify-end">
-              <p className="text-sm text-gray-600 mt-1">
-                {formData.description.length} / 1000 characters
-              </p>
+              <p className="text-sm text-gray-600 mt-1">{formData.description.length} / 1000 characters</p>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* CARD 2: LOCATION & PAY */}
+      <div className="bg-white rounded-xl shadow-md p-8 hover:shadow-lg transition-shadow">
+        <div className="flex items-center mb-6 pb-4 border-b-2 border-gray-100">
+          <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mr-4">
+            <Wallet className="w-6 h-6 text-blue-600" />
+          </div>
+          <div className="flex-1">
+            <h2 className="text-xl font-bold text-gray-900">Location & Pay</h2>
+            <p className="text-sm text-gray-600">Where & how much?</p>
+          </div>
+          <div className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg">
+            2
+          </div>
+        </div>
+
+        <div className="space-y-5">
+          {/* Location */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <MapPin className="w-4 h-4 inline mr-1" /> Location *
+            </label>
+            <input
+              type="text"
+              name="location"
+              value={formData.location}
+              onChange={handleChange}
+              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-100 transition-all"
+              placeholder="e.g., Colombo, Sri Lanka"
+              maxLength={100}
+            />
+          </div>
+
+          {/* Payment Rate */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <Banknote className="w-4 h-4 inline mr-1" /> Payment Rate *
+            </label>
+            <div className="flex items-center border-2 border-gray-300 rounded-lg overflow-hidden focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-100 transition-all">
+              <span className="px-4 py-3 bg-gray-50 border-r-2 border-gray-300 font-semibold text-gray-700">LKR</span>
+              <input
+                type="number"
+                name="salary"
+                value={formData.salary}
+                onChange={handleChange}
+                min="100"
+                max="1000000"
+                className="flex-1 px-4 py-3 border-none outline-none text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                placeholder="2500"
+              />
+              <span className="px-2 text-gray-400 text-xl font-light">/</span>
+              <select
+                name="salaryPeriod"
+                value={formData.salaryPeriod}
+                onChange={handleChange}
+                className="px-2 py-3 pr-8 border-none outline-none text-base cursor-pointer appearance-none bg-white bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSIjNmI3MjgwIj48cGF0aCBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iMiIgZD0iTTE5IDlsLTcgNy03LTciPjwvcGF0aD48L3N2Zz4=')] bg-[length:1.5rem] bg-[position:right_0.5rem_center] bg-no-repeat min-w-[120px]"
+              >
+                <option value="hourly">hour</option>
+                <option value="daily">day</option>
+                <option value="weekly">week</option>
+                <option value="monthly">month</option>
+                <option value="fixed">fixed</option>
+              </select>
+            </div>
+            <span className="text-xs text-gray-600 mt-1 block">Enter the amount and select payment period</span>
+          </div>
+
+          {/* Duration */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <Clock className="w-4 h-4 inline mr-1" /> Duration *
+            </label>
+            <input
+              type="text"
+              name="duration"
+              value={formData.duration}
+              onChange={handleChange}
+              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-100 transition-all"
+              placeholder="e.g., 2 months, 3 weeks, 10 days"
+              maxLength={50}
+            />
           </div>
         </div>
       </div>
@@ -148,6 +218,5 @@ const JobForm = ({
     </form>
   );
 };
-
 
 export default JobForm;
