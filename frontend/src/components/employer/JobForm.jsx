@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FileText, Wallet, MapPin, Banknote, Clock } from 'lucide-react';
+import { FileText, Wallet, MapPin, Banknote, Clock, Users } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { categories } from '../../mocks/jobData';
 
@@ -36,7 +36,7 @@ const JobForm = ({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       
-      {/* CARD 1: JOB BASICS (keep from Commit 2) */}
+      {/* CARD 1: JOB BASICS  */}
       <div className="bg-white rounded-xl shadow-md p-8 hover:shadow-lg transition-shadow">
         <div className="flex items-center mb-6 pb-4 border-b-2 border-gray-100">
           <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mr-4">
@@ -113,7 +113,7 @@ const JobForm = ({
         </div>
       </div>
 
-      {/* CARD 2: LOCATION & PAY */}
+      {/* CARD 2: LOCATION & PAY  */}
       <div className="bg-white rounded-xl shadow-md p-8 hover:shadow-lg transition-shadow">
         <div className="flex items-center mb-6 pb-4 border-b-2 border-gray-100">
           <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mr-4">
@@ -129,7 +129,6 @@ const JobForm = ({
         </div>
 
         <div className="space-y-5">
-          {/* Location */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               <MapPin className="w-4 h-4 inline mr-1" /> Location *
@@ -145,7 +144,6 @@ const JobForm = ({
             />
           </div>
 
-          {/* Payment Rate */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               <Banknote className="w-4 h-4 inline mr-1" /> Payment Rate *
@@ -179,7 +177,6 @@ const JobForm = ({
             <span className="text-xs text-gray-600 mt-1 block">Enter the amount and select payment period</span>
           </div>
 
-          {/* Duration */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               <Clock className="w-4 h-4 inline mr-1" /> Duration *
@@ -197,7 +194,42 @@ const JobForm = ({
         </div>
       </div>
 
-      {/*  actions */}
+      {/* CARD 3: WORKFORCE */}
+      <div className="bg-white rounded-xl shadow-md p-8 hover:shadow-lg transition-shadow">
+        <div className="flex items-center mb-6 pb-4 border-b-2 border-gray-100">
+          <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mr-4">
+            <Users className="w-6 h-6 text-blue-600" />
+          </div>
+          <div className="flex-1">
+            <h2 className="text-xl font-bold text-gray-900">Workforce</h2>
+            <p className="text-sm text-gray-600">How many people do you need?</p>
+          </div>
+          <div className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg">
+            3
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <Users className="w-4 h-4 inline mr-1" /> Workers Needed *
+          </label>
+          <input
+            type="number"
+            name="workersNeeded"
+            value={formData.workersNeeded}
+            onChange={handleChange}
+            min="1"
+            max="50"
+            className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-100 transition-all"
+            placeholder="Number of workers"
+          />
+          <span className="text-xs text-gray-600 mt-1 block">
+            How many workers do you need for this job?
+          </span>
+        </div>
+      </div>
+
+      {/* Temporary actions */}
       <div className="flex flex-col sm:flex-row gap-4">
         <button 
           type="submit" 
