@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FileText, Wallet, MapPin, Banknote, Clock, Users, ClipboardList, Plus, X } from 'lucide-react';
+import { FileText, Wallet, MapPin, Banknote, Clock, Users, ClipboardList, Plus, X, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { categories } from '../../mocks/jobData';
 
@@ -23,10 +23,16 @@ const JobForm = ({
 }) => {
   const [formData, setFormData] = useState(initialData);
   const [requirementInput, setRequirementInput] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Clear error when user starts typing
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => ({ ...prev, [name]: '' }));
+    }
   };
 
   const addRequirement = () => {
@@ -64,9 +70,97 @@ const JobForm = ({
     toast.success('Requirement removed');
   };
 
+  const validateForm = () => {
+    const errors = {};
+    let isValid = true;
+
+    // Title validation
+    if (!formData.title.trim()) {
+      errors.title = 'Job title is required';
+      isValid = false;
+    } else if (formData.title.length < 5) {
+      errors.title = 'Job title must be at least 5 characters';
+      isValid = false;
+    }
+
+    // Description validation
+    if (!formData.description.trim()) {
+      errors.description = 'Job description is required';
+      isValid = false;
+    }
+
+    // Category validation
+    if (!formData.category) {
+      errors.category = 'Please select a category';
+      isValid = false;
+    }
+
+    // Custom category validation
+    if (formData.category === 'Other') {
+      if (!formData.customCategory.trim()) {
+        errors.customCategory = 'Please specify your custom category';
+        isValid = false;
+      } else if (formData.customCategory.trim().length < 3) {
+        errors.customCategory = 'Custom category must be at least 3 characters';
+        isValid = false;
+      }
+    }
+
+    // Location validation
+    if (!formData.location.trim()) {
+      errors.location = 'Location is required';
+      isValid = false;
+    }
+
+    // Salary validation
+    if (!formData.salary) {
+      errors.salary = 'Salary is required';
+      isValid = false;
+    } else if (formData.salary <= 0) {
+      errors.salary = 'Salary must be greater than 0';
+      isValid = false;
+    } else if (formData.salary < 100) {
+      errors.salary = 'Salary must be at least LKR 100';
+      isValid = false;
+    }
+
+    // Duration validation
+    if (!formData.duration.trim()) {
+      errors.duration = 'Job duration is required';
+      isValid = false;
+    }
+
+    // Workers needed validation
+    if (!formData.workersNeeded || formData.workersNeeded < 1) {
+      errors.workersNeeded = 'At least 1 worker is required';
+      isValid = false;
+    }
+
+    setFieldErrors(errors);
+    return isValid;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    
+    if (!validateForm()) {
+      toast.error('Please fix the errors below');
+      return;
+    }
+
+    const jobData = {
+      title: formData.title.trim(),
+      description: formData.description.trim(),
+      category: formData.category === 'Other' ? formData.customCategory.trim() : formData.category,
+      location: formData.location.trim(),
+      salary: Number(formData.salary),
+      salaryPeriod: formData.salaryPeriod,
+      duration: formData.duration.trim(),
+      workersNeeded: Number(formData.workersNeeded),
+      requirements: formData.requirements
+    };
+
+    onSubmit(jobData);
   };
 
   return (
@@ -95,10 +189,20 @@ const JobForm = ({
               name="title"
               value={formData.title}
               onChange={handleChange}
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-100 transition-all"
+              className={`w-full px-4 py-3 border-2 rounded-lg text-base transition-all ${
+                fieldErrors.title 
+                  ? 'border-red-500 focus:border-red-600 focus:ring-red-100' 
+                  : 'border-gray-300 focus:border-blue-500 focus:ring-blue-100'
+              } focus:outline-none focus:ring-3`}
               placeholder="e.g., Experienced Mason Needed for House Construction"
               maxLength={100}
             />
+            {fieldErrors.title && (
+              <span className="flex items-start text-red-600 text-sm font-medium mt-2">
+                <AlertCircle className="w-4 h-4 mr-1.5 mt-0.5 flex-shrink-0" />
+                {fieldErrors.title}
+              </span>
+            )}
           </div>
 
           <div>
@@ -107,13 +211,23 @@ const JobForm = ({
               name="category"
               value={formData.category}
               onChange={handleChange}
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-100 transition-all"
+              className={`w-full px-4 py-3 border-2 rounded-lg text-base transition-all ${
+                fieldErrors.category 
+                  ? 'border-red-500 focus:border-red-600 focus:ring-red-100' 
+                  : 'border-gray-300 focus:border-blue-500 focus:ring-blue-100'
+              } focus:outline-none focus:ring-3`}
             >
               <option value="">Select a category</option>
               {categories.map(cat => (
                 <option key={cat} value={cat}>{cat}</option>
               ))}
             </select>
+            {fieldErrors.category && (
+              <span className="flex items-start text-red-600 text-sm font-medium mt-2">
+                <AlertCircle className="w-4 h-4 mr-1.5 mt-0.5 flex-shrink-0" />
+                {fieldErrors.category}
+              </span>
+            )}
             
             {formData.category === 'Other' && (
               <div className="mt-4">
@@ -123,10 +237,20 @@ const JobForm = ({
                   name="customCategory"
                   value={formData.customCategory}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-100 transition-all"
+                  className={`w-full px-4 py-3 border-2 rounded-lg text-base transition-all ${
+                    fieldErrors.customCategory 
+                      ? 'border-red-500 focus:border-red-600 focus:ring-red-100' 
+                      : 'border-gray-300 focus:border-blue-500 focus:ring-blue-100'
+                  } focus:outline-none focus:ring-3`}
                   placeholder="Enter your custom category"
                   maxLength={50}
                 />
+                {fieldErrors.customCategory && (
+                  <span className="flex items-start text-red-600 text-sm font-medium mt-2">
+                    <AlertCircle className="w-4 h-4 mr-1.5 mt-0.5 flex-shrink-0" />
+                    {fieldErrors.customCategory}
+                  </span>
+                )}
               </div>
             )}
           </div>
@@ -138,13 +262,23 @@ const JobForm = ({
               value={formData.description}
               onChange={handleChange}
               rows={6}
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base resize-none focus:outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-100 transition-all"
+              className={`w-full px-4 py-3 border-2 rounded-lg text-base resize-none transition-all ${
+                fieldErrors.description 
+                  ? 'border-red-500 focus:border-red-600 focus:ring-red-100' 
+                  : 'border-gray-300 focus:border-blue-500 focus:ring-blue-100'
+              } focus:outline-none focus:ring-3`}
               placeholder="Describe the job requirements, responsibilities, and what you're looking for in detail..."
               maxLength={1000}
             />
             <div className="flex justify-end">
               <p className="text-sm text-gray-600 mt-1">{formData.description.length} / 1000 characters</p>
             </div>
+            {fieldErrors.description && (
+              <span className="flex items-start text-red-600 text-sm font-medium mt-2">
+                <AlertCircle className="w-4 h-4 mr-1.5 mt-0.5 flex-shrink-0" />
+                {fieldErrors.description}
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -174,17 +308,31 @@ const JobForm = ({
               name="location"
               value={formData.location}
               onChange={handleChange}
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-100 transition-all"
+              className={`w-full px-4 py-3 border-2 rounded-lg text-base transition-all ${
+                fieldErrors.location 
+                  ? 'border-red-500 focus:border-red-600 focus:ring-red-100' 
+                  : 'border-gray-300 focus:border-blue-500 focus:ring-blue-100'
+              } focus:outline-none focus:ring-3`}
               placeholder="e.g., Colombo, Sri Lanka"
               maxLength={100}
             />
+            {fieldErrors.location && (
+              <span className="flex items-start text-red-600 text-sm font-medium mt-2">
+                <AlertCircle className="w-4 h-4 mr-1.5 mt-0.5 flex-shrink-0" />
+                {fieldErrors.location}
+              </span>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               <Banknote className="w-4 h-4 inline mr-1" /> Payment Rate *
             </label>
-            <div className="flex items-center border-2 border-gray-300 rounded-lg overflow-hidden focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-100 transition-all">
+            <div className={`flex items-center border-2 rounded-lg overflow-hidden transition-all ${
+              fieldErrors.salary 
+                ? 'border-red-500 focus-within:border-red-600 focus-within:ring-3 focus-within:ring-red-100' 
+                : 'border-gray-300 focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-100'
+            }`}>
               <span className="px-4 py-3 bg-gray-50 border-r-2 border-gray-300 font-semibold text-gray-700">LKR</span>
               <input
                 type="number"
@@ -210,6 +358,12 @@ const JobForm = ({
                 <option value="fixed">fixed</option>
               </select>
             </div>
+            {fieldErrors.salary && (
+              <span className="flex items-start text-red-600 text-sm font-medium mt-2">
+                <AlertCircle className="w-4 h-4 mr-1.5 mt-0.5 flex-shrink-0" />
+                {fieldErrors.salary}
+              </span>
+            )}
             <span className="text-xs text-gray-600 mt-1 block">Enter the amount and select payment period</span>
           </div>
 
@@ -222,15 +376,25 @@ const JobForm = ({
               name="duration"
               value={formData.duration}
               onChange={handleChange}
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-100 transition-all"
+              className={`w-full px-4 py-3 border-2 rounded-lg text-base transition-all ${
+                fieldErrors.duration 
+                  ? 'border-red-500 focus:border-red-600 focus:ring-red-100' 
+                  : 'border-gray-300 focus:border-blue-500 focus:ring-blue-100'
+              } focus:outline-none focus:ring-3`}
               placeholder="e.g., 2 months, 3 weeks, 10 days"
               maxLength={50}
             />
+            {fieldErrors.duration && (
+              <span className="flex items-start text-red-600 text-sm font-medium mt-2">
+                <AlertCircle className="w-4 h-4 mr-1.5 mt-0.5 flex-shrink-0" />
+                {fieldErrors.duration}
+              </span>
+            )}
           </div>
         </div>
       </div>
 
-      {/* CARD 3: WORKFORCE */}
+      {/* CARD 3: WORKFORCE  */}
       <div className="bg-white rounded-xl shadow-md p-8 hover:shadow-lg transition-shadow">
         <div className="flex items-center mb-6 pb-4 border-b-2 border-gray-100">
           <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mr-4">
@@ -256,9 +420,19 @@ const JobForm = ({
             onChange={handleChange}
             min="1"
             max="50"
-            className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-100 transition-all"
+            className={`w-full px-4 py-3 border-2 rounded-lg text-base transition-all ${
+              fieldErrors.workersNeeded 
+                ? 'border-red-500 focus:border-red-600 focus:ring-red-100' 
+                : 'border-gray-300 focus:border-blue-500 focus:ring-blue-100'
+            } focus:outline-none focus:ring-3`}
             placeholder="Number of workers"
           />
+          {fieldErrors.workersNeeded && (
+            <span className="flex items-start text-red-600 text-sm font-medium mt-2">
+              <AlertCircle className="w-4 h-4 mr-1.5 mt-0.5 flex-shrink-0" />
+              {fieldErrors.workersNeeded}
+            </span>
+          )}
           <span className="text-xs text-gray-600 mt-1 block">
             How many workers do you need for this job?
           </span>
@@ -286,7 +460,6 @@ const JobForm = ({
         </div>
 
         <div>
-          {/* Requirements List */}
           {formData.requirements.length > 0 ? (
             <div className="space-y-2 mb-4">
               {formData.requirements.map((req, index) => (
@@ -309,7 +482,6 @@ const JobForm = ({
             </div>
           )}
           
-          {/* Add Requirement Input */}
           <div className="flex flex-col sm:flex-row gap-2">
             <input
               type="text"
@@ -337,24 +509,42 @@ const JobForm = ({
         </div>
       </div>
 
-      {/* Temporary actions */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <button 
-          type="submit" 
-          disabled={loading}
-          className="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors disabled:opacity-50"
-        >
-          {loading ? 'Loading...' : submitButtonText}
-        </button>
-        <button
-          type="button"
-          onClick={onCancel}
-          disabled={loading}
-          className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors disabled:opacity-50"
-        >
-          Cancel
-        </button>
+      {/* CARD 5: FORM ACTIONS */}
+      <div className="bg-white rounded-xl shadow-md p-6 md:p-8 hover:shadow-lg transition-shadow border-2 border-blue-100">
+        <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="flex-1 px-6 md:px-8 py-3 md:py-4 bg-blue-600 text-white rounded-lg text-base md:text-lg font-bold hover:bg-blue-700 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {loading ? (
+              <span className="flex items-center justify-center">
+                <span className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin mr-3"></span>
+                {submitButtonText === 'Post Job' ? 'Posting Job...' : 'Updating Job...'}
+              </span>
+            ) : (
+              submitButtonText
+            )}
+          </button>
+          
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={loading}
+            className="px-6 md:px-8 py-3 md:py-4 border-2 border-blue-600 bg-white text-blue-600 rounded-lg text-base md:text-lg font-bold hover:bg-blue-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Cancel
+          </button>
+        </div>
+
+        <div className="mt-4 md:mt-6 p-3 md:p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <p className="text-xs md:text-sm text-blue-900 leading-relaxed">
+            <strong className="font-bold">Tip:</strong> Be specific and detailed in your job description to attract the right workers. 
+            Include work hours, safety requirements, and any special conditions.
+          </p>
+        </div>
       </div>
+
     </form>
   );
 };
