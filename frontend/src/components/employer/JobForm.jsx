@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { FileText } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { categories } from '../../mocks/jobData';
 
@@ -34,10 +35,99 @@ const JobForm = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="bg-white rounded-xl shadow-md p-8">
-        <p className="text-gray-600 text-center">JobForm initialized. Cards coming next...</p>
+      
+      {/* CARD 1: JOB BASICS */}
+      <div className="bg-white rounded-xl shadow-md p-8 hover:shadow-lg transition-shadow">
+        <div className="flex items-center mb-6 pb-4 border-b-2 border-gray-100">
+          <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mr-4">
+            <FileText className="w-6 h-6 text-blue-600" />
+          </div>
+          <div className="flex-1">
+            <h2 className="text-xl font-bold text-gray-900">Job Basics</h2>
+            <p className="text-sm text-gray-600">What is the job?</p>
+          </div>
+          <div className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg">
+            1
+          </div>
+        </div>
+
+        <div className="space-y-5">
+          {/* Job Title */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Job Title *
+            </label>
+            <input
+              type="text"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-100 transition-all"
+              placeholder="e.g., Experienced Mason Needed for House Construction"
+              maxLength={100}
+            />
+          </div>
+
+          {/* Category */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Category *
+            </label>
+            <select
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-100 transition-all"
+            >
+              <option value="">Select a category</option>
+              {categories.map(cat => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+            
+            {/* Custom Category */}
+            {formData.category === 'Other' && (
+              <div className="mt-4">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Custom Category *
+                </label>
+                <input
+                  type="text"
+                  name="customCategory"
+                  value={formData.customCategory}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-100 transition-all"
+                  placeholder="Enter your custom category"
+                  maxLength={50}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Description */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Job Description *
+            </label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              rows={6}
+              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base resize-none focus:outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-100 transition-all"
+              placeholder="Describe the job requirements, responsibilities, and what you're looking for in detail..."
+              maxLength={1000}
+            />
+            <div className="flex justify-end">
+              <p className="text-sm text-gray-600 mt-1">
+                {formData.description.length} / 1000 characters
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
+      {/*  actions */}
       <div className="flex flex-col sm:flex-row gap-4">
         <button 
           type="submit" 
@@ -58,5 +148,6 @@ const JobForm = ({
     </form>
   );
 };
+
 
 export default JobForm;
