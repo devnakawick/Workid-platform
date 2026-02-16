@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FileText, Wallet, MapPin, Banknote, Clock, Users } from 'lucide-react';
+import { FileText, Wallet, MapPin, Banknote, Clock, Users, ClipboardList, Plus, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { categories } from '../../mocks/jobData';
 
@@ -22,10 +22,46 @@ const JobForm = ({
   onCancel
 }) => {
   const [formData, setFormData] = useState(initialData);
+  const [requirementInput, setRequirementInput] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const addRequirement = () => {
+    const requirement = requirementInput.trim();
+    
+    if (!requirement) {
+      toast.error('Please enter a requirement');
+      return;
+    }
+    
+    if (requirement.length < 3) {
+      toast.error('Requirement must be at least 3 characters');
+      return;
+    }
+    
+    if (formData.requirements.includes(requirement)) {
+      toast.error('This requirement is already added');
+      return;
+    }
+    
+    setFormData(prev => ({
+      ...prev,
+      requirements: [...prev.requirements, requirement]
+    }));
+    
+    setRequirementInput('');
+    toast.success('Requirement added');
+  };
+
+  const removeRequirement = (requirement) => {
+    setFormData(prev => ({
+      ...prev,
+      requirements: prev.requirements.filter(r => r !== requirement)
+    }));
+    toast.success('Requirement removed');
   };
 
   const handleSubmit = (e) => {
@@ -226,6 +262,78 @@ const JobForm = ({
           <span className="text-xs text-gray-600 mt-1 block">
             How many workers do you need for this job?
           </span>
+        </div>
+      </div>
+
+      {/* CARD 4: REQUIREMENTS  */}
+      <div className="bg-white rounded-xl shadow-md p-8 hover:shadow-lg transition-shadow">
+        <div className="flex items-center mb-6 pb-4 border-b-2 border-gray-100">
+          <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mr-4">
+            <ClipboardList className="w-6 h-6 text-blue-600" />
+          </div>
+          <div className="flex-1">
+            <h2 className="text-xl font-bold text-gray-900">
+              Additional Requirements
+              <span className="ml-2 inline-block px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded-full">
+                Optional
+              </span>
+            </h2>
+            <p className="text-sm text-gray-600">Any extra conditions?</p>
+          </div>
+          <div className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg">
+            4
+          </div>
+        </div>
+
+        <div>
+          {/* Requirements List */}
+          {formData.requirements.length > 0 ? (
+            <div className="space-y-2 mb-4">
+              {formData.requirements.map((req, index) => (
+                <div key={index} className="flex items-center gap-3 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                  <span className="flex-1 text-sm text-gray-700">{req}</span>
+                  <button
+                    type="button"
+                    onClick={() => removeRequirement(req)}
+                    className="p-1.5 bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition-colors"
+                    title="Remove requirement"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-400 text-sm italic">
+              No additional requirements added yet
+            </div>
+          )}
+          
+          {/* Add Requirement Input */}
+          <div className="flex flex-col sm:flex-row gap-2">
+            <input
+              type="text"
+              value={requirementInput}
+              onChange={(e) => setRequirementInput(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  addRequirement();
+                }
+              }}
+              className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-100 transition-all"
+              placeholder="e.g., Must have valid driving license, 5+ years experience"
+              maxLength={100}
+            />
+            <button
+              type="button"
+              onClick={addRequirement}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+            >
+              <Plus className="w-4.5 h-4.5" />
+              Add
+            </button>
+          </div>
         </div>
       </div>
 
