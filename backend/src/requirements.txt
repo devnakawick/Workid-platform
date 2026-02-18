@@ -11,3 +11,6 @@ email-validator
 python-jose 
 twilio
 aiofiles
+pytest
+pytest-asyncio
+httpx
