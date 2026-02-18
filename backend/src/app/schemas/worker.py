@@ -145,7 +145,7 @@ class DocumentUploadResponse(BaseModel):
     Schemas for document upload response
     """
     id: int
-    worker_id: UUID
+    worker_id: int
     document_type: DocumentType
     file_name: str
     file_url: str

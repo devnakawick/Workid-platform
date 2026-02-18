@@ -144,7 +144,7 @@ async def get_job_details(
 
 # ======= Applications (Worker Side) =======
 
-@router.post("/{job_id}/applu", response_model=ApplicationResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/{job_id}/apply", response_model=ApplicationResponse, status_code=status.HTTP_201_CREATED)
 async def apply_to_job(
     job_id: int,
     application_data: ApplicationCreate,

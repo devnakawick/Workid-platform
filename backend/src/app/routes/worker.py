@@ -139,10 +139,19 @@ async def upload_document(
         worker_id=worker.id,
         document_type=document_type,
         file_url=file_info["file_url"],
-        file_name=file_info["file_name"]
+        file_name=file_info["filename"]
     )
 
-    return document
+    return {
+        "id": document.id,
+        "worker_id": str(document.worker_id),
+        "document_type": document.document_type,
+        "file_url": document.file_url,
+        "file_name": document.file_name,
+        "status": document.status,
+        "uploaded_at": document.uploaded_at.isoformat(),
+        "verified_at": document.verified_at.isoformat() if document.verified_at else None
+    }
 
 @router.get("/documents", response_model=List[DocumentUploadResponse])
 async def get_worker_documents(
