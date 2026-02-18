@@ -11,8 +11,8 @@ from app.models.worker import Worker
 from app.models.employer import Employer
 from app.models.job import Job, JobStatus
 from app.models.application import Application, ApplicationStatus
-from app.models.wallet import Wallet
-from app.models.transaction import Transaction
+#from app.models.wallet import Wallet
+#from app.models.transaction import Transaction
 
 routes = APIRouter()
 logger = logging.getLogger(__name__)
@@ -31,8 +31,9 @@ async def get_worker_dashboard_stats(
         if not worker:
             return {"error": "Worker profile not found"}
 
-        # Get wallet
-        wallet = db.query(Wallet).filter(Wallet.user_id == current_user.id).first()
+        # Get wallet (TODO: Implement Wallet model)
+        # wallet = db.query(Wallet).filter(Wallet.user_id == current_user.id).first()
+        wallet_balance = 0.0
         
         # Get applications count
         total_applications = db.query(func.count(Application.id)).filter(
@@ -47,6 +48,12 @@ async def get_worker_dashboard_stats(
         accepted_applications = db.query(func.count(Application.id)).filter(
             Application.worker_id == worker.id,
             Application.status == ApplicationStatus.ACCEPTED
+        ).scalar()
+
+        active_jobs = db.query(func.count(Application.id)).join(Job).filter(
+            Application.worker_id == worker.id,
+            Application.status == ApplicationStatus.ACCEPTED,
+            Job.status.in_([JobStatus.OPEN, JobStatus.IN_PROGRESS])
         ).scalar()
 
         completed_jobs = db.query(func.count(Application.id)).join(Job).filter(
@@ -92,7 +99,7 @@ async def get_worker_dashboard_stats(
                 "completed_jobs": completed_jobs or 0
             },
             "earnings": {
-                "total": float(wallet.balance) if wallet else 0.0,
+                "total": wallet_balance,
                 "this_month": 0.0,  # TODO: Calculate from transactions
                 "pending": 0.0  # TODO: Calculate from pending payments
             },
@@ -122,8 +129,9 @@ async def get_employer_dashboard_stats(
         if not employer:
             return {"error": "Employer profile not found"}
         
-        # Get wallet
-        wallet = db.query(Wallet).filter(Wallet.user_id == current_user.id).first()
+        # Get wallet (TODO: Implement Wallet model)
+        # wallet = db.query(Wallet).filter(Wallet.user_id == current_user.id).first()
+        wallet_balance = 0.0
         
         # Get jobs count
         total_jobs = db.query(func.count(Job.id)).filter(
@@ -192,7 +200,7 @@ async def get_employer_dashboard_stats(
                 "active_workers": active_workers or 0
             },
             "wallet": {
-                "balance": float(wallet.balance) if wallet else 0.0,
+                "balance": wallet_balance,
                 "total_spent": 0.0,  # TODO: Calculate from transactions
                 "this_month_spent": 0.0  # TODO: Calculate from this month's transactions
             },

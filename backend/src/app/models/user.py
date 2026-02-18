@@ -21,7 +21,7 @@ class User(Base):
     
     # Authentication
     phone_number = Column(String(15), unique=True, nullable=False, index=True)
-    user_type = Column(SQLEnum(UserType), nullable=False)
+    user_type = Column(SQLEnum(UserType, name="user_type"), nullable=False)
     preferred_language = Column(String(5), default='en')  # 'en', 'si', 'ta'
 
 
@@ -41,8 +41,8 @@ class User(Base):
     last_login = Column(DateTime, nullable=True)
     
     # Relationships (defined in other models)
-    # worker_profile
-    # employer_profile
+    worker_profile = relationship("Worker", back_populates="user", uselist=False)
+    employer_profile = relationship("Employer", back_populates="user", uselist=False)
     # wallet
     
     def __repr__(self):
