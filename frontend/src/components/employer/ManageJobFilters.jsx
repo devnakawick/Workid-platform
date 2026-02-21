@@ -23,10 +23,24 @@ const ManageJobFilters = ({ filters, onFilterChange, onClearAll, locations, jobs
     filters.dateFilter && filters.dateFilter !== 'all'
   ].filter(Boolean).length;
 
-  const hasActive = activeCount > 0 || filters.searchQuery.trim() !== '';
-
-  // Clamp salary value between 0 and MAX_SALARY
+  const hasActive   = activeCount > 0 || filters.searchQuery.trim() !== '';
   const clampSalary = (value) => value === '' ? '' : Math.min(MAX_SALARY, Math.max(0, Number(value)));
+
+  // Remove a single filter by name
+  const removeFilter = (name) => {
+    if (name === 'salary') { onFilterChange('minSalary', ''); onFilterChange('maxSalary', ''); }
+    else onFilterChange(name === 'date' ? 'dateFilter' : name, 'all');
+  };
+
+  // Small chip component for each active filter
+  const FilterChip = ({ label, onRemove }) => (
+    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-gray-200 text-gray-700 rounded-full text-xs font-medium shadow-sm">
+      {label}
+      <button onClick={onRemove} className="hover:bg-gray-100 rounded-full p-0.5 transition-colors">
+        <X className="w-3 h-3" />
+      </button>
+    </span>
+  );
 
   return (
     <div className="bg-white rounded-xl p-6 border border-gray-200 space-y-4">
@@ -56,7 +70,6 @@ const ManageJobFilters = ({ filters, onFilterChange, onClearAll, locations, jobs
         </button>
       </div>
 
-      {/* Expanded filter panel */}
       {showFilters && (
         <div className="space-y-6 pt-4 border-t border-gray-200">
 
@@ -89,14 +102,12 @@ const ManageJobFilters = ({ filters, onFilterChange, onClearAll, locations, jobs
             <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-3">Salary Range (LKR)</label>
             <div className="relative px-2 mb-6">
               <div className="relative h-1.5 bg-gray-200 rounded-full">
-                {/* Blue fill between min and max handles */}
                 <div className="absolute h-1.5 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"
                   style={{
                     left:  `${((filters.minSalary || 0)               / MAX_SALARY) * 100}%`,
                     right: `${100 - ((filters.maxSalary || MAX_SALARY) / MAX_SALARY) * 100}%`
                   }} />
               </div>
-              {/* Min and max range inputs stacked on same track */}
               {[{ value: filters.minSalary || 0, key: 'minSalary' }, { value: filters.maxSalary || MAX_SALARY, key: 'maxSalary' }].map(({ value, key }) => (
                 <input key={key} type="range" min="0" max={MAX_SALARY} step="1000" value={value}
                   onChange={(e) => onFilterChange(key, e.target.value)}
@@ -118,6 +129,39 @@ const ManageJobFilters = ({ filters, onFilterChange, onClearAll, locations, jobs
             ))}
           </div>
 
+          {/* Active filter chips — show what filters are applied */}
+          {activeCount > 0 && (
+            <div className="flex flex-wrap items-center gap-2 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+              <span className="text-xs font-bold text-gray-700 uppercase tracking-wide">Active:</span>
+              {filters.status   !== 'all' && <FilterChip label={labels.status[filters.status]} onRemove={() => removeFilter('status')}   />}
+              {filters.category !== 'all' && <FilterChip label={filters.category}              onRemove={() => removeFilter('category')} />}
+              {filters.location !== 'all' && <FilterChip label={filters.location}              onRemove={() => removeFilter('location')} />}
+              {(filters.minSalary !== '' || filters.maxSalary !== '') && (
+                <FilterChip
+                  label={`LKR ${(filters.minSalary || 0).toLocaleString()} - ${filters.maxSalary ? Number(filters.maxSalary).toLocaleString() : '∞'}`}
+                  onRemove={() => removeFilter('salary')}
+                />
+              )}
+              {filters.dateFilter && filters.dateFilter !== 'all' && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-gray-200 text-gray-700 rounded-full text-xs font-medium shadow-sm">
+                  <Calendar className="w-3 h-3 text-gray-500" />
+                  {labels.date[filters.dateFilter]}
+                  <button onClick={() => removeFilter('date')} className="hover:bg-gray-100 rounded-full p-0.5"><X className="w-3 h-3" /></button>
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Clear all filters button — aligned to right */}
+          {hasActive && (
+            <div className="flex justify-end">
+              <button onClick={onClearAll}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm font-medium hover:bg-red-50 hover:border-red-400">
+                <X className="w-4 h-4" />
+                Clear all filters
+              </button>
+            </div>
+          )}
         </div>
       )}
 
