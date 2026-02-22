@@ -1,42 +1,23 @@
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from app.config import settings
+from sqlalchemy.orm import sessionmaker, declarative_base
 
-# Create engine
-engine = create_engine(
-    settings.DATABASE_URL,
-    echo=settings.DATABASE_ECHO,
-    pool_pre_ping=True,
-    pool_size=10,
-    max_overflow=20
-)
+DATABASE_URL = "postgresql://postgres:Devnaka2006@localhost:5432/workId"
 
-# Create session factory
+engine = create_engine(DATABASE_URL)
+
 SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
     bind=engine
 )
 
-# Base class for models
 Base = declarative_base()
 
-# Dependency for FastAPI
+from sqlalchemy.orm import Session
+
 def get_db():
-    """Database session dependency"""
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
-
-# Create all tables
-def create_tables():
-    """Create all database tables"""
-    Base.metadata.create_all(bind=engine)
-
-# Drop all tables (use with caution!)
-def drop_tables():
-    """Drop all database tables"""
-    Base.metadata.drop_all(bind=engine)

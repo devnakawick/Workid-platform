@@ -4,8 +4,15 @@ from fastapi.responses import JSONResponse
 import logging
 
 from app.config import settings
-from app.database import create_tables
+#from src.app.database import create_tables
 from app.routes import auth, dashboard
+from app.database import engine, Base
+
+app = FastAPI()
+
+@app.get("/")
+def root():
+    return {"message": "Backend Running"}
 
 # Configure logging
 logging.basicConfig(
@@ -33,8 +40,8 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
-app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
+app.include_router(auth.routes, prefix="/api/auth", tags=["Authentication"])
+app.include_router(dashboard.routes, prefix="/api/dashboard", tags=["Dashboard"])
 
 # Member 2: Include worker and jobs routers here
 
@@ -50,7 +57,7 @@ async def startup_event():
     
     # Create database tables
     try:
-        create_tables()
+       # create_tables()
         logger.info("Database tables created successfully")
     except Exception as e:
         logger.error(f"Failed to create database tables: {str(e)}")
