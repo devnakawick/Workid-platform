@@ -40,10 +40,10 @@ class User(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     last_login = Column(DateTime, nullable=True)
     
-    # Relationships (defined in other models)
-    # worker_profile
-    # employer_profile
-    # wallet
+    # Relationships
+    worker_profile = relationship("Worker", back_populates="user", uselist=False)
+    employer_profile = relationship("Employer", back_populates="user", uselist=False)
+    wallet = relationship("Wallet", back_populates="user", uselist=False)
     
     def __repr__(self):
         return f"<User {self.phone_number} ({self.user_type})>"
