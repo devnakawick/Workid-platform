@@ -7,8 +7,21 @@ from app.config import settings
 #from src.app.database import create_tables
 from app.routes import auth, dashboard
 from app.database import engine, Base
+from app.routes import employer_wallet
+from app.routes import escrow
+from app.routes import worker_wallet
 
-app = FastAPI()
+
+# Create FastAPI app
+app = FastAPI(
+    title=settings.APP_NAME,
+    version=settings.APP_VERSION,
+    description="WorkID Platform Backend API",
+    docs_url="/docs",
+    redoc_url="/redoc"
+)
+
+app.include_router(employer_wallet.router)
 
 @app.get("/")
 def root():
@@ -20,15 +33,6 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
-
-# Create FastAPI app
-app = FastAPI(
-    title=settings.APP_NAME,
-    version=settings.APP_VERSION,
-    description="WorkID Platform Backend API",
-    docs_url="/docs",
-    redoc_url="/redoc"
-)
 
 # CORS Configuration
 app.add_middleware(
@@ -42,6 +46,8 @@ app.add_middleware(
 # Include routers
 app.include_router(auth.routes, prefix="/api/auth", tags=["Authentication"])
 app.include_router(dashboard.routes, prefix="/api/dashboard", tags=["Dashboard"])
+app.include_router(escrow.routes)
+app.include_router(worker_wallet.routes)
 
 # Member 2: Include worker and jobs routers here
 
