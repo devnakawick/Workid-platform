@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     MAX_PAGE_SIZE: int = 100
     
     class Config:
-        env_file = ".env"
+        env_file = "../.env"
         case_sensitive = True
 
 @lru_cache()
