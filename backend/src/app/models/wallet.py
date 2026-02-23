@@ -24,7 +24,7 @@ class Wallet(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationships
-    user = relationship("User", backref="wallet")
+    user = relationship("User", back_populates="wallet")
 
     def __repr__(self):
         return f"<Wallet user_id={self.user_id} balance={self.balance}>"
