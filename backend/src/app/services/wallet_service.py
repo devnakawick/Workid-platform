@@ -17,48 +17,35 @@ def get_wallet(db: Session, user_id):
     if not wallet:
         wallet = Wallet(user_id=user_id, balance=Decimal("0.00"))
         db.add(wallet)
-        db.commit()
-        db.refresh(wallet)
+        db.flush()
+       
 
     return wallet
 
 
 def credit_wallet(db: Session, user_id, amount: Decimal):
-    """
-    Add money to a user's wallet and create a transaction record.
-    """
 
     if amount <= 0:
         raise ValueError("Amount must be greater than zero")
 
     wallet = get_wallet(db, user_id)
 
-    try:
-        wallet.balance += amount
+    wallet.balance += amount
 
-        transaction = Transaction(
-            from_user_id=None,
-            to_user_id=user_id,
-            amount=amount,
-            transaction_type="topup",
-            status="completed"
-        )
+    transaction = Transaction(
+        from_user_id=None,
+        to_user_id=user_id,
+        amount=amount,
+        transaction_type="topup",
+        status="completed"
+    )
 
-        db.add(transaction)
-        db.commit()
-        db.refresh(wallet)
+    db.add(transaction)
 
-        return wallet
+    return wallet
 
-    except SQLAlchemyError:
-        db.rollback()
-        raise
-    
 
 def debit_wallet(db: Session, user_id, amount: Decimal):
-    """
-    Subtract money from a user's wallet and create a transaction record.
-    """
 
     if amount <= 0:
         raise ValueError("Amount must be greater than zero")
@@ -68,23 +55,16 @@ def debit_wallet(db: Session, user_id, amount: Decimal):
     if wallet.balance < amount:
         raise ValueError("Insufficient balance")
 
-    try:
-        wallet.balance -= amount
+    wallet.balance -= amount
 
-        transaction = Transaction(
-            from_user_id=user_id,
-            to_user_id=None,
-            amount=amount,
-            transaction_type="withdrawal",
-            status="completed"
-        )
+    transaction = Transaction(
+        from_user_id=user_id,
+        to_user_id=None,
+        amount=amount,
+        transaction_type="withdrawal",
+        status="completed"
+    )
 
-        db.add(transaction)
-        db.commit()
-        db.refresh(wallet)
+    db.add(transaction)
 
-        return wallet
-
-    except SQLAlchemyError:
-        db.rollback()
-        raise
+    return wallet

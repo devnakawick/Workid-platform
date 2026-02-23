@@ -54,6 +54,12 @@ async def get_worker_dashboard_stats(
             Application.status == ApplicationStatus.ACCEPTED,
             Job.status == JobStatus.COMPLETED
         ).scalar()
+        
+        active_jobs = db.query(func.count(Application.id)).join(Job).filter(
+            Application.worker_id == worker.id,
+            Application.status == ApplicationStatus.ACCEPTED,
+            Job.status.in_([JobStatus.OPEN, JobStatus.IN_PROGRESS])
+        ).scalar()
 
         # Calculate profile completion
         profile_fields = [

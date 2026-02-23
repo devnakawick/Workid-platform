@@ -16,7 +16,7 @@ security = HTTPBearer()
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
-) -> User:
+):
     """Get current authenticated user"""
     
     credentials_exception = HTTPException(
@@ -60,7 +60,7 @@ async def get_current_user(
 
 async def get_current_worker(
     current_user: User = Depends(get_current_user)
-) -> User:
+):
     """Get current user - must be worker"""
     if current_user.user_type != UserType.WORKER:
         raise HTTPException(
@@ -71,7 +71,7 @@ async def get_current_worker(
 
 async def get_current_employer(
     current_user: User = Depends(get_current_user)
-) -> User:
+):
     """Get current user - must be employer"""
     if current_user.user_type != UserType.EMPLOYER:
         raise HTTPException(
@@ -82,7 +82,7 @@ async def get_current_employer(
 
 async def get_current_admin(
     current_user: User = Depends(get_current_user)
-) -> User:
+):
     """Get current user - must be admin"""
     if current_user.user_type != UserType.ADMIN:
         raise HTTPException(
@@ -94,7 +94,7 @@ async def get_current_admin(
 def get_optional_user(
     credentials: Optional[HTTPAuthorizationCredentials] = Depends(security),
     db: Session = Depends(get_db)
-) -> Optional[User]:
+):
     """Get current user if authenticated, None otherwise"""
     if credentials is None:
         return None
