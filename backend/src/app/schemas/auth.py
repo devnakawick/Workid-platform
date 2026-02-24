@@ -4,29 +4,28 @@ from datetime import datetime
 import re
 
 class SendOTPRequest(BaseModel):
-    """Request schema for sending OTP"""
-    phone_number: str = Field(..., min_length=10, max_length=15)
-    
+    phone_number: str
+
     @validator('phone_number')
     def validate_phone(cls, v):
-        # Remove spaces and dashes
         v = v.replace(' ', '').replace('-', '')
-        # Check if it's numeric
+
         if not v.isdigit():
             raise ValueError('Phone number must contain only digits')
-        # Check length (adjust based on your country)
-        if len(v) < 10 or len(v) > 15:
+
+        if not 10 <= len(v) <= 15:
             raise ValueError('Phone number must be between 10 and 15 digits')
+
         return v
 
 class VerifyOTPRequest(BaseModel):
     """Request schema for verifying OTP"""
-    phone_number: str = Field(..., min_length=10, max_length=15)
+    phone_number: str = Field(..., min_length=9, max_length=15)
     otp: str = Field(..., min_length=4, max_length=6)
 
 class SignupRequest(BaseModel):
     """Base signup request schema"""
-    phone_number: str = Field(..., min_length=10, max_length=15)
+    phone_number: str = Field(..., min_length=9, max_length=15)
     full_name: str = Field(..., min_length=2, max_length=100)
     email: Optional[str] = None
     

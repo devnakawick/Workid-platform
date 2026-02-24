@@ -5,6 +5,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 def send_otp(phone_number: str, otp_code: str) -> bool:
+    print("SID:", settings.TWILIO_ACCOUNT_SID)
+    print("TOKEN:", settings.TWILIO_AUTH_TOKEN)
     """
     Send OTP via Twilio SMS
     Return True if successful, False otherwise
