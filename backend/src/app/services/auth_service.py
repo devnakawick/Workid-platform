@@ -6,15 +6,15 @@ import random
 import logging
 
 from app.models.user import User, UserType
-#from app.models.worker import Worker
-#from app.models.employer import Employer
+from app.models.worker import Worker
+from app.models.employer import Employer
 #from app.models.wallet import Wallet
 from app.schemas.auth import (
     SendOTPRequest, VerifyOTPRequest, 
     WorkerSignupRequest, EmployerSignupRequest
 )
 from app.utils.security import create_access_token, create_refresh_token
-from app.services.sms_service import send_otp_sms
+from app.services.sms_service import send_otp
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +61,7 @@ class AuthService:
             self.db.commit()
             
             # Send OTP via SMS
-            sms_sent = send_otp_sms(request.phone_number, otp_code)
+            sms_sent = send_otp(request.phone_number, otp_code)
             
             if not sms_sent:
                 logger.warning(f"Failed to send OTP to {request.phone_number}")

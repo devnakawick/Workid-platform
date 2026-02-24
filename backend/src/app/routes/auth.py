@@ -1,19 +1,26 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.orm import Session
 import logging
 
 from app.database import get_db
-from app.schemas.auth import (SendOTPRequest, VerifyOTPRequest, WorkerSignupRequest, EmployerSignupRequest, TokenResponse, UserResponse)
-
+from app.schemas.auth import (
+    SendOTPRequest,
+    VerifyOTPRequest,
+    WorkerSignupRequest,
+    EmployerSignupRequest,
+    TokenResponse,
+    UserResponse
+)
 from app.services.auth_service import AuthService
 from app.utils.dependencies import get_current_user
 from app.models.user import User
+
 
 routes = APIRouter()
 logger = logging.getLogger(__name__)
 
 @routes.post("/send-otp", status_code=status.HTTP_200_OK)
-async def send_otp(request: SendOTPRequest, db: Session = Depends):
+async def send_otp(request: SendOTPRequest, db: Session = Depends(get_db)):
 
     """
     Send OTP to phone number
