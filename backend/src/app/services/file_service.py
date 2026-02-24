@@ -105,4 +105,5 @@ class FileService:
         """
 
         path = os.path.join(UPLOAD_DIR, subfolder, filename)
-        return f"/{path.replace('\\', '/')}"
+        clean_path = path.replace("\\", "/")
+        return f"/{clean_path}"
