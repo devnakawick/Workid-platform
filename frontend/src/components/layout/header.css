@@ -1,0 +1,16 @@
+/* Header styles for WorkID */
+.workid-header{border-bottom:1px solid rgba(15,23,42,0.06);background:#ffffff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:60}
+.workid-header-left{display:flex;align-items:center;gap:16px}
+.workid-header-left a{display:flex;align-items:center;gap:8px;color:#0f172a;font-weight:800;font-size:20px;text-decoration:none}
+.workid-header-left .brand-icon{background:#1f77ff;color:#fff;padding:6px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center}
+.desktop-nav{display:none;gap:6px}
+@media (min-width:768px){.desktop-nav{display:flex}}
+.nav-item{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:8px;color:#374151;text-decoration:none;transition:background .15s,color .15s}
+.nav-item:hover{background:#fbfdff}
+.nav-item.active{background:#eef2ff;color:#0f172a;font-weight:700}
+.nav-label{display:inline-block}
+
+/* Align header content with sidebar on wide screens */
+@media (min-width:1024px){
+	.workid-header{padding-left:300px}
+}

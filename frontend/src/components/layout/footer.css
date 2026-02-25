@@ -1,0 +1,24 @@
+@media (min-width:1024px) {
+	.site-footer {
+		margin-left: 260px;
+	}
+}
+/* Footer styles */
+.site-footer{background:#fff;border-top:1px solid #e5e7eb;padding:48px 24px}
+.site-footer-grid{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:32px}
+@media (min-width:768px){.site-footer-grid{grid-template-columns:repeat(4,1fr)}}
+.site-footer-brand .brand-wrap{display:flex;align-items:center;gap:8px;font-weight:700;color:#4f46e5}
+.site-footer .brand-icon{background:#4f46e5;color:#fff;padding:6px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center}
+.brand-logo{width:36px;height:36px;object-fit:cover;border-radius:6px;border:1px solid rgba(0,0,0,0.06)}
+.brand-name{margin-left:6px}
+.brand-tagline{color:#6b7280;font-size:14px;margin-top:8px}
+.site-footer-col h3{font-size:13px;font-weight:700;color:#111827;margin-bottom:8px;text-transform:uppercase}
+.site-footer-col ul{list-style:none;padding:0;margin:0}
+.site-footer-col li{margin-bottom:8px}
+.site-footer-col a{color:#6b7280;text-decoration:none}
+.site-footer-col a:hover{color:#4f46e5}
+.site-footer-socials{display:flex;gap:12px}
+.site-footer-bottom{border-top:1px solid #f3f4f6;margin-top:24px;padding-top:16px;display:flex;flex-direction:column;gap:12px}
+@media (min-width:768px){.site-footer-bottom{flex-direction:row;justify-content:space-between;align-items:center}}
+.site-footer-bottom p{color:#9ca3af;font-size:13px;margin:0}
+.bottom-right{color:#9ca3af}
