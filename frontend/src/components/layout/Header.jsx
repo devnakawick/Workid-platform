@@ -1,26 +1,57 @@
 import React from 'react';
+import './header.css';
 import { Briefcase, FileText, FolderOpen, GraduationCap, Award } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../common/LanguageSwitcher';
 
 const Header = () => {
+    const { t } = useTranslation();
+    const location = useLocation();
+
     return (
-        <header className="border-b bg-white px-6 py-3 flex items-center justify-between sticky top-0 z-50">
-            <div className="flex items-center gap-8">
+        <header className="workid-header">
+            <div className="workid-header-left">
                 {/* Brand Identity */}
-                <div className="flex items-center gap-2 text-indigo-600 font-bold text-2xl">
+                <Link to="/" className="flex items-center gap-2 text-indigo-600 font-bold text-2xl">
                     <div className="bg-indigo-600 p-1.5 rounded-lg text-white">
                         <Briefcase size={22} />
                     </div>
                     <span>WorkID</span>
-                </div>
+                </Link>
 
                 {/* Desktop Navigation Links */}
-                <nav className="hidden md:flex gap-1">
-                    <NavItem icon={<Briefcase size={18} />} label="Find Jobs" active />
-                    <NavItem icon={<FileText size={18} />} label="My Applications" />
-                    <NavItem icon={<FolderOpen size={18} />} label="Documents" />
-                    <NavItem icon={<GraduationCap size={18} />} label="Learning" />
-                    <NavItem icon={<Award size={18} />} label="Badges" />
+                <nav className="desktop-nav">
+                    <NavItem
+                        to="/Jobs"
+                        icon={<Briefcase size={18} />}
+                        label={t('nav.findJobs', 'Find Jobs')}
+                        active={location.pathname === '/Jobs' || location.pathname === '/'}
+                    />
+                    <NavItem
+                        to="/Applications"
+                        icon={<FileText size={18} />}
+                        label={t('nav.applications', 'My Applications')}
+                        active={location.pathname === '/Applications'}
+                    />
+                    <NavItem
+                        to="/Documents"
+                        icon={<FolderOpen size={18} />}
+                        label={t('nav.documents', 'Documents')}
+                        active={location.pathname === '/Documents'}
+                    />
+                    <NavItem
+                        to="/Learning"
+                        icon={<GraduationCap size={18} />}
+                        label={t('nav.learning', 'Learning')}
+                        active={location.pathname === '/Learning'}
+                    />
+                    <NavItem
+                        to="/Badges"
+                        icon={<Award size={18} />}
+                        label={t('nav.badges', 'Badges')}
+                        active={location.pathname === '/Badges'}
+                    />
                 </nav>
             </div>
 
@@ -34,11 +65,10 @@ const Header = () => {
     );
 };
 
-const NavItem = ({ icon, label, active }) => (
-    <button className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${active ? 'bg-indigo-50 text-indigo-600 font-semibold' : 'text-gray-600 hover:bg-gray-50'
-        }`}>
-        {icon} {label}
-    </button>
+const NavItem = ({ to, icon, label, active }) => (
+    <Link to={to} className={`nav-item ${active ? 'active' : ''}`}>
+        {icon} <span className="nav-label">{label}</span>
+    </Link>
 );
 
 export default Header;

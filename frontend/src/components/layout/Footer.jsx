@@ -1,44 +1,67 @@
-import React from 'react';
-import { Briefcase, FileText, FolderOpen, GraduationCap, Award } from 'lucide-react';
+import { Briefcase, Twitter, Facebook, Instagram, Github } from 'lucide-react';
+import './footer.css';
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../common/LanguageSwitcher';
+import logo from '@/assets/Workid.jpeg';
 
-const Header = () => {
+const Footer = () => {
+    const { t } = useTranslation();
+
     return (
-        <header className="border-b bg-white px-6 py-3 flex items-center justify-between sticky top-0 z-50">
-            <div className="flex items-center gap-8">
-                {/* Brand Identity */}
-                <div className="flex items-center gap-2 text-indigo-600 font-bold text-2xl">
-                    <div className="bg-indigo-600 p-1.5 rounded-lg text-white">
-                        <Briefcase size={22} />
+        <footer className="site-footer">
+            <div className="site-footer-grid">
+                <div className="site-footer-brand">
+                    <div className="brand-wrap">
+                        <img src={logo} alt="WorkID" className="brand-logo" />
+                        <span className="brand-name">WorkID</span>
                     </div>
-                    <span>WorkID</span>
+                    <p className="brand-tagline">
+                        {t('footer.tagline', 'Connecting talent with opportunity through a secure and efficient platform. Your identity, your career, your WorkID.')}
+                    </p>
                 </div>
 
-                {/* Desktop Navigation Links */}
-                <nav className="hidden md:flex gap-1">
-                    <NavItem icon={<Briefcase size={18} />} label="Find Jobs" active />
-                    <NavItem icon={<FileText size={18} />} label="My Applications" />
-                    <NavItem icon={<FolderOpen size={18} />} label="Documents" />
-                    <NavItem icon={<GraduationCap size={18} />} label="Learning" />
-                    <NavItem icon={<Award size={18} />} label="Badges" />
-                </nav>
-            </div>
+                <div className="site-footer-col">
+                    <h3>{t('footer.platform', 'Platform')}</h3>
+                    <ul>
+                        <li><Link to="/Jobs">{t('nav.findJobs', 'Find Jobs')}</Link></li>
+                        <li><Link to="/Applications">{t('nav.applications', 'My Applications')}</Link></li>
+                        <li><Link to="/Documents">{t('nav.documents', 'Documents')}</Link></li>
+                        <li><Link to="/Learning">{t('nav.learning', 'Learning')}</Link></li>
+                    </ul>
+                </div>
 
-            <div className="flex items-center gap-4">
-                <LanguageSwitcher /> {/* Multi-language support requirement */}
-                <div className="w-9 h-9 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold">
-                    D
+                <div className="site-footer-col">
+                    <h3>{t('footer.support', 'Support')}</h3>
+                    <ul>
+                        <li><Link to="/Settings">{t('nav.settings', 'Settings')}</Link></li>
+                        <li><Link to="/Badges">{t('nav.badges', 'Badges')}</Link></li>
+                        <li><a href="#">{t('footer.helpCenter', 'Help Center')}</a></li>
+                        <li><a href="#">{t('footer.privacyPolicy', 'Privacy Policy')}</a></li>
+                    </ul>
+                </div>
+
+                <div className="site-footer-col">
+                    <h3>{t('footer.connect', 'Connect')}</h3>
+                    <div className="site-footer-socials">
+                        <a href="#"><Twitter size={20} /></a>
+                        <a href="#"><Facebook size={20} /></a>
+                        <a href="#"><Instagram size={20} /></a>
+                        <a href="#"><Github size={20} /></a>
+                    </div>
                 </div>
             </div>
-        </header>
+            <div className="site-footer-bottom">
+                <div className="bottom-left">
+                    <p>© {new Date().getFullYear()} WorkID Platform. {t('footer.allRightsReserved', 'All rights reserved.')}</p>
+                    <LanguageSwitcher />
+                </div>
+                <div className="bottom-right">
+                    <span>Powered by DeepMind</span>
+                </div>
+            </div>
+        </footer>
     );
 };
 
-const NavItem = ({ icon, label, active }) => (
-    <button className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${active ? 'bg-indigo-50 text-indigo-600 font-semibold' : 'text-gray-600 hover:bg-gray-50'
-        }`}>
-        {icon} {label}
-    </button>
-);
-
-export default Header;
+export default Footer;
