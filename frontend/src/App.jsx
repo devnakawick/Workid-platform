@@ -1,53 +1,106 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Header from './components/layout/Header';
-import Footer from './components/layout/Footer';
-import Sidebar from './components/layout/Sidebar';
-
-// Import your page components (You will create these in src/pages/)
+import { Toaster } from "@/components/ui/toaster"
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import PageNotFound from './lib/PageNotFound';
+import { AuthProvider, useAuth } from '@/lib/AuthContext';
+import Layout from './Layout';
+import WorkerProfile from './pages/worker/WorkerProfile';
 import WorkerDashboard from './pages/worker/WorkerDashboard';
-// Note: Assuming you create these files next based on your previous codes
+import EmployerDashboard from './pages/employer/EmployerDashboard';
+import LandingPage from './pages/land/LandingPage';
+import Login from './pages/auth/Login';
+import SignupEmployer from './pages/auth/SignupEmployer';
+import SignupWorker from './pages/auth/SignupWorker';
+import Applications from './pages/Application';
+import Badges from './pages/Badges';
+import Documents from './pages/Documents';
+import Jobs from './pages/Jobs';
+import Learning from './pages/Learning';
+import Settings from './pages/Settings';
 
-const MainLayout = ({ children }) => (
-  <div className="flex flex-col min-h-screen">
-    <Header />
-    <div className="flex flex-1">
-      <Sidebar />
-      <main className="flex-1 bg-gray-50 p-6">
-        <div className="max-w-6xl mx-auto">
-          {children}
-        </div>
-      </main>
-    </div>
-    <Footer />
-  </div>
-);
+const AuthenticatedApp = () => {
+  const { isLoadingAuth, isLoadingPublicSettings } = useAuth();
+
+  // Show loading spinner while checking app public settings or auth
+  if (isLoadingPublicSettings || isLoadingAuth) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  // Render the main app
+  return (
+    <Routes>
+      <Route path="/" element={
+        <Layout currentPageName="Jobs">
+          <Jobs />
+        </Layout>
+      } />
+      <Route path="/Applications" element={
+        <Layout currentPageName="Applications">
+          <Applications />
+        </Layout>
+      } />
+      <Route path="/Badges" element={
+        <Layout currentPageName="Badges">
+          <Badges />
+        </Layout>
+      } />
+      <Route path="/Documents" element={
+        <Layout currentPageName="Documents">
+          <Documents />
+        </Layout>
+      } />
+      <Route path="/Jobs" element={
+        <Layout currentPageName="Jobs">
+          <Jobs />
+        </Layout>
+      } />
+      <Route path="/worker/dashboard" element={
+        <Layout currentPageName="Dashboard">
+          <WorkerDashboard />
+        </Layout>
+      } />
+      <Route path="/employer/dashboard" element={
+        <Layout currentPageName="Dashboard">
+          <EmployerDashboard />
+        </Layout>
+      } />
+      <Route path="/Learning" element={
+        <Layout currentPageName="Learning">
+          <Learning />
+        </Layout>
+      } />
+      <Route path="/Profile" element={
+        <Layout currentPageName="Profile">
+          <WorkerProfile />
+        </Layout>
+      } />
+      <Route path="/Settings" element={
+        <Layout currentPageName="Settings">
+          <Settings />
+        </Layout>
+      } />
+      <Route path="/landing" element={<LandingPage />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup-employer" element={<SignupEmployer />} />
+      <Route path="/signup-worker" element={<SignupWorker />} />
+      <Route path="*" element={<PageNotFound />} />
+    </Routes>
+  );
+};
+
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        {/* Auth Routes (No Header/Sidebar) */}
-        <Route path="/login" element={<div className="flex items-center justify-center min-h-screen bg-gray-50">Login Page Content</div>} />
-
-        {/* Protected Routes (With Header/Sidebar) */}
-        <Route path="/worker/dashboard" element={
-          <MainLayout>
-            <WorkerDashboard />
-          </MainLayout>
-        } />
-
-        <Route path="/worker/profile" element={
-          <MainLayout>
-            <div className="bg-white p-6 rounded-xl border">Worker Profile Page</div>
-          </MainLayout>
-        } />
-
-        {/* Redirects */}
-        <Route path="/" element={<Navigate to="/worker/dashboard" />} />
-      </Routes>
-    </Router>
-  );
+    <AuthProvider>
+      <Router>
+        <AuthenticatedApp />
+      </Router>
+      <Toaster />
+    </AuthProvider>
+  )
 }
 
-export default App;
+export default App
