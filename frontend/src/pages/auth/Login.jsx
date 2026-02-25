@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
+import logo from '@/assets/Workid.jpeg';
 import { Mail, Lock } from 'lucide-react';
 
 export default function Login() {
@@ -46,10 +47,10 @@ export default function Login() {
     try {
       // Placeholder for API call
       console.log('Login attempt with:', { email, password });
-      
+
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       // TODO: Handle authentication response and store token
       // Navigate to worker dashboard after successful login
       navigate('/worker/dashboard');
@@ -65,8 +66,8 @@ export default function Login() {
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-white rounded-xl shadow-sm mb-4">
-            <span className="text-lg font-bold text-indigo-600">WI</span>
+          <div className="inline-flex items-center justify-center w-12 h-12 mb-4">
+            <img src={logo} alt="WorkID" className="w-12 h-12 rounded-xl object-cover shadow-sm" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">WorkID</h1>
           <p className="text-gray-500">Sign in to your account</p>
