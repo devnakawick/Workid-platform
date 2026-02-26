@@ -71,4 +71,5 @@ const NavItem = ({ to, icon, label, active }) => (
     </Link>
 );
 
+
 export default Header;
