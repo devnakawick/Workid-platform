@@ -20,7 +20,8 @@ def clean_text(text: str) -> str:
     text = text.lower()
 
     # Remoce extra whitespace
-    text = re.sub(r'[^\w\s]', '', text, flags=re.UNICODE) 
+    text = re.sub(r'[^\w\s]', '', text, flags=re.UNICODE)   # remove punctuation
+    text = re.sub(r'\s+', ' ', text)    # normalize all whitespace to single space
 
     return text.strip()
 
