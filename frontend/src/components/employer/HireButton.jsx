@@ -1,3 +1,5 @@
+// HireButton - reusable hire/reject button component
+
 const HireButton = ({ status, onHire, onReject }) => {
 
   // Show hired badge if worker is already accepted
@@ -19,6 +21,25 @@ const HireButton = ({ status, onHire, onReject }) => {
       </div>
     );
   }
+
+  // Show hire and reject action buttons for pending applications
+  return (
+    <div className="flex items-center gap-2">
+      <button
+        onClick={onReject}
+        className="px-5 py-2.5 rounded-lg text-sm font-semibold bg-white text-gray-700 border border-gray-300 hover:bg-red-50 hover:border-red-400 hover:text-red-600 transition-all"
+      >
+        Reject
+      </button>
+      <button
+        onClick={onHire}
+        className="px-5 py-2.5 rounded-lg text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 shadow-md transition-all"
+      >
+        ✓ Hire Now
+      </button>
+    </div>
+  );
 };
+
 
 export default HireButton;
