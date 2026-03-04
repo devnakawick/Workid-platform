@@ -90,8 +90,54 @@ const ApplicationFilters = ({ filters, onFilterChange, onClearAll, jobs }) => {
               </select>
             </div>
           </div>
+
+          {/* Active filter chips - show each active filter with remove button */}
+          {activeCount > 0 && (
+            <div className="flex flex-wrap items-center gap-2 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+              <span className="text-xs font-bold text-gray-700 uppercase tracking-wide">Active:</span>
+
+              {/* Status filter chip */}
+              {filters.status !== 'all' && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-gray-200 text-gray-700 rounded-full text-xs font-medium shadow-sm">
+                  {filters.status}
+                  <button onClick={() => onFilterChange('status', 'all')} className="hover:bg-gray-100 rounded-full p-0.5">
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              )}
+
+              {/* Job filter chip */}
+              {filters.jobId !== 'all' && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-gray-200 text-gray-700 rounded-full text-xs font-medium shadow-sm">
+                  {jobs.find(j => j.id === filters.jobId)?.title || filters.jobId}
+                  <button onClick={() => onFilterChange('jobId', 'all')} className="hover:bg-gray-100 rounded-full p-0.5">
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Clear all filters button - visible when any filter is active */}
+          {hasActive && (
+            <div className="flex justify-center">
+              <button
+                onClick={onClearAll}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm font-medium hover:bg-red-50 hover:border-red-400 transition-all"
+              >
+                <X className="w-4 h-4" />
+                Clear all filters
+              </button>
+            </div>
+          )}
         </div>
       )}
+
+      {/* Results count - shows filtered vs total applications */}
+      <div className="text-sm pt-2 border-t border-gray-200 text-gray-600">
+        Showing <span className="font-bold text-gray-900">{filters.filteredCount}</span> of{' '}
+        <span className="font-bold text-gray-900">{filters.totalCount}</span> applications
+      </div>
 
     </div>
   );
