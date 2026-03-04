@@ -73,6 +73,36 @@ const WalletCard = ({ wallet, onDeposit, onPay }) => {
         </div>
       </div>
 
+      {/* Total deposited stat */}
+      <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+        <div className="flex items-start gap-4">
+          <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
+            <TrendingUp className="w-7 h-7 text-green-600" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-500 mb-1">Total Deposited</p>
+            <p className="text-2xl font-bold text-gray-900">LKR {fmt(wallet.totalDeposited)}</p>
+            {/* All time deposit summary */}
+            <p className="text-xs text-green-600 font-semibold mt-1">↑ All time deposits</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Total spent stat */}
+      <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+        <div className="flex items-start gap-4">
+          <div className="w-14 h-14 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
+            <TrendingDown className="w-7 h-7 text-red-500" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-500 mb-1">Total Spent</p>
+            <p className="text-2xl font-bold text-gray-900">LKR {fmt(wallet.totalSpent)}</p>
+            {/* All time worker payment summary */}
+            <p className="text-xs text-red-500 font-semibold mt-1">↓ Worker payments</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 };
