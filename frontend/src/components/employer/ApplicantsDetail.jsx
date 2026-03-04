@@ -80,4 +80,98 @@ const OverviewTab = ({ app, onHire }) => (
   </div>
 );
 
+// Shows overall rating score, star breakdown and recent reviews
+const RatingTab = ({ app }) => {
+
+  // Static star breakdown percentages
+  const breakdown = [
+    { star: 5, pct: 58 },
+    { star: 4, pct: 26 },
+    { star: 3, pct: 10 },
+    { star: 2, pct: 4  },
+    { star: 1, pct: 2  },
+  ];
+
+  return (
+    <div className="space-y-4">
+
+      {/* Overall rating score with star breakdown bars */}
+      <div className="bg-white rounded-xl p-4 md:p-5 border border-gray-200">
+        <div className="flex items-center gap-6 md:gap-8">
+
+          {/* Average rating number and stars */}
+          <div className="text-center flex-shrink-0">
+            <p className="text-4xl md:text-5xl font-black text-gray-900 leading-none">{app.rating}</p>
+            <div className="mt-2"><Stars rating={app.rating} /></div>
+            <p className="text-xs text-gray-400 mt-1">{app.jobs} reviews</p>
+          </div>
+
+          {/* Star by star percentage bars */}
+          <div className="flex-1 space-y-2">
+            {breakdown.map(({ star, pct }) => (
+              <div key={star} className="flex items-center gap-2">
+                <span className="text-xs text-gray-500 w-2">{star}</span>
+                <svg width="10" height="10" viewBox="0 0 10 10">
+                  <path d="M5 1l1.1 2.2 2.4.35-1.75 1.7.41 2.45L5 6.5 2.84 7.7l.41-2.45L1.5 3.55l2.4-.35L5 1z" fill="#F59E0B" />
+                </svg>
+                <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-blue-500 rounded-full" style={{ width: `${pct}%` }} />
+                </div>
+                <span className="text-xs text-gray-400 w-7 text-right">{pct}%</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Recent reviews list */}
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="px-4 md:px-5 py-3 border-b border-gray-200 flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
+          <span className="text-xs font-bold text-gray-700 uppercase tracking-wide">Recent Reviews</span>
+        </div>
+
+        {/* Each review row */}
+        <div className="divide-y divide-gray-100">
+          {(app.reviews || []).map((review) => (
+            <div key={review.id} className="px-4 md:px-5 py-4">
+              <div className="flex items-start gap-3">
+
+                {/* Reviewer initials avatar */}
+                <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600 flex-shrink-0">
+                  {review.initials}
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  {/* Reviewer name and date */}
+                  <div className="flex items-center justify-between gap-2 mb-1 flex-wrap">
+                    <span className="text-sm font-semibold text-gray-800">{review.employer}</span>
+                    <span className="text-xs text-gray-400 flex-shrink-0">{review.date}</span>
+                  </div>
+
+                  {/* Star rating for this review */}
+                  <div className="flex items-center gap-0.5 mb-2">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <svg key={i} width="12" height="12" viewBox="0 0 10 10">
+                        <path
+                          d="M5 1l1.1 2.2 2.4.35-1.75 1.7.41 2.45L5 6.5 2.84 7.7l.41-2.45L1.5 3.55l2.4-.35L5 1z"
+                          fill={i <= review.rating ? '#F59E0B' : '#E5E7EB'}
+                        />
+                      </svg>
+                    ))}
+                  </div>
+
+                  {/* Review comment */}
+                  <p className="text-sm text-gray-600 leading-relaxed">{review.comment}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+    </div>
+  );
+};
+
 export default ApplicantsDetail;
