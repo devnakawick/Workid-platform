@@ -174,4 +174,105 @@ const RatingTab = ({ app }) => {
   );
 };
 
+// Tab options for switching between Overview and Rating
+const TABS = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'rating',   label: 'Rating'   },
+];
+
+// Status badge styles mapped by application status
+const STATUS_BADGE = {
+  pending:  'bg-yellow-100 text-yellow-700 border-yellow-200',
+  accepted: 'bg-green-100 text-green-700 border-green-200',
+  rejected: 'bg-red-100 text-red-700 border-red-200',
+};
+
+// Main component-displays full applicant detail with tabs
+const ApplicantsDetail = ({ application, onHire, onReject }) => {
+  const [activeTab, setActiveTab] = useState('overview');
+
+  return (
+    <div className="flex-1 flex flex-col overflow-hidden bg-gray-50 min-w-0">
+
+      {/* Worker header-avatar, name, location, status */}
+      <div className="bg-white border-b border-gray-200 px-4 md:px-6 py-4">
+
+        <div className="flex items-start gap-3">
+
+          {/* Avatar with verified badge */}
+          <div className="relative flex-shrink-0">
+            <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-base md:text-lg">
+              {application.initials}
+            </div>
+            {/* Show verified tick if worker is verified */}
+            {application.verified && (
+              <div className="absolute -bottom-1 -right-1 w-5 h-5 md:w-6 md:h-6 rounded-full bg-blue-600 border-2 border-white flex items-center justify-center">
+                <CircleCheck className="w-3 h-3 md:w-3.5 md:h-3.5 text-white" />
+              </div>
+            )}
+          </div>
+
+          {/* Name,verified badge and status */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between gap-2 mb-1">
+              <div className="flex flex-wrap items-center gap-1.5 min-w-0">
+                <h2 className="text-sm md:text-base font-bold text-gray-900">{application.name}</h2>
+                {/* Verified label badge */}
+                {application.verified && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 border border-blue-200 text-blue-700 rounded-full text-xs font-semibold flex-shrink-0">
+                    <CircleCheck className="w-3 h-3" />
+                    Verified
+                  </span>
+                )}
+              </div>
+              {/* Application status badge */}
+              <span className={`inline-flex items-center px-2.5 py-0.5 border rounded-full text-xs font-semibold flex-shrink-0 ${STATUS_BADGE[application.status]}`}>
+                {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
+              </span>
+            </div>
+
+            {/* Location,age and member since */}
+            <p className="text-xs text-gray-500 truncate flex items-center gap-1">
+              <MapPin className="w-3 h-3 flex-shrink-0" /> {application.location} · {application.age} yrs · Since {application.memberSince}
+            </p>
+          </div>
+        </div>
+
+        {/* Hire/Reject action buttons */}
+        <div className="mt-3">
+          <HireButton
+            status={application.status}
+            onHire={() => onHire(application.id)}
+            onReject={() => onReject(application.id)}
+          />
+        </div>
+
+        {/* Tab navigation-Overview and Rating */}
+        <div className="flex items-center gap-1 mt-4 border-b border-gray-200 -mb-4 overflow-x-auto scrollbar-hide">
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-4 py-2.5 text-sm font-semibold border-b-2 transition-all -mb-px whitespace-nowrap ${
+                activeTab === tab.id
+                  ? 'border-blue-600 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Render active tab content */}
+      <div className="flex-1 overflow-y-auto p-4 md:p-6">
+        {activeTab === 'overview' && <OverviewTab app={application} onHire={onHire} />}
+        {activeTab === 'rating'   && <RatingTab   app={application} />}
+      </div>
+
+    </div>
+  );
+};
+
 export default ApplicantsDetail;
