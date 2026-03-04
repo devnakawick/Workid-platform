@@ -51,6 +51,48 @@ const ApplicationFilters = ({ filters, onFilterChange, onClearAll, jobs }) => {
         </button>
       </div>
 
+      {/* Expanded filter dropdowns - visible when filters toggled open */}
+      {showFilters && (
+        <div className="space-y-4 pt-4 border-t border-gray-200">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            {/* Filter by application status */}
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2">
+                Status
+              </label>
+              <select
+                value={filters.status}
+                onChange={(e) => onFilterChange('status', e.target.value)}
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              >
+                <option value="all">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="accepted">Accepted</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+
+            {/* Filter by job title */}
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2">
+                Job
+              </label>
+              <select
+                value={filters.jobId}
+                onChange={(e) => onFilterChange('jobId', e.target.value)}
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              >
+                <option value="all">All Jobs</option>
+                {jobs.map(job => (
+                  <option key={job.id} value={job.id}>{job.title}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
