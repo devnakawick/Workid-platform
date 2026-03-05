@@ -193,10 +193,9 @@ const ManageJobs = () => {
               ) : (
                 filteredJobs.map(job => (
                   <JobCard key={job.id} job={job}
-                    
                     onEdit={(id) => navigate(`/employer/jobs/edit/${id}`)}
                     onDelete={setDeleteConfirm}
-                    onViewApplications={(id) => navigate(`/employer/applications/${id}`)}
+                    onViewApplications={(id) => navigate(`/employer/applications?jobId=${id}`)}
                   />
                 ))
               )}
