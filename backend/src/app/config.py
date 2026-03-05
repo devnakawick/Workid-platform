@@ -37,6 +37,8 @@ class Settings(BaseSettings):
     DEFAULT_PAGE_SIZE: int = 20
     MAX_PAGE_SIZE: int = 100
     
+    PAYHERE_MERCHANT_ID: str
+    PAYHERE_MERCHANT_SECRET: str
     class Config:
         env_file = "../.env"
         case_sensitive = True
