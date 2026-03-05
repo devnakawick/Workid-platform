@@ -23,6 +23,8 @@ class Transaction(Base):
     transaction_type = Column(String(20), nullable=False)
     # examples: "topup", "payment", "withdrawal"
 
+    currency = Column(String)
+
     # Status
     status = Column(String(20), default="completed")
     # examples: "pending", "completed", "failed"
