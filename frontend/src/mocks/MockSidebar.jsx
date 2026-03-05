@@ -2,6 +2,7 @@ import {
   Briefcase,
   Wallet,
   MessageCircle,
+  MessageSquare,
   HelpCircle,
   LogOut,
   Plus,
@@ -10,11 +11,12 @@ import {
 import { Link, useLocation } from 'react-router-dom';
 
 const employerMenuItems = [
-  { path: '/employer/jobs/new', icon: Plus,  label: 'Post Job'        },
-  { path: '/employer/jobs',  icon: Briefcase, label: 'My Jobs'         },
-  { path: '/employer/applications',icon: MessageCircle, label: 'Applications'    },
-  { path: '/employer/workers', icon: Users,  label: 'Find Workers'    },
-  { path: '/employer/wallet',  icon: Wallet,  label: 'Employer Wallet' },
+  { path: '/employer/jobs/new',      icon: Plus,          label: 'Post Job'        },
+  { path: '/employer/jobs',          icon: Briefcase,     label: 'My Jobs'         },
+  { path: '/employer/applications',  icon: MessageCircle, label: 'Applications'    },
+  { path: '/employer/workers',       icon: Users,         label: 'Find Workers'    },
+  { path: '/employer/messages',      icon: MessageSquare, label: 'Messages'        },
+  { path: '/employer/wallet',        icon: Wallet,        label: 'Employer Wallet' },
 ];
 
 const workerMenuItems = [
@@ -29,6 +31,7 @@ const isPathActive = (itemPath, currentPath) => {
   if (itemPath === '/employer/jobs'         && currentPath.startsWith('/employer/jobs/edit'))    return true;
   if (itemPath === '/employer/applications' && currentPath.startsWith('/employer/applications')) return true;
   if (itemPath === '/employer/workers'      && currentPath.startsWith('/employer/workers'))      return true;
+  if (itemPath === '/employer/messages'     && currentPath.startsWith('/employer/messages'))     return true;
   return currentPath === itemPath;
 };
 
@@ -54,11 +57,11 @@ const MockSidebar = () => {
   const location = useLocation();
 
   const mobileNavItems = [
-    { path: '/employer/jobs',icon: Briefcase, label: 'Jobs'         },
-    { path: '/employer/applications/', icon: MessageCircle, label: 'Applications' },
-    { path: '/employer/jobs/new',  icon: Plus,  label: 'Post'         },
-    { path: '/employer/workers', icon: Users,  label: 'Workers'      },
-    { path: '/employer/wallet',  icon: Wallet,  label: 'Wallet'       },
+    { path: '/employer/jobs',         icon: Briefcase,     label: 'Jobs'         },
+    { path: '/employer/applications', icon: MessageCircle, label: 'Applications' },
+    { path: '/employer/jobs/new',     icon: Plus,          label: 'Post'         },
+    { path: '/employer/messages',     icon: MessageSquare, label: 'Messages'     },
+    { path: '/employer/wallet',       icon: Wallet,        label: 'Wallet'       },
   ];
 
   return (
@@ -148,7 +151,7 @@ const MockSidebar = () => {
         </div>
       </aside>
 
-      {/*MOBILE BOTTOM NAVBAR */}
+      {/* MOBILE BOTTOM NAVBAR */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg">
         <div className="flex items-center justify-around px-2 py-2">
           {mobileNavItems.map(({ path, icon: Icon, label }) => {
