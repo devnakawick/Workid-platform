@@ -3,6 +3,7 @@ from app.models.worker import Worker, WorkerDocument
 from app.models.employer import Employer
 from app.models.job import Job
 from app.models.application import Application
+from .escrow import Escrow
 
 __all__ = [
     "User",
@@ -11,4 +12,5 @@ __all__ = [
     "Employer",
     "Job",
     "Application",
+    "Escrow",
 ]

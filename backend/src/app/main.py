@@ -7,16 +7,17 @@ import logging
 import os
 
 from app.config import settings
-from app.database import create_tables
+#from src.app.database import create_tables
 from app.routes import auth, dashboard
 from app.routes import worker, jobs, employer
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+from app.database import engine, Base
+from app.routes import employer_wallet
+from app.routes import escrow
+from app.routes import worker_wallet
+from app.routes import payment
+from app.routes import mock_gateway
+from dotenv import load_dotenv
+load_dotenv()
 
 # Create FastAPI app
 app = FastAPI(
@@ -26,6 +27,15 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc"
 )
+
+app.include_router(employer_wallet.router)
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 # CORS Configuration
 app.add_middleware(
@@ -43,13 +53,16 @@ app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 # Include routers
 app.include_router(auth.routes, prefix="/api/auth", tags=["Authentication"])
 app.include_router(dashboard.routes, prefix="/api/dashboard", tags=["Dashboard"])
+app.include_router(escrow.routes)
+app.include_router(worker_wallet.routes)
+app.include_router(payment.router)
+app.include_router(mock_gateway.router)
 
+# Include additional routers
 app.include_router(worker.router)
 app.include_router(jobs.router)
 app.include_router(employer.router)
 
-
-# Member 3: Include payment, messaging, admin routers here
 
 
 @app.on_event("startup")
@@ -60,7 +73,7 @@ async def startup_event():
     
     # Create database tables
     try:
-        create_tables()
+       # create_tables()
         logger.info("Database tables created successfully")
     except Exception as e:
         logger.error(f"Failed to create database tables: {str(e)}")

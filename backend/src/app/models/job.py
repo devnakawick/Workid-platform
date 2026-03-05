@@ -1,64 +1,92 @@
-from sqlalchemy import Column, Integer, String, Boolean, Float, DateTime, ForeignKey, Enum, JSON, Text
+from sqlalchemy import Column, String, Text, Float, Integer, DateTime, ForeignKey, Enum as SQLEnum
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from datetime import datetime
+import uuid
 import enum
 from app.database import Base
 
 class JobStatus(str, enum.Enum):
+    """Job status enumeration"""
     OPEN = "open"
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
     CANCELLED = "cancelled"
 
-class UrgencyLevel(str, enum.Enum):
-    LOW = "low"
-    MEDIUM = "medium"
-    HIGH = "high"
-
-class PaymentType(str, enum.Enum):
-    FIXED = "fixed"
-    HOURLY = "hourly"
-    NEGOTIABLE = "negotiable"
-
 class Job(Base):
+    """Job model"""
     __tablename__ = "jobs"
-
-    id = Column(Integer, primary_key=True, index=True)
-    employer_id = Column(Integer, ForeignKey("employers.id"), nullable=False)
-
+    
+    # Primary Key
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    
+    # Foreign Key
+    employer_id = Column(UUID(as_uuid=True), ForeignKey("employers.id"), nullable=False)
+    
     # Job Details
-    title = Column(String, nullable=False)
+    title = Column(String(200), nullable=False)
     description = Column(Text, nullable=False)
-    category = Column(String, nullable=False, index=True)
-
+    category = Column(String(50), nullable=True)
+    skills_required = Column(Text, nullable=True)  # JSON string of required skills
+    
     # Location
-    location = Column(Text, nullable=False)
-    city = Column(String, nullable=False, index=True)
-    district = Column(String, nullable=False, index=True)
-    latitude = Column(Float)
-    longitude = Column(Float)
-
+    location = Column(String(100), nullable=True)
+    is_remote = Column(String(10), default="no")  # yes, no, hybrid
+    
+    # Compensation
+    budget_min = Column(Float, nullable=True)
+    budget_max = Column(Float, nullable=True)
+    payment_type = Column(String(20), default="fixed")  # fixed, hourly
+    
     # Duration
-    estimated_duration_hours = Column(Integer)
-    start_date = Column(DateTime)
-    urgency = Column(Enum(UrgencyLevel, name="urgency_level"), default=UrgencyLevel.MEDIUM)
-
-    # Payment
-    budget = Column(Float, nullable=False)
-    payment_type = Column(Enum(PaymentType), default=PaymentType.FIXED)
-
+    duration = Column(String(50), nullable=True)  # e.g., "2 weeks", "1 month"
+    start_date = Column(DateTime, nullable=True)
+    end_date = Column(DateTime, nullable=True)
+    
     # Status
-    status = Column(Enum(JobStatus, name="job_status"), default=JobStatus.OPEN, index=True)
-
-    # Engagement
-    views_count = Column(Integer, default=0)
-    applications_count = Column(Integer, default=0)
-
-    # Metadata
-    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+    status = Column(SQLEnum(JobStatus), default=JobStatus.OPEN)
+    
+    # Visibility
+    is_featured = Column(String(10), default="no")  # yes, no
+    is_urgent = Column(String(10), default="no")  # yes, no
+    
+    # Application Settings
+    max_applications = Column(Integer, nullable=True)
+    application_deadline = Column(DateTime, nullable=True)
+    
+    # Timestamps
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    expires_at = Column(DateTime)
-
+    
     # Relationships
     employer = relationship("Employer", back_populates="jobs")
-    applications = relationship("Application", back_populates="job", cascade="all, delete-orphan")
+    applications = relationship("Application", back_populates="job")
+    
+    def __repr__(self):
+        return f"<Job {self.title}>"
+    
+    def to_dict(self):
+        """Convert model to dictionary"""
+        return {
+            "id": str(self.id),
+            "employer_id": str(self.employer_id),
+            "title": self.title,
+            "description": self.description,
+            "category": self.category,
+            "skills_required": self.skills_required,
+            "location": self.location,
+            "is_remote": self.is_remote,
+            "budget_min": self.budget_min,
+            "budget_max": self.budget_max,
+            "payment_type": self.payment_type,
+            "duration": self.duration,
+            "start_date": self.start_date.isoformat() if self.start_date else None,
+            "end_date": self.end_date.isoformat() if self.end_date else None,
+            "status": self.status.value,
+            "is_featured": self.is_featured,
+            "is_urgent": self.is_urgent,
+            "max_applications": self.max_applications,
+            "application_deadline": self.application_deadline.isoformat() if self.application_deadline else None,
+            "created_at": self.created_at.isoformat(),
+            "updated_at": self.updated_at.isoformat(),
+        }

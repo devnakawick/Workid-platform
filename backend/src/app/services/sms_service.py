@@ -35,3 +35,6 @@ def send_otp(phone_number: str, otp_code: str) -> bool:
     except Exception as e:
         logger.error(f"Failed to send SMS to {phone_number}: {str(e)}")
         return False
+
+def send_otp_sms(phone_number: str, otp: str):
+    print(f"Mock SMS sent to {phone_number}: {otp}")
