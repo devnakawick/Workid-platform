@@ -52,16 +52,75 @@ const PayModal = ({ transactions, walletBalance, onConfirm, onCancel, loading })
           </span>
         </div>
 
-        {/* Empty state — all payments done */}
-        <div className="p-5">
-          {pendingPayments.length === 0 && (
+        {/* Pending payments list */}
+        <div className="p-5 flex flex-col gap-3 max-h-[380px] overflow-y-auto">
+          {pendingPayments.length === 0 ? (
+
+            // All paid — show success state
             <div className="text-center py-12">
               <CheckCircle2 className="w-12 h-12 text-green-400 mx-auto mb-3" />
               <p className="text-lg font-bold text-gray-800">All Caught Up!</p>
               <p className="text-sm text-gray-400 mt-1">No pending payments right now</p>
             </div>
+          ) : (
+            pendingPayments.map((txn) => {
+              // Check if balance covers this single payment
+              const canPay = walletBalance >= txn.amount;
+              return (
+                <div
+                  key={txn.id}
+                  className="flex items-center justify-between p-4 border-2 border-gray-100 rounded-xl hover:border-blue-100 hover:bg-blue-50/30 transition-all"
+                >
+                  {/* Worker name, job title and amount */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-yellow-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Clock className="w-5 h-5 text-yellow-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-gray-900">{txn.workerName}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{txn.jobTitle}</p>
+                      <p className="text-xs font-bold text-gray-700 mt-1">
+                        LKR {fmt(txn.amount)}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Pay now button — disabled if balance too low */}
+                  <button
+                    onClick={() => onConfirm(txn)}
+                    disabled={loading || !canPay}
+                    className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                      canPay
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md'
+                        : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    }`}
+                  >
+                    {loading ? '...' : canPay ? 'Pay Now' : 'Low Balance'}
+                  </button>
+                </div>
+              );
+            })
           )}
         </div>
+
+        {/* Footer — total pending amount and low balance warning */}
+        {pendingPayments.length > 0 && (
+          <div className="border-t border-gray-100 px-5 py-4 bg-gray-50">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-semibold text-gray-500">Total Pending</span>
+              <span className="text-sm font-bold text-gray-900">LKR {fmt(totalPending)}</span>
+            </div>
+            {/* Show warning if balance not enough for all */}
+            {!canPayAll && (
+              <div className="flex items-center gap-2 mt-2 p-2.5 bg-red-50 border border-red-100 rounded-xl">
+                <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
+                <p className="text-xs text-red-600 font-medium">
+                  Insufficient balance to pay all. Please top up your wallet first.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
 
       </div>
     </div>
