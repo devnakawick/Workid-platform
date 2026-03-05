@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, DateTime, Numeric, ForeignKey
+from sqlalchemy import Boolean, Column, String, DateTime, Numeric, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime
 import uuid
@@ -25,3 +25,13 @@ class Payment(Base):
     signature = Column(String(255), nullable=True)
 
     created_at = Column(DateTime, default=datetime.utcnow)
+
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    currency = Column(String(10), default="LKR")
+
+    is_processed = Column(Boolean, default=False)
+
+    payment_type = Column(String(50), default="wallet_topup")
+
+    failure_reason = Column(String(255), nullable=True)
