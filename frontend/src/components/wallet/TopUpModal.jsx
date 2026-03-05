@@ -26,11 +26,22 @@ const TopUpModal = ({ onTopUp, onCancel, loading }) => {
   const [card,       setCard]       = useState({ number: '', name: '', expiry: '', cvv: '' });
   const [cardErrors, setCardErrors] = useState({});
 
+  // Format card number with spaces
   const fmtCard   = (v) => v.replace(/\D/g, '').slice(0, 16).replace(/(.{4})/g, '$1 ').trim();
+
+  // Format expiry as MM/YY
   const fmtExpiry = (v) => { const d = v.replace(/\D/g, '').slice(0, 4); return d.length >= 3 ? `${d.slice(0,2)}/${d.slice(2)}` : d; };
+
+  // Detect card type from number
   const cardType  = () => { const n = card.number.replace(/\s/g,''); return n.startsWith('4') ? 'Visa' : n.startsWith('5') ? 'Mastercard' : ''; };
+
+  // Copy value to clipboard with temporary tick
   const copy      = (val, key) => { navigator.clipboard.writeText(val); setCopied(key); setTimeout(() => setCopied(''), 2000); };
+
+  // Update card field and clear its error
   const inp       = (field, val) => { setCard(p => ({ ...p, [field]: val })); setCardErrors(p => ({ ...p, [field]: '' })); };
+
+  // Input style — red border on error
   const inputCls  = (err) => `w-full px-3 py-2.5 border-2 rounded-xl text-sm focus:outline-none transition-all ${err ? 'border-red-400 bg-red-50' : 'border-gray-200 focus:border-blue-500'}`;
 
   return (
@@ -43,6 +54,7 @@ const TopUpModal = ({ onTopUp, onCancel, loading }) => {
             <h3 className="text-xl font-bold">Top Up Wallet</h3>
             <p className="text-blue-200 text-sm">Add funds to your employer wallet</p>
           </div>
+          {/* Close button */}
           <button onClick={onCancel} disabled={loading}
             className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-lg flex items-center justify-center">
             <X className="w-4 h-4" />
@@ -81,9 +93,34 @@ const TopUpModal = ({ onTopUp, onCancel, loading }) => {
               {error && <p className="mt-1 text-xs text-red-500 font-medium">{error}</p>}
             </div>
 
+            {/* Payment method selector — bank or card */}
+            <div>
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Payment Method</p>
+              <div className="space-y-2">
+                {[
+                  { id: 'bank', label: 'Bank Transfer',       icon: Building2,  desc: 'Direct from your bank' },
+                  { id: 'card', label: 'Debit / Credit Card', icon: CreditCard, desc: 'Visa, Mastercard'       },
+                ].map(({ id, label, icon: Icon, desc }) => (
+                  <button key={id} onClick={() => setMethod(id)}
+                    className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left ${
+                      method === id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                    }`}>
+                    <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${method === id ? 'bg-blue-100' : 'bg-gray-100'}`}>
+                      <Icon className={`w-5 h-5 ${method === id ? 'text-blue-600' : 'text-gray-500'}`} />
+                    </div>
+                    <div className="flex-1">
+                      <p className={`text-sm font-semibold ${method === id ? 'text-blue-700' : 'text-gray-700'}`}>{label}</p>
+                      <p className="text-xs text-gray-400">{desc}</p>
+                    </div>
+                    {/* Checkmark for selected method */}
+                    {method === id && <CheckCircle className="w-4 h-4 text-blue-500" />}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
 
+        </div>
       </div>
     </div>
   );
