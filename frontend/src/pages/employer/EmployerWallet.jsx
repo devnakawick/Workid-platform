@@ -109,6 +109,81 @@ const EmployerWallet = () => {
     }
   };
 
+  return (
+    <div className="flex min-h-screen bg-gray-50">
+      <MockSidebar />
+
+      <div className="flex-1 flex flex-col">
+        <main className="flex-1 p-4 md:p-8">
+          <Toaster position="top-right" />
+
+          <div className="max-w-7xl mx-auto">
+
+            {/* Page title */}
+            <div className="mb-8">
+              <h1 className="flex items-center text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+                <Wallet className="w-8 h-8 md:w-10 md:h-10 mr-3 text-blue-600" />
+                Employer Wallet
+              </h1>
+              <p className="text-gray-500 text-sm md:text-base">
+                Manage your balance and track all payment transactions.
+              </p>
+            </div>
+
+            {/* Loading spinner */}
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-16 bg-white rounded-2xl shadow-md">
+                <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin mb-4" />
+                <p className="text-gray-500">Loading wallet...</p>
+              </div>
+            ) : (
+              <>
+                {/* Balance card + stats */}
+                <WalletCard
+                  wallet={wallet}
+                  onDeposit={() => setShowDepositModal(true)}
+                  onPay={() => setShowPayModal(true)}
+                />
+
+                {/* Spending chart */}
+                <EarningsChart transactions={transactions} />
+
+                {/* Transaction history table */}
+                <TransactionList
+                  transactions={filteredTxns}
+                  filters={filters}
+                  onFilterChange={handleFilterChange}
+                />
+              </>
+            )}
+          </div>
+        </main>
+
+        <MockFooter />
+      </div>
+
+      {/* Top Up Modal */}
+      {showDepositModal && (
+        <TopUpModal
+          onTopUp={handleDeposit}
+          onCancel={() => setShowDepositModal(false)}
+          loading={depositLoading}
+        />
+      )}
+
+      {/* Pay Worker Modal — passes live transactions so list updates after each pay */}
+      {showPayModal && (
+        <PayModal
+          transactions={transactions}
+          walletBalance={wallet?.balance || 0}
+          onConfirm={handlePayWorker}
+          onCancel={() => setShowPayModal(false)}
+          loading={payLoading}
+        />
+      )}
+
+    </div>
+  );
 };
 
 export default EmployerWallet;
