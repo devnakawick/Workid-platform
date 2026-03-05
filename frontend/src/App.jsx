@@ -3,6 +3,13 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import Layout from './Layout';
+import WorkerProfile from './pages/worker/WorkerProfile';
+import WorkerDashboard from './pages/worker/WorkerDashboard';
+import EmployerDashboard from './pages/employer/EmployerDashboard';
+import LandingPage from './pages/land/LandingPage';
+import Login from './pages/auth/Login';
+import SignupEmployer from './pages/auth/SignupEmployer';
+import SignupWorker from './pages/auth/SignupWorker';
 import Applications from './pages/Application';
 import Badges from './pages/Badges';
 import Documents from './pages/Documents';
@@ -50,9 +57,24 @@ const AuthenticatedApp = () => {
           <Jobs />
         </Layout>
       } />
+      <Route path="/worker/dashboard" element={
+        <Layout currentPageName="Dashboard">
+          <WorkerDashboard />
+        </Layout>
+      } />
+      <Route path="/employer/dashboard" element={
+        <Layout currentPageName="Dashboard">
+          <EmployerDashboard />
+        </Layout>
+      } />
       <Route path="/Learning" element={
         <Layout currentPageName="Learning">
           <Learning />
+        </Layout>
+      } />
+      <Route path="/Profile" element={
+        <Layout currentPageName="Profile">
+          <WorkerProfile />
         </Layout>
       } />
       <Route path="/Settings" element={
@@ -60,6 +82,10 @@ const AuthenticatedApp = () => {
           <Settings />
         </Layout>
       } />
+      <Route path="/landing" element={<LandingPage />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup-employer" element={<SignupEmployer />} />
+      <Route path="/signup-worker" element={<SignupWorker />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
