@@ -1,9 +1,9 @@
-import { Briefcase, Twitter, Facebook, Instagram, Github } from 'lucide-react';
+import { Twitter, Facebook, Instagram, Github } from 'lucide-react';
 import './footer.css';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../common/LanguageSwitcher';
-import logo from '@/assets/Workid.jpeg';
+import logo from '@/assets/Workid.svg';
 
 const Footer = () => {
     const { t } = useTranslation();

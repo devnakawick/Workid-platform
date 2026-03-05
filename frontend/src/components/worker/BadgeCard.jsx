@@ -2,7 +2,6 @@ import React from 'react';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Shield, Medal, Trophy, Star, Zap, Crown } from 'lucide-react';
-import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
 const rarityColors = {

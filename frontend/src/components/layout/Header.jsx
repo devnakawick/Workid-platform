@@ -1,14 +1,10 @@
 import React from 'react';
 import './header.css';
-import { Briefcase, FileText, FolderOpen, GraduationCap, Award } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { Briefcase } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import LanguageSwitcher from '../common/LanguageSwitcher';
 
 const Header = () => {
-    const { t } = useTranslation();
-    const location = useLocation();
-
     return (
         <header className="workid-header">
             <div className="workid-header-left">
@@ -19,40 +15,6 @@ const Header = () => {
                     </div>
                     <span>WorkID</span>
                 </Link>
-
-                {/* Desktop Navigation Links */}
-                <nav className="desktop-nav">
-                    <NavItem
-                        to="/Jobs"
-                        icon={<Briefcase size={18} />}
-                        label={t('nav.findJobs', 'Find Jobs')}
-                        active={location.pathname === '/Jobs' || location.pathname === '/'}
-                    />
-                    <NavItem
-                        to="/Applications"
-                        icon={<FileText size={18} />}
-                        label={t('nav.applications', 'My Applications')}
-                        active={location.pathname === '/Applications'}
-                    />
-                    <NavItem
-                        to="/Documents"
-                        icon={<FolderOpen size={18} />}
-                        label={t('nav.documents', 'Documents')}
-                        active={location.pathname === '/Documents'}
-                    />
-                    <NavItem
-                        to="/Learning"
-                        icon={<GraduationCap size={18} />}
-                        label={t('nav.learning', 'Learning')}
-                        active={location.pathname === '/Learning'}
-                    />
-                    <NavItem
-                        to="/Badges"
-                        icon={<Award size={18} />}
-                        label={t('nav.badges', 'Badges')}
-                        active={location.pathname === '/Badges'}
-                    />
-                </nav>
             </div>
 
             <div className="flex items-center gap-4">
@@ -64,12 +26,5 @@ const Header = () => {
         </header>
     );
 };
-
-const NavItem = ({ to, icon, label, active }) => (
-    <Link to={to} className={`nav-item ${active ? 'active' : ''}`}>
-        {icon} <span className="nav-label">{label}</span>
-    </Link>
-);
-
 
 export default Header;

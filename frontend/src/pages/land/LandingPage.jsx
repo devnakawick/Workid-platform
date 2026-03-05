@@ -9,7 +9,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import logo from "@/assets/Workid.jpeg";
+import logo from '@/assets/Workid.svg';
 
 export default function LandingPage({ onLearnMore }) {
   const navigate = useNavigate();

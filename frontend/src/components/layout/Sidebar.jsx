@@ -17,14 +17,18 @@ import {
     HelpCircle,
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import logo from '@/assets/Workid.jpeg';
+import logo from '@/assets/Workid.svg';
 import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../common/LanguageSwitcher';
 
 const menuItems = [
     { path: '/worker/dashboard', icon: Grid, labelKey: 'nav.dashboard', fallback: 'Dashboard' },
-    { path: '/Jobs', icon: Briefcase, labelKey: 'nav.jobListings', fallback: 'Job Listings' },
+    { path: '/Jobs', icon: Briefcase, labelKey: 'nav.findJobs', fallback: 'Find Jobs' },
+    { path: '/Applications', icon: FileText, labelKey: 'nav.applications', fallback: 'My Applications' },
+    { path: '/Documents', icon: FolderOpen, labelKey: 'nav.documents', fallback: 'Documents' },
+    { path: '/Learning', icon: GraduationCap, labelKey: 'nav.learning', fallback: 'Learning' },
+    { path: '/Badges', icon: Award, labelKey: 'nav.badges', fallback: 'Badges' },
     { path: '/Profile', icon: User, labelKey: 'nav.profile', fallback: 'Profile' },
-    { path: '/Learning', icon: GraduationCap, labelKey: 'nav.learning_skills', fallback: 'Learning & Skills' },
     { path: '/Wallet', icon: Wallet, labelKey: 'nav.wallet', fallback: 'Wallet' },
     { path: '/Support', icon: HelpCircle, labelKey: 'nav.support', fallback: 'Support' },
     { path: '/Settings', icon: Settings, labelKey: 'nav.settings', fallback: 'Settings' },
@@ -91,14 +95,17 @@ const Sidebar = () => {
 
                 {/* User info */}
                 <div className="p-4 bg-indigo-50 border-t">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center">
-                            <span className="text-white font-bold">D</span>
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center">
+                                <span className="text-white font-bold">D</span>
+                            </div>
+                            <div>
+                                <p className="text-sm font-semibold text-gray-900">John Doe</p>
+                                <p className="text-xs text-indigo-600">Pro Member</p>
+                            </div>
                         </div>
-                        <div>
-                            <p className="text-sm font-semibold text-gray-900">John Doe</p>
-                            <p className="text-xs text-indigo-600">Pro Member</p>
-                        </div>
+                        <LanguageSwitcher />
                     </div>
                 </div>
             </aside>

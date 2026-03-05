@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, FileText, DollarSign, Calendar, Star } from 'lucide-react';
+import { Users, FileText, DollarSign, Calendar } from 'lucide-react';
 
 const mock = {
 	name: 'Samantha',

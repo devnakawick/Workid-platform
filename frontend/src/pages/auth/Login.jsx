@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
-import logo from '@/assets/Workid.jpeg';
+import logo from '@/assets/Workid.svg';
 import { Mail, Lock } from 'lucide-react';
 
 export default function Login() {

@@ -1,8 +1,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { DollarSign, Clock, Briefcase, Building, ArrowLeft } from 'lucide-react';
-import { format } from 'date-fns';
+import { DollarSign, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export default function JobDetails({ job, onBack, onApply }) {
