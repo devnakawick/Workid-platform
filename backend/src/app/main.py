@@ -10,7 +10,10 @@ from app.database import engine, Base
 from app.routes import employer_wallet
 from app.routes import escrow
 from app.routes import worker_wallet
-
+from app.routes import payment
+from app.routes import mock_gateway
+from dotenv import load_dotenv
+load_dotenv()
 
 # Create FastAPI app
 app = FastAPI(
@@ -48,6 +51,8 @@ app.include_router(auth.routes, prefix="/api/auth", tags=["Authentication"])
 app.include_router(dashboard.routes, prefix="/api/dashboard", tags=["Dashboard"])
 app.include_router(escrow.routes)
 app.include_router(worker_wallet.routes)
+app.include_router(payment.router)
+app.include_router(mock_gateway.router)
 
 # Member 2: Include worker and jobs routers here
 
