@@ -44,6 +44,17 @@ const TopUpModal = ({ onTopUp, onCancel, loading }) => {
   // Input style — red border on error
   const inputCls  = (err) => `w-full px-3 py-2.5 border-2 rounded-xl text-sm focus:outline-none transition-all ${err ? 'border-red-400 bg-red-50' : 'border-gray-200 focus:border-blue-500'}`;
 
+  // Validate form and submit top up
+  const handleSubmit = async () => {
+    const num = Number(amount);
+    if (!num || num < 500)  { setError('Minimum top-up is LKR 500');     return; }
+    if (num > 500000)       { setError('Maximum top-up is LKR 500,000'); return; }
+    setError('');
+    setPaidAmount(num);
+    await onTopUp({ amount: num, method });
+    setSuccess(true);
+  };
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden">
@@ -118,6 +129,68 @@ const TopUpModal = ({ onTopUp, onCancel, loading }) => {
                 ))}
               </div>
             </div>
+          </div>
+
+          {/* Right panel — bank details */}
+          <div className="flex-1 p-5 flex flex-col gap-4">
+            {method === 'bank' && (
+              <div className="flex-1 flex flex-col gap-4">
+                <div className="flex-1 bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col gap-3">
+
+                  {/* Bank details header */}
+                  <div className="flex items-center gap-2 pb-3 border-b border-gray-200">
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <Building2 className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-gray-800">Bank Transfer Details</p>
+                      <p className="text-xs text-gray-400">Transfer to complete top-up</p>
+                    </div>
+                    {/* Show entered amount if valid */}
+                    {amount && Number(amount) >= 500 && (
+                      <span className="ml-auto text-sm font-bold text-blue-600 bg-blue-50 border border-blue-200 px-3 py-1 rounded-lg">
+                        LKR {Number(amount).toLocaleString()}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Each bank detail row with copy button */}
+                  {BANK_DETAILS.map(({ label, value }) => (
+                    <div key={label} className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs text-gray-400">{label}</p>
+                        <p className="text-sm font-bold text-gray-800">{value}</p>
+                      </div>
+                      {/* Copy to clipboard button */}
+                      <button onClick={() => copy(value, label)}
+                        className="flex items-center gap-1 px-2.5 py-1 bg-white border border-gray-200 rounded-lg text-xs font-semibold text-gray-500 hover:border-blue-400 hover:text-blue-600 transition-all">
+                        <Copy className="w-3 h-3" />
+                        {copied === label ? '✓' : 'Copy'}
+                      </button>
+                    </div>
+                  ))}
+
+                  {/* Reference warning note */}
+                  <div className="mt-auto pt-3 border-t border-gray-200">
+                    <p className="text-xs text-yellow-700 font-medium bg-yellow-50 border border-yellow-100 rounded-lg p-2.5">
+                      Use <span className="font-bold">WRKID-EMP-001</span> as reference. Wallet tops up within 24 hours.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Cancel and confirm buttons */}
+                <div className="flex gap-3">
+                  <button onClick={onCancel} disabled={loading}
+                    className="flex-1 py-2.5 border-2 border-gray-200 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-50 disabled:opacity-50 transition-all">
+                    Cancel
+                  </button>
+                  <button onClick={handleSubmit} disabled={loading || !amount}
+                    className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold shadow-md disabled:opacity-50 transition-all">
+                    {loading ? 'Processing...' : 'Done ✓'}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
         </div>
