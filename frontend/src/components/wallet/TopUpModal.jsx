@@ -49,6 +49,17 @@ const TopUpModal = ({ onTopUp, onCancel, loading }) => {
     const num = Number(amount);
     if (!num || num < 500)  { setError('Minimum top-up is LKR 500');     return; }
     if (num > 500000)       { setError('Maximum top-up is LKR 500,000'); return; }
+
+    // Validate card fields if card method selected
+    if (method === 'card') {
+      const e = {};
+      if (card.number.replace(/\s/g,'').length < 16) e.number = 'Invalid card number';
+      if (!card.name.trim())                          e.name   = 'Enter cardholder name';
+      if (card.expiry.length < 5)                     e.expiry = 'Invalid expiry';
+      if (card.cvv.length < 3)                        e.cvv    = 'Invalid CVV';
+      if (Object.keys(e).length) { setCardErrors(e); return; }
+    }
+
     setError('');
     setPaidAmount(num);
     await onTopUp({ amount: num, method });
@@ -131,8 +142,10 @@ const TopUpModal = ({ onTopUp, onCancel, loading }) => {
             </div>
           </div>
 
-          {/* Right panel — bank details */}
+          {/* Right panel — bank details or card form */}
           <div className="flex-1 p-5 flex flex-col gap-4">
+
+            {/* Bank transfer panel */}
             {method === 'bank' && (
               <div className="flex-1 flex flex-col gap-4">
                 <div className="flex-1 bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col gap-3">
@@ -191,8 +204,76 @@ const TopUpModal = ({ onTopUp, onCancel, loading }) => {
                 </div>
               </div>
             )}
-          </div>
 
+            {/* Card payment form */}
+            {method === 'card' && (
+              <>
+                {/* Card number with card type detection */}
+                <div>
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">
+                    Card Number {cardType() && <span className="normal-case text-blue-600 ml-1">{cardType()}</span>}
+                  </p>
+                  <input type="text" value={card.number} placeholder="1234 5678 9012 3456"
+                    onChange={e => inp('number', fmtCard(e.target.value))}
+                    className={`${inputCls(cardErrors.number)} font-mono`} />
+                  {cardErrors.number && <p className="mt-1 text-xs text-red-500">{cardErrors.number}</p>}
+                </div>
+
+                {/* Cardholder name */}
+                <div>
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Cardholder Name</p>
+                  <input type="text" value={card.name} placeholder="Name on card"
+                    onChange={e => inp('name', e.target.value)}
+                    className={inputCls(cardErrors.name)} />
+                  {cardErrors.name && <p className="mt-1 text-xs text-red-500">{cardErrors.name}</p>}
+                </div>
+
+                {/* Expiry and CVV side by side */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Expiry</p>
+                    <input type="text" value={card.expiry} placeholder="MM/YY"
+                      onChange={e => inp('expiry', fmtExpiry(e.target.value))}
+                      className={`${inputCls(cardErrors.expiry)} font-mono`} />
+                    {cardErrors.expiry && <p className="mt-1 text-xs text-red-500">{cardErrors.expiry}</p>}
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">CVV</p>
+                    <div className="relative">
+                      {/* Toggle CVV visibility with lock icon */}
+                      <input type={showCvv ? 'text' : 'password'} value={card.cvv} placeholder="•••"
+                        onChange={e => inp('cvv', e.target.value.replace(/\D/g,'').slice(0,4))}
+                        className={`${inputCls(cardErrors.cvv)} font-mono pr-10`} />
+                      <button onClick={() => setShowCvv(!showCvv)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                        <Lock className="w-4 h-4" />
+                      </button>
+                    </div>
+                    {cardErrors.cvv && <p className="mt-1 text-xs text-red-500">{cardErrors.cvv}</p>}
+                  </div>
+                </div>
+
+                {/* SSL security note */}
+                <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-100 rounded-xl mt-auto">
+                  <Lock className="w-4 h-4 text-green-600 flex-shrink-0" />
+                  <p className="text-xs text-green-700 font-medium">256-bit SSL secured— no real charge.</p>
+                </div>
+
+                {/* Cancel and pay buttons */}
+                <div className="flex gap-3">
+                  <button onClick={onCancel} disabled={loading}
+                    className="flex-1 py-2.5 border-2 border-gray-200 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-50 disabled:opacity-50 transition-all">
+                    Cancel
+                  </button>
+                  <button onClick={handleSubmit} disabled={loading || !amount}
+                    className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold shadow-md disabled:opacity-50 transition-all">
+                    {loading ? 'Processing...' : `Pay LKR ${Number(amount||0).toLocaleString()}`}
+                  </button>
+                </div>
+              </>
+            )}
+
+          </div>
         </div>
       </div>
     </div>
