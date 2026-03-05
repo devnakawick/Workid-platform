@@ -65,6 +65,50 @@ const EmployerWallet = () => {
   const handleFilterChange = (name, value) =>
     setFilters(prev => ({ ...prev, [name]: value }));
 
+  // Handle wallet top-up
+  const handleDeposit = async ({ amount, method }) => {
+    setDepositLoading(true);
+    try {
+      const result = await depositToWalletAPI(Number(amount), method);
+      if (result.success) {
+        // Refresh data and close modal on success
+        await fetchData();
+        toast.success(result.message);
+        setShowDepositModal(false);
+      } else {
+        toast.error(result.error || 'Deposit failed');
+      }
+    } catch {
+      toast.error('Something went wrong');
+    } finally {
+      setDepositLoading(false);
+    }
+  };
+
+  // Handle pay worker — modal stays open, paid row removed, list updates
+  const handlePayWorker = async (txn) => {
+    setPayLoading(true);
+    try {
+      const result = await payWorkerAPI(
+        txn.workerName,
+        txn.amount,
+        txn.jobTitle,
+        txn.id,
+      );
+      if (result.success) {
+        // Refresh data — pending row removed, transaction list updated
+        await fetchData();
+        toast.success(result.message);
+      } else {
+        toast.error(result.error || 'Payment failed');
+      }
+    } catch {
+      toast.error('Something went wrong');
+    } finally {
+      setPayLoading(false);
+    }
+  };
+
 };
 
 export default EmployerWallet;
