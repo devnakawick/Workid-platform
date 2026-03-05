@@ -26,22 +26,11 @@ const TopUpModal = ({ onTopUp, onCancel, loading }) => {
   const [card,       setCard]       = useState({ number: '', name: '', expiry: '', cvv: '' });
   const [cardErrors, setCardErrors] = useState({});
 
-  // Format card number with spaces
   const fmtCard   = (v) => v.replace(/\D/g, '').slice(0, 16).replace(/(.{4})/g, '$1 ').trim();
-
-  // Format expiry as MM/YY
   const fmtExpiry = (v) => { const d = v.replace(/\D/g, '').slice(0, 4); return d.length >= 3 ? `${d.slice(0,2)}/${d.slice(2)}` : d; };
-
-  // Detect card type from number
   const cardType  = () => { const n = card.number.replace(/\s/g,''); return n.startsWith('4') ? 'Visa' : n.startsWith('5') ? 'Mastercard' : ''; };
-
-  // Copy value to clipboard with temporary tick
   const copy      = (val, key) => { navigator.clipboard.writeText(val); setCopied(key); setTimeout(() => setCopied(''), 2000); };
-
-  // Update card field and clear its error
   const inp       = (field, val) => { setCard(p => ({ ...p, [field]: val })); setCardErrors(p => ({ ...p, [field]: '' })); };
-
-  // Input style — red border on error
   const inputCls  = (err) => `w-full px-3 py-2.5 border-2 rounded-xl text-sm focus:outline-none transition-all ${err ? 'border-red-400 bg-red-50' : 'border-gray-200 focus:border-blue-500'}`;
 
   return (
@@ -54,11 +43,45 @@ const TopUpModal = ({ onTopUp, onCancel, loading }) => {
             <h3 className="text-xl font-bold">Top Up Wallet</h3>
             <p className="text-blue-200 text-sm">Add funds to your employer wallet</p>
           </div>
-          {/* Close button */}
           <button onClick={onCancel} disabled={loading}
             className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-lg flex items-center justify-center">
             <X className="w-4 h-4" />
           </button>
+        </div>
+
+        <div className="flex min-h-[420px]">
+
+          {/* Left panel — amount and method */}
+          <div className="w-[44%] border-r border-gray-100 p-5 flex flex-col gap-5">
+
+            {/* Quick select preset amounts */}
+            <div>
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Quick Select</p>
+              <div className="flex flex-wrap gap-2">
+                {QUICK_AMOUNTS.map(v => (
+                  <button key={v} onClick={() => { setAmount(String(v)); setError(''); }}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-semibold border transition-all ${
+                      amount === String(v)
+                        ? 'bg-blue-600 text-white border-blue-600'
+                        : 'bg-gray-50 text-gray-700 border-gray-200 hover:border-blue-300'
+                    }`}>
+                    {v.toLocaleString()}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Manual amount input */}
+            <div>
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Amount (LKR)</p>
+              <input type="number" value={amount} placeholder="Min. 500"
+                onChange={e => { setAmount(e.target.value); setError(''); }}
+                className={inputCls(error)} />
+              {/* Show validation error */}
+              {error && <p className="mt-1 text-xs text-red-500 font-medium">{error}</p>}
+            </div>
+
+          </div>
         </div>
 
       </div>
