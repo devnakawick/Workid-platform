@@ -21,11 +21,10 @@ class Settings(BaseSettings):
     # CORS
     CORS_ORIGINS: List[str] = ["http://localhost:5173", "http://localhost:3000"]
     
-    # Twilio (OTP)
-    TWILIO_ACCOUNT_SID: str = ""
-    TWILIO_AUTH_TOKEN: str = ""
-    TWILIO_PHONE_NUMBER: str = ""
-    TWILIO_VERIFY_SERVICE_SID: str = ""
+    # Vonage SMS
+    VONAGE_API_KEY: str = ""
+    VONAGE_API_SECRET: str = ""
+    VONAGE_FROM_NUMBER: str = "WorkID"
     
     # File Upload
     UPLOAD_DIR: str = "uploads"

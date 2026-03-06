@@ -44,7 +44,7 @@ class WorkerSignupRequest(SignupRequest):
     phone_number: str
     password: str
     city: Optional[str] = None
-    skills: Optional[list[str]] = []
+    skills: Optional[list[str]] = None
 
 class EmployerSignupRequest(SignupRequest):
     """Employer signup request"""
