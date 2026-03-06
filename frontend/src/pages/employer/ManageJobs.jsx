@@ -145,10 +145,10 @@ const ManageJobs = () => {
               {/* Statistics cards — click to filter by status */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 {[
-                  { label: 'Total Jobs',  value: statistics.total,      icon: Briefcase,     color: 'blue',   status: null          },
+                  { label: 'Total Jobs',  value: statistics.total,      icon: Briefcase,     color: 'gray',   status: null          },
                   { label: 'Open Jobs',   value: statistics.open,       icon: Clock,         color: 'green',  status: 'open'        },
                   { label: 'In Progress', value: statistics.inProgress, icon: HourglassIcon, color: 'yellow', status: 'in-progress' },
-                  { label: 'Completed',   value: statistics.completed,  icon: CheckCircle2,  color: 'purple', status: 'completed'   },
+                  { label: 'Completed',   value: statistics.completed,  icon: CheckCircle2,  color: 'blue', status: 'completed'   },
                 ].map(({ label, value, icon: Icon, color, status }) => (
                   <div key={label}
                     onClick={() => status && handleFilterChange('status', status)}

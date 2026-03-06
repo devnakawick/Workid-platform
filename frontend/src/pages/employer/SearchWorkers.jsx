@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Users, Star, CheckCircle2, UserSearch } from 'lucide-react';
+import { Users, Star, CheckCircle2, UserSearch, UserCheck } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
 import MockSidebar        from '../../mocks/MockSidebar';
@@ -126,9 +126,9 @@ const SearchWorkers = () => {
               {/* Statistics cards */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 {[
-                  { label: 'Total Workers',    value: statistics.total,     icon: Users,        color: 'blue'   },
-                  { label: 'Available Now',    value: statistics.available, icon: CheckCircle2, color: 'green'  },
-                  { label: 'Verified Workers', value: statistics.verified,  icon: CheckCircle2, color: 'purple' },
+                  { label: 'Total Workers',    value: statistics.total,     icon: Users,        color: 'gray'   },
+                  { label: 'Available Now',    value: statistics.available, icon: UserCheck, color: 'green'  },
+                  { label: 'Verified Workers', value: statistics.verified,  icon: CheckCircle2, color: 'blue' },
                   { label: 'Top Rated (4.5+)', value: statistics.topRated,  icon: Star,         color: 'yellow' },
                 ].map(({ label, value, icon: Icon, color }) => (
                   <div key={label} className="bg-white rounded-xl p-4 md:p-5 shadow-md hover:shadow-lg transition-shadow">
