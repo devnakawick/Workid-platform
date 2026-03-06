@@ -63,7 +63,7 @@ const WorkerEarningsChart = ({ transactions }) => {
         {label && <p className="font-bold text-gray-600 mb-2">{label}</p>}
         {payload.map((entry, i) => (
           <div key={i} className="flex items-center gap-2 mb-1">
-            <span className="w-2 h-2 rounded-full" style={{ background: entry.color }} />
+            <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: entry.color }} />
             <span className="text-gray-500">{entry.name}:</span>
             <span className="font-bold text-gray-800">LKR {Number(entry.value).toLocaleString()}</span>
           </div>
@@ -73,15 +73,15 @@ const WorkerEarningsChart = ({ transactions }) => {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6 mb-6">
+    <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-4 sm:p-6 mb-6">
 
-      {/* Header with range filter toggle */}
-      <div className="flex items-center justify-between mb-6">
+      {/* Header with range filter toggle — wraps on small screens */}
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+          <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
             <BarChart2 className="w-5 h-5 text-blue-600" />
           </div>
-          <h2 className="text-lg font-bold text-gray-900">Earnings Overview</h2>
+          <h2 className="text-base sm:text-lg font-bold text-gray-900">Earnings Overview</h2>
         </div>
 
         {/* Range toggle — 7d, 30d, 90d */}
@@ -104,14 +104,14 @@ const WorkerEarningsChart = ({ transactions }) => {
 
       {/* Empty state — no transactions in range */}
       {isEmpty ? (
-        <div className="h-56 flex flex-col items-center justify-center text-gray-400">
+        <div className="h-48 sm:h-56 flex flex-col items-center justify-center text-gray-400">
           <BarChart2 className="w-12 h-12 text-gray-200 mb-3" />
           <p className="text-sm font-semibold text-gray-500">No earnings data yet</p>
           <p className="text-xs text-gray-400 mt-1">Your chart will appear once you complete jobs</p>
         </div>
       ) : (
-        /* Area chart with earned and withdrawn areas */
-        <div className="h-56">
+        /* Area chart with earned and withdrawn areas — taller on larger screens */
+        <div className="h-48 sm:h-56">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
 
