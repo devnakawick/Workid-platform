@@ -1,36 +1,37 @@
-from pydantic import BaseModel, Field, validator, EmailStr
-from typing import Optional
+from pydantic import BaseModel, Field, field_validator, EmailStr
+from typing import List, Optional
 from datetime import datetime
 import re
 
 class SendOTPRequest(BaseModel):
-    """Request schema for sending OTP"""
-    phone_number: str = Field(..., min_length=10, max_length=15)
-    
-    @validator('phone_number')
+    phone_number: str
+
+    @field_validator('phone_number')
+    @classmethod
     def validate_phone(cls, v):
-        # Remove spaces and dashes
         v = v.replace(' ', '').replace('-', '')
-        # Check if it's numeric
+
         if not v.isdigit():
             raise ValueError('Phone number must contain only digits')
-        # Check length (adjust based on your country)
-        if len(v) < 10 or len(v) > 15:
+
+        if not 10 <= len(v) <= 15:
             raise ValueError('Phone number must be between 10 and 15 digits')
+
         return v
 
 class VerifyOTPRequest(BaseModel):
     """Request schema for verifying OTP"""
-    phone_number: str = Field(..., min_length=10, max_length=15)
+    phone_number: str = Field(..., min_length=9, max_length=15)
     otp: str = Field(..., min_length=4, max_length=6)
 
 class SignupRequest(BaseModel):
     """Base signup request schema"""
-    phone_number: str = Field(..., min_length=10, max_length=15)
+    phone_number: str = Field(..., min_length=9, max_length=15)
     full_name: str = Field(..., min_length=2, max_length=100)
     email: Optional[str] = None
     
-    @validator('email')
+    @field_validator('email')
+    @classmethod
     def validate_email(cls, v):
         if v:
             pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
@@ -45,16 +46,23 @@ class WorkerSignupRequest(SignupRequest):
     phone_number: str
     password: str
     city: Optional[str] = None
-    skills: Optional[list[str]] = []
+    district: Optional[str] = None
+    nic_number: str = Field(..., min_length=10, max_length=12)
+    primary_skill: str = Field(..., description="Primary skill category")
+    other_skills: Optional[List[str]] = []
+    experience_years: Optional[int] = Field(0, ge=0)
+    daily_rate: Optional[float] = Field(None, ge=0)
+    hourly_rate: Optional[float] = Field(None, ge=0)
+    bio: Optional[str] = None
 
 class EmployerSignupRequest(SignupRequest):
     """Employer signup request"""
-    company_name: str
-    email: EmailStr
+    full_name: str
     phone_number: str
     password: str
-    company_name: Optional[str] = None
     city: Optional[str] = None
+    district: Optional[str] = None
+    address: Optional[str] = None
 
 class TokenResponse(BaseModel):
     """Token response schema"""
