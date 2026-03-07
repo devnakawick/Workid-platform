@@ -39,6 +39,8 @@ class Worker(Base):
     full_name = Column(String, nullable=False)
     nic_number = Column(String, unique=True, nullable=False)
     date_of_birth = Column(DateTime)
+    email = Column(String, nullable=False)
+    phone_number = Column(String, nullable=False)
 
     # Contact & Location
     address = Column(Text)

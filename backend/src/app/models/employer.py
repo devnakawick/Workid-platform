@@ -16,6 +16,8 @@ class Employer(Base):
 
     # Basic Info
     full_name = Column(String, nullable=False)
+    email = Column(String, nullable=False, unique=True)
+    phone_number = Column(String, nullable=False)
     is_business = Column(Boolean, default=False)
 
     # Contact & Location
@@ -32,6 +34,7 @@ class Employer(Base):
     # Metadata
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_active = Column(DateTime, default=datetime.utcnow)
 
     # Relationships
     user = relationship("User", back_populates="employer_profile")
