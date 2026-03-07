@@ -11,6 +11,7 @@ from datetime import datetime
 ALLOWED_EMPLOYER_UPDATE_FIELDS = {
     "full_name", 
     "email",
+    "phone_number",
     "address", 
     "city", 
     "district", 
@@ -110,7 +111,7 @@ class EmployerService:
         ).count()
         
         return {
-            "total_jobs": total_jobs,
+            "total_jobs_posted": total_jobs,
             "active_jobs": active_jobs,
             "completed_jobs": completed_jobs,
             "total_applications": total_applications,
