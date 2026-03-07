@@ -10,7 +10,8 @@ class EmployerProfileCreate(BaseModel):
     Schema for creating employer profile
     """
     full_name: str = Field(..., min_length=2, max_length=100)
-    email: EmailStr =Field(..., description="Employer email address")
+    email: EmailStr = Field(..., description="Employer email address")
+    phone_number: str = Field(..., min_length=9, max_length=15, description="Contact phone number")
 
     # Location
     address: str = Field(..., min_length=10, max_length=500, description="Employer address")
@@ -23,6 +24,7 @@ class EmployerProfileCreate(BaseModel):
             "example": {
                 "full_name": "John Doe",
                 "email": "john.doe@example.com",
+                "phone_number": "+94771234567",
                 "address": "123 Main Street",
                 "city": "Dehiwala",
                 "district": "Colombo",
@@ -36,6 +38,7 @@ class EmployerProfileUpdate(BaseModel):
     """
     full_name: Optional[str] = Field(None, min_length=2, max_length=100)
     email: Optional[EmailStr] = None
+    phone_number: Optional[str] = Field(None, min_length=9, max_length=15)
     address: Optional[str] = Field(None, max_length=500)
     city: Optional[str] = None
     district: Optional[str] = None
@@ -44,7 +47,9 @@ class EmployerProfileUpdate(BaseModel):
     class Config:
         json_schema_extra = {
             "example": {
-                "full_name": "Rohan Silva", 
+                "full_name": "Rohan Silva",
+                "email": "rohan.silva@example.com",
+                "phone_number": "+94771234567",
                 "postal_code": "10350"
             }
         }

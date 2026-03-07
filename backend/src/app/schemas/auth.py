@@ -58,6 +58,7 @@ class WorkerSignupRequest(SignupRequest):
 class EmployerSignupRequest(SignupRequest):
     """Employer signup request"""
     full_name: str
+    email: str
     phone_number: str
     password: str
     city: Optional[str] = None

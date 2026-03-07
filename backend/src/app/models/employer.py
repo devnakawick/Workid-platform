@@ -18,7 +18,6 @@ class Employer(Base):
     full_name = Column(String, nullable=False)
     email = Column(String, nullable=False, unique=True)
     phone_number = Column(String, nullable=False)
-    is_business = Column(Boolean, default=False)
 
     # Contact & Location
     address = Column(Text)
