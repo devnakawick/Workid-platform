@@ -10,7 +10,8 @@ ALLOWED_WORKER_UPDATE_FIELDS = {
     "district",
     "primary_skill",
     "experience_years",
-    "bio"
+    "bio",
+    "daily_rate"
 }
 
 class WorkerService:
