@@ -1,4 +1,4 @@
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "sonner"
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
@@ -16,6 +16,9 @@ import Documents from './pages/Documents';
 import Jobs from './pages/Jobs';
 import Learning from './pages/Learning';
 import Settings from './pages/Settings';
+import Notifications from './pages/Notifications';
+import Messages from './pages/Messages';
+import OtpVerification from './pages/auth/OtpVerification';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings } = useAuth();
@@ -82,10 +85,21 @@ const AuthenticatedApp = () => {
           <Settings />
         </Layout>
       } />
+      <Route path="/Notifications" element={
+        <Layout currentPageName="Notifications">
+          <Notifications />
+        </Layout>
+      } />
+      <Route path="/Messages" element={
+        <Layout currentPageName="Messages">
+          <Messages />
+        </Layout>
+      } />
       <Route path="/landing" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup-employer" element={<SignupEmployer />} />
       <Route path="/signup-worker" element={<SignupWorker />} />
+      <Route path="/verify-otp" element={<OtpVerification />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
@@ -98,7 +112,7 @@ function App() {
       <Router>
         <AuthenticatedApp />
       </Router>
-      <Toaster />
+      <Toaster position="top-center" richColors closeButton />
     </AuthProvider>
   )
 }

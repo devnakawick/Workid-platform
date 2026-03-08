@@ -1,42 +1,61 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import Sidebar from './components/layout/Sidebar';
+import WorkerSidebar from './components/layout/WorkerSidebar';
+import EmployerSidebar from './components/layout/EmployerSidebar';
 import Footer from './components/layout/Footer';
-import Navigation from './components/layout/Navigation';
+import DashboardHeader from './components/layout/DashboardHeader';
+
 import './components/layout/sidebar.css';
 import './components/layout/footer.css';
-import './components/layout/navigation.css';
 
 export default function Layout({ children, currentPageName }) {
     const location = useLocation();
-    
+
     // Pages that don't need the full layout (no sidebar, no footer)
     const authPages = ['/login', '/signup-employer', '/signup-worker'];
     const landingPage = '/landing';
     const isFullPage = authPages.includes(location.pathname) || location.pathname === landingPage;
-    
+
     if (isFullPage) {
         return <div>{children}</div>;
     }
 
+    // Determine which sidebar to show based on route
+    const isEmployerRoute = location.pathname.startsWith('/employer');
+    const isWorkerRoute = location.pathname.startsWith('/worker') ||
+        ['/Jobs', '/Profile', '/Learning', '/Wallet', '/Support', '/Settings', '/Applications', '/Documents', '/Badges', '/Notifications', '/Messages'].includes(location.pathname);
+
+    const Sidebar = isEmployerRoute ? EmployerSidebar : WorkerSidebar;
+
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
             <div className="flex flex-1">
-                {/* Sidebar - now contains logo and all navigation */}
+                {/* Sidebar - Worker or Employer based on route */}
                 <Sidebar />
-                
+
                 {/* Main Content Area */}
-                <main className="flex-1 main-content-with-sidebar">
-                    {/* Navigation/Breadcrumb */}
-                    <Navigation currentPath={location.pathname} />
-                    
+                <main className="flex-1 main-content-with-sidebar bg-slate-50/50">
+                    {/* Header - Unified Global Header */}
+                    {isWorkerRoute && (
+                        <DashboardHeader
+                            subtitle="Here's what's happening with your work today!"
+                            showAvailability={true}
+                        />
+                    )}
+                    {isEmployerRoute && (
+                        <DashboardHeader
+                            subtitle="Manage your job postings and applicants."
+                            showAvailability={true}
+                        />
+                    )}
+
                     {/* Page Content */}
                     <div className="p-6">
                         {children}
                     </div>
                 </main>
             </div>
-            
+
             {/* Footer */}
             <Footer />
         </div>

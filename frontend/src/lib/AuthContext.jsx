@@ -16,7 +16,19 @@ export const AuthProvider = ({ children }) => {
             setIsLoadingPublicSettings(false);
             setIsLoadingAuth(false);
             setIsAuthenticated(true);
-            setUser({ id: 'demo_user', name: 'Nafees Ahamed', email: 'nafees@example.com' });
+            setUser({
+                id: 'demo_user',
+                name: 'John Doe',
+                email: 'john.doe@gmail.com',
+                role: 'Employer',
+                phone: '077-1234567',
+                location: 'Colombo 07',
+                experience: '5 Years Experience',
+                notificationsCount: 3,
+                messagesCount: 5,
+                isAvailable: true,
+                avatar: null
+            });
             setAppPublicSettings({ id: 'demo_app', public_settings: {} });
         };
 
@@ -28,6 +40,10 @@ export const AuthProvider = ({ children }) => {
         window.location.reload();
     };
 
+    const updateUser = (data) => {
+        setUser(prev => ({ ...prev, ...data }));
+    };
+
     return (
         <AuthContext.Provider value={{
             user,
@@ -35,7 +51,8 @@ export const AuthProvider = ({ children }) => {
             isLoadingAuth,
             isLoadingPublicSettings,
             appPublicSettings,
-            logout
+            logout,
+            updateUser
         }}>
             {children}
         </AuthContext.Provider>
