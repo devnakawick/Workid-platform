@@ -69,7 +69,7 @@ SKILL_KEYWORDS = {
     ]
 }
 
-# ======= Span Detection =======
+# ======= Spam Detection =======
 
 # Keywords that indicate spam/scam
 SPAM_KEYWORDS = [
@@ -82,7 +82,7 @@ SPAM_KEYWORDS = [
 MIN_DESCRIPTION_LENGTH = 20
 
 # Maximum reasonable budget
-MAX_REASONABLE_BUDGET = 100000
+MAX_REASONABLE_BUDGET = 100000  #LKR
 
 # ======= Fraud Detection =======
 
@@ -91,7 +91,7 @@ MAX_JOBS_PER_DAY = 10   # Employer posting more = suspicious
 MAX_APPLICATIONS_PER_DAY = 50   # Worker applying to 50+ = suspicious
 
 # Minimum time between applications (seconds)
-MIN_APPLICATION_INTERVAL = 10   # Applying every 5 seconds = bot
+MIN_APPLICATION_INTERVAL = 10   # Applying every few seconds may indicate bot behavior
 
 # ======= Content Moderation =======
 
@@ -106,9 +106,48 @@ INAPPROPRIATE_KEYWORDS = [
 # Sri Lankan cities for location parsing
 SRI_LANKAN_CITIES = [
     "colombo", "galle", "kandy", "jaffna", "negombo",
-    "baticaloa", "trincomalee", "matara", "anuradhapura", 
+    "batticaloa", "trincomalee", "matara", "anuradhapura", 
     "kurunegala", "ratnapura", "badulla", "ampara", 
     "hambantota", "vavuniya", "gampaha", "kalutara"
+]
+
+# 9 Provinces
+SRI_LANKAN_PROVINCES = [
+    "Western",
+    "Central",
+    "Southern",
+    "Northern",
+    "Eastern",
+    "North Western",
+    "North Central",
+    "Uva",
+    "Sabaragamuwa"
+]
+
+# 25 districts organized by province
+SRI_LANKAN_DISTRICTS = {
+    "Western": ["colombo", "gampaha", "kalutara"],
+    "Central": ["kandy", "matale", "nuwara eliya"],
+    "Southern": ["galle", "matara", "hambantota"],
+    "Northern": ["jaffna", "kilinochchi", "mannar", "vavuniya", "mullaitivu"],
+    "Eastern": ["trincomalee", "batticaloa", "ampara"],
+    "North Western": ["kurunegala", "puttalam"],
+    "North Central": ["anuradhapura", "polonnaruwa"],
+    "Uva": ["badulla", "monaragala"],
+    "Sabaragamuwa": ["ratnapura", "kegalle"]
+}
+
+# List of districts for easy search
+ALL_DISTRICTS = [
+    "colombo", "gampaha", "kalutara",
+    "kandy", "matale", "nuwara eliya",
+    "galle", "matara", "hambantota",
+    "jaffna", "kilinochchi", "mannar", "vavuniya", "mullaitivu",
+    "trincomalee", "batticaloa", "ampara",
+    "kurunegala", "puttalam",
+    "anuradhapura", "polonnaruwa",
+    "badulla", "monaragala",
+    "ratnapura", "kegalle"
 ]
 
 # Budget-related keywords
