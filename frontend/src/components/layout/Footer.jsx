@@ -3,7 +3,7 @@ import './footer.css';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../common/LanguageSwitcher';
-import logo from '@/assets/Workid.svg';
+import logo from '@/images/logo.jpeg';
 
 const Footer = () => {
     const { t } = useTranslation();
