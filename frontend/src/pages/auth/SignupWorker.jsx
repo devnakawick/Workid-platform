@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
+import logo from '@/images/logo.jpeg';
 import { Mail, Lock, User, Phone } from 'lucide-react';
 
 export default function SignupWorker() {
@@ -77,16 +78,16 @@ export default function SignupWorker() {
 
     setIsLoading(true);
     try {
-      console.log('Worker signup attempt with:', { 
-        fullName: formData.fullName, 
+      console.log('Worker signup attempt with:', {
+        fullName: formData.fullName,
         email: formData.email,
         phone: formData.phone
       });
 
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Navigate to worker dashboard after successful signup
-      navigate('/worker/dashboard');
+      // Navigate to OTP verification instead of dashboard
+      navigate('/verify-otp', { state: { email: formData.email, role: 'worker' } });
     } catch (error) {
       setErrors({ general: 'An error occurred. Please try again.' });
     } finally {
@@ -99,8 +100,8 @@ export default function SignupWorker() {
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-white rounded-xl shadow-sm mb-4">
-            <span className="text-lg font-bold text-indigo-600">WI</span>
+          <div className="inline-flex items-center justify-center w-14 h-14 mb-4">
+            <img src={logo} alt="WorkID" className="w-14 h-14 rounded-xl object-cover shadow-md" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">WorkID</h1>
           <p className="text-gray-500">Sign up as a Worker</p>

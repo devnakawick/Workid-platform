@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
-import { Mail, Lock, Building2, Phone } from 'lucide-react';
+import logo from '@/images/logo.jpeg';
+import { Mail, Lock, User, Phone } from 'lucide-react';
 
 export default function SignupEmployer() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    companyName: '',
+    fullName: '',
     email: '',
     phone: '',
     password: '',
@@ -39,8 +40,8 @@ export default function SignupEmployer() {
     e.preventDefault();
     const newErrors = {};
 
-    if (!formData.companyName.trim()) {
-      newErrors.companyName = 'Company name is required';
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = 'Full name is required';
     }
 
     if (!formData.email.trim()) {
@@ -75,16 +76,16 @@ export default function SignupEmployer() {
 
     setIsLoading(true);
     try {
-      console.log('Employer signup attempt with:', { 
-        companyName: formData.companyName, 
+      console.log('Employer signup attempt with:', {
+        fullName: formData.fullName,
         email: formData.email,
         phone: formData.phone
       });
 
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Navigate to employer dashboard after successful signup
-      navigate('/employer/dashboard');
+      // Navigate to OTP verification instead of dashboard
+      navigate('/verify-otp', { state: { email: formData.email, role: 'employer' } });
     } catch (error) {
       setErrors({ general: 'An error occurred. Please try again.' });
     } finally {
@@ -96,12 +97,12 @@ export default function SignupEmployer() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-white rounded-xl shadow-sm mb-4">
-            <span className="text-lg font-bold text-indigo-600">WI</span>
+        <div className="text-center mb-8 px-4">
+          <div className="inline-flex items-center justify-center w-14 h-14 mb-4">
+            <img src={logo} alt="WorkID" className="w-14 h-14 rounded-xl object-cover shadow-md" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">WorkID</h1>
-          <p className="text-gray-500">Sign up as an Employer</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">WorkID</h1>
+          <p className="text-gray-500 text-sm md:text-base font-medium">Sign up as an Employer</p>
         </div>
 
         {/* Signup Form Card */}
@@ -114,23 +115,23 @@ export default function SignupEmployer() {
           )}
 
           <form onSubmit={handleSignUp} className="space-y-4">
-            {/* Company Name Input */}
+            {/* Full Name Input */}
             <Input
-              label="Company Name"
+              label="Full Name"
               type="text"
-              placeholder="Your Company"
-              name="companyName"
-              value={formData.companyName}
+              placeholder="John Doe"
+              name="fullName"
+              value={formData.fullName}
               onChange={handleChange}
-              error={errors.companyName}
-              icon={<Building2 size={18} />}
+              error={errors.fullName}
+              icon={<User size={18} />}
             />
 
             {/* Email Input */}
             <Input
               label="Email Address"
               type="email"
-              placeholder="you@company.com"
+              placeholder="johndoe@gmail.com"
               name="email"
               value={formData.email}
               onChange={handleChange}
