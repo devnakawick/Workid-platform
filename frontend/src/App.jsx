@@ -1,8 +1,10 @@
 import { Toaster } from "sonner"
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import Layout from './Layout';
+
+// Original imports
 import WorkerProfile from './pages/worker/WorkerProfile';
 import WorkerDashboard from './pages/worker/WorkerDashboard';
 import EmployerDashboard from './pages/employer/EmployerDashboard';
@@ -20,6 +22,18 @@ import Notifications from './pages/Notifications';
 import Messages from './pages/Messages';
 import OtpVerification from './pages/auth/OtpVerification';
 
+// New employer pages from feature branch
+import PostJob from './pages/employer/PostJob';
+import ManageJobs from './pages/employer/ManageJobs';
+import EditJob  from './pages/employer/EditJob';
+import EmployerWallet from './pages/employer/EmployerWallet';
+import ReviewApplications from './pages/employer/ReviewApplications';
+import SearchWorkers from './pages/employer/SearchWorkers';
+import HelpSupport from './pages/employer/HelpSupport';
+
+// New worker pages from feature branch
+import WorkerWallet from './pages/worker/WorkerWallet';
+
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings } = useAuth();
 
@@ -35,6 +49,7 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <Routes>
+      {/* Original routes */}
       <Route path="/" element={
         <Layout currentPageName="Jobs">
           <Jobs />
@@ -100,11 +115,55 @@ const AuthenticatedApp = () => {
       <Route path="/signup-employer" element={<SignupEmployer />} />
       <Route path="/signup-worker" element={<SignupWorker />} />
       <Route path="/verify-otp" element={<OtpVerification />} />
+
+      {/* New employer routes from feature branch */}
+      <Route path="/employer/jobs" element={
+        <Layout currentPageName="Manage Jobs">
+          <ManageJobs />
+        </Layout>
+      } />
+      <Route path="/employer/jobs/new" element={
+        <Layout currentPageName="Post Job">
+          <PostJob />
+        </Layout>
+      } />
+      <Route path="/employer/jobs/edit/:jobId" element={
+        <Layout currentPageName="Edit Job">
+          <EditJob />
+        </Layout>
+      } />
+      <Route path="/employer/applications" element={
+        <Layout currentPageName="Review Applications">
+          <ReviewApplications />
+        </Layout>
+      } />
+      <Route path="/employer/wallet" element={
+        <Layout currentPageName="Employer Wallet">
+          <EmployerWallet />
+        </Layout>
+      } />
+      <Route path="/employer/workers" element={
+        <Layout currentPageName="Search Workers">
+          <SearchWorkers />
+        </Layout>
+      } />
+      <Route path="/employer/help" element={
+        <Layout currentPageName="Help Support">
+          <HelpSupport />
+        </Layout>
+      } />
+
+      {/* New worker routes from feature branch */}
+      <Route path="/worker/wallet" element={
+        <Layout currentPageName="Worker Wallet">
+          <WorkerWallet />
+        </Layout>
+      } />
+
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
 };
-
 
 function App() {
   return (
