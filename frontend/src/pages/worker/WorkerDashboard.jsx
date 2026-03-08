@@ -1,5 +1,15 @@
 import React from 'react';
-import { Star } from 'lucide-react';
+import {
+	Briefcase,
+	CheckCircle2,
+	Star,
+	Wallet as WalletIcon,
+	MapPin,
+	Calendar,
+	ChevronRight,
+	Circle
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const mock = {
 	user: 'John',
@@ -11,157 +21,179 @@ const mock = {
 		earnings: 'Rs. 7,500'
 	},
 	activeJobsList: [
-		{ id: 1, title: 'Kitchen Sink Repair', excerpt: 'Fix leaking kitchen sink and replace faucet. Materials provided.', price: 'Rs. 4,000.00', tag: 'In Progress' },
-		{ id: 2, title: 'Bathroom Plumbing Install', excerpt: 'Complete bathroom plumbing installation for new construction.', price: 'Rs. 65,000.00', tag: 'Starting Soon' }
+		{ id: 1, title: 'Kitchen Sink Repair', excerpt: 'Fix leaking kitchen sink and replace faucet. Materials provided.', price: 'Rs. 4000.00', status: 'In Progress', location: '2.3 KM', time: 'Today, 2:00 PM' },
+		{ id: 2, title: 'Bathroom Plumbing Install', excerpt: 'Complete bathroom plumbing installation for new construction.', price: 'Rs. 65,000.00', status: 'Starting Soon', location: '2.3 4.1 KM', time: 'Tomorrow, 9:00 AM' }
 	],
 	upcoming: [
-		{ id: 'u1', title: 'Pipe Replacement', date: 'Mon', day: 'Nov 26', time: '10:00 AM - 2:00 PM' },
-		{ id: 'u2', title: 'Drain Cleaning', date: 'Tue', day: 'Nov 27', time: '1:00 PM - 3:00 PM' },
-		{ id: 'u3', title: 'Toilet Repair', date: 'Thu', day: 'Nov 29', time: '9:00 AM - 11:00 AM' }
+		{ id: 'u1', title: 'Pipe Replacement', excerpt: 'Replace old pipes', day: 'MON', date: 'Nov 26', time: '10:00 AM - 2:00 PM' },
+		{ id: 'u2', title: 'Drain Cleaning', excerpt: 'Clear clogged bathroom drain', day: 'TUE', date: 'Nov 27', time: '1:00 PM - 3:00 PM' },
+		{ id: 'u3', title: 'Toilet Repair', excerpt: 'Fix running toilet issue', day: 'THU', date: 'Nov 29', time: '9:00 AM - 11:00 AM' }
 	]
 };
 
-const styles = {
-	page: { background: '#f1f5f9', minHeight: '100vh', padding: '20px 28px' },
-	container: { maxWidth: 1200, margin: '0 auto' },
-	topRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 },
-	title: { fontSize: 20, fontWeight: 700, color: '#0f172a' },
-	subtitle: { color: '#64748b', fontSize: 13 },
-	banner: { background: 'linear-gradient(90deg,#0ea5e9,#2563eb)', borderRadius: 12, padding: 18, color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16 },
-	bannerLeft: { flex: 1 },
-	bannerTitle: { fontSize: 16, fontWeight: 700, marginBottom: 8 },
-	progressWrap: { background: 'rgba(255,255,255,0.12)', height: 10, borderRadius: 999, overflow: 'hidden', marginTop: 8 },
-	progressFill: (pct) => ({ width: `${pct}%`, height: '100%', background: 'rgba(255,255,255,0.9)' }),
-	bannerCta: { marginLeft: 12, padding: '10px 16px', borderRadius: 8, background: 'white', color: '#2563eb', fontWeight: 700, cursor: 'pointer' },
-	statsGrid: { display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12, marginTop: 18 },
-	statCard: { background: 'white', borderRadius: 10, padding: 14, boxShadow: '0 4px 10px rgba(2,6,23,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
-	mainGrid: { display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 18, marginTop: 18 },
-	card: { background: 'white', borderRadius: 10, padding: 16, boxShadow: '0 6px 14px rgba(2,6,23,0.04)' },
-	jobItem: { borderBottom: '1px solid #eef2ff', padding: '12px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
-	upcomingWrap: { marginTop: 18, background: 'white', borderRadius: 10, padding: 16, boxShadow: '0 6px 14px rgba(2,6,23,0.04)' },
-	upcomingRow: { display: 'flex', gap: 12 }
-};
-
-export default function WorkerDashboard() {
+const WorkerDashboard = () => {
 	return (
-		<div style={styles.page}>
-			<div style={styles.container}>
-				<div style={styles.topRow}>
-					<div>
-						<div style={styles.title}>Welcome back, {mock.user}</div>
-						<div style={styles.subtitle}>Here's what's happening with your work today!</div>
-					</div>
-					<div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-						<div style={{ width: 36, height: 36, borderRadius: 8, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🔔</div>
-						<div style={{ width: 36, height: 36, borderRadius: 8, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✉️</div>
-						<div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-							<div style={{ width: 36, height: 36, borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>JD</div>
-						</div>
-					</div>
-				</div>
+		<div className="max-w-7xl mx-auto space-y-8">
 
-				<div style={styles.banner}>
-					<div style={styles.bannerLeft}>
-						<div style={styles.bannerTitle}>Complete Your Profile</div>
-						<div style={{ color: 'rgba(255,255,255,0.9)' }}>You're almost there! Complete your profile to get more job opportunities</div>
-						<div style={styles.progressWrap}>
-							<div style={styles.progressFill(mock.completion)} />
+			{/* 1. Profile Completion Banner */}
+			<div className="relative overflow-hidden bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl p-8 text-white shadow-lg">
+				<div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
+					<div className="space-y-4 flex-1">
+						<div>
+							<h2 className="text-2xl font-bold">Complete Your Profile</h2>
+							<p className="text-blue-100 mt-1">You're almost there! Complete your profile to get more job opportunities</p>
 						</div>
-					</div>
-					<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-						<div style={{ color: 'rgba(255,255,255,0.9)', marginBottom: 8 }}>{mock.completion}%</div>
-						<button style={styles.bannerCta}>Complete Now</button>
-					</div>
-				</div>
 
-				<div style={styles.statsGrid}>
-					<div style={styles.statCard}>
-						<div>
-							<div style={{ fontSize: 12, color: '#64748b' }}>Active Jobs</div>
-							<div style={{ fontSize: 20, fontWeight: 700 }}>{mock.stats.activeJobs}</div>
-						</div>
-						<div style={{ color: '#10b981' }}>▲ 12%</div>
-					</div>
-					<div style={styles.statCard}>
-						<div>
-							<div style={{ fontSize: 12, color: '#64748b' }}>Completed Jobs</div>
-							<div style={{ fontSize: 20, fontWeight: 700 }}>{mock.stats.completedJobs}</div>
-						</div>
-						<div style={{ color: '#10b981' }}>▲ 8%</div>
-					</div>
-					<div style={styles.statCard}>
-						<div>
-							<div style={{ fontSize: 12, color: '#64748b' }}>Rating</div>
-							<div style={{ fontSize: 20, fontWeight: 700 }}>{mock.stats.rating}</div>
-						</div>
-						<div style={{ fontSize: 18, color: '#f59e0b' }}>★</div>
-					</div>
-					<div style={styles.statCard}>
-						<div>
-							<div style={{ fontSize: 12, color: '#64748b' }}>This Month</div>
-							<div style={{ fontSize: 20, fontWeight: 700 }}>{mock.stats.earnings}</div>
-						</div>
-						<div style={{ color: '#10b981' }}>▲ 24%</div>
-					</div>
-				</div>
-
-				<div style={styles.mainGrid}>
-					<div>
-						<div style={styles.card}>
-							<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-								<h3 style={{ margin: 0 }}>Active Jobs</h3>
-								<a href="#" style={{ color: '#2563eb', fontSize: 13 }}>View all</a>
+						<div className="space-y-4">
+							<div className="flex items-center gap-4">
+								<div className="flex-1 bg-white/20 h-2.5 rounded-full overflow-hidden">
+									<div className="bg-white h-full transition-all duration-500" style={{ width: '75%' }}></div>
+								</div>
+								<span className="font-bold">75%</span>
 							</div>
-							<div>
-								{mock.activeJobsList.map((j) => (
-									<div key={j.id} style={styles.jobItem}>
-										<div style={{ maxWidth: '70%' }}>
-											<div style={{ fontWeight: 700 }}>{j.title}</div>
-											<div style={{ fontSize: 13, color: '#64748b' }}>{j.excerpt}</div>
-										</div>
-										<div style={{ textAlign: 'right' }}>
-											<div style={{ color: '#2563eb', fontWeight: 700 }}>{j.price}</div>
-											<div style={{ fontSize: 12, color: '#10b981' }}>{j.tag}</div>
-										</div>
-									</div>
-								))}
-							</div>
-						</div>
-						<div style={{ ...styles.card, marginTop: 18 }}>
-							<h3 style={{ marginTop: 0 }}>Upcoming Jobs</h3>
-							<div style={styles.upcomingRow}>
-								{mock.upcoming.map((u) => (
-									<div key={u.id} style={{ flex: 1, border: '1px solid #eef2ff', borderRadius: 8, padding: 12 }}>
-										<div style={{ fontSize: 12, color: '#64748b' }}>{u.date} • {u.day}</div>
-										<div style={{ fontWeight: 700, marginTop: 6 }}>{u.title}</div>
-										<div style={{ fontSize: 12, color: '#64748b', marginTop: 8 }}>{u.time}</div>
-									</div>
-								))}
+
+							<div className="flex flex-wrap gap-4 text-xs font-medium">
+								<div className="flex items-center gap-1.5"><CheckCircle2 size={14} className="text-green-300" /> Profile Photo</div>
+								<div className="flex items-center gap-1.5"><CheckCircle2 size={14} className="text-green-300" /> Skills Added</div>
+								<div className="flex items-center gap-1.5"><CheckCircle2 size={14} className="text-green-300" /> Bio Written</div>
+								<div className="flex items-center gap-1.5 opacity-60"><Circle size={14} /> Profile Verified</div>
 							</div>
 						</div>
 					</div>
 
-					<div>
-						<div style={{ ...styles.card }}>
-							<h3 style={{ marginTop: 0 }}>Reputation</h3>
-							<div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-								<div style={{ width: 64, height: 64, borderRadius: 12, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{mock.stats.rating}</div>
-								<div style={{ flex: 1 }}>
-									<div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-										{Array.from({ length: 5 }).map((_, i) => (
-											<Star key={i} size={16} color={i < Math.round(mock.stats.rating) ? '#f59e0b' : '#e6eaf0'} />
-										))}
+					<Button variant="outline" className="bg-white text-blue-600 border-white hover:bg-blue-50 font-bold px-8 py-6 text-lg rounded-xl">
+						Complete Now
+					</Button>
+				</div>
+
+				{/* Decorative circle */}
+				<div className="absolute top-[-50%] right-[-10%] w-[400px] h-[400px] bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+			</div>
+
+			{/* 2. Stats Grid */}
+			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+				{[
+					{ label: 'Active Jobs', value: mock.stats.activeJobs, change: '+ 12%', icon: Briefcase, color: 'blue' },
+					{ label: 'Completed Jobs', value: mock.stats.completedJobs, change: '+ 8%', icon: CheckCircle2, color: 'green' },
+					{ label: 'Rating', value: mock.stats.rating, change: '-', icon: Star, color: 'amber' },
+					{ label: 'This Month', value: mock.stats.earnings, change: '+ 24%', icon: WalletIcon, color: 'purple' },
+				].map((stat) => (
+					<div key={stat.label} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group transition-all hover:shadow-md">
+						<div className="space-y-1">
+							<p className="text-gray-500 text-sm font-medium">{stat.label}</p>
+							<h3 className="text-3xl font-extrabold text-gray-900">{stat.value}</h3>
+							<p className={`text-xs font-bold ${stat.change.startsWith('+') ? 'text-green-500' : 'text-gray-400'}`}>
+								{stat.change}
+							</p>
+						</div>
+						<div className={`p-4 rounded-xl bg-${stat.color}-50 text-${stat.color}-600 group-hover:scale-110 transition-transform`}>
+							<stat.icon size={28} />
+						</div>
+					</div>
+				))}
+			</div>
+
+			{/* 3. Main Content Grid */}
+			<div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+				{/* Active Jobs List */}
+				<div className="lg:col-span-2 space-y-4">
+					<div className="flex items-center justify-between px-2">
+						<h3 className="text-xl font-bold text-gray-900">Active Jobs</h3>
+						<button className="text-blue-600 text-sm font-bold hover:underline flex items-center gap-1">View all <ChevronRight size={14} /></button>
+					</div>
+
+					<div className="space-y-4">
+						{mock.activeJobsList.map(job => (
+							<div key={job.id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition-all hover:border-blue-100 hover:shadow-md">
+								<div className="flex justify-between items-start mb-4">
+									<div className="space-y-1">
+										<h4 className="text-lg font-bold text-gray-900">{job.title}</h4>
+										<p className="text-gray-500 text-sm leading-relaxed">{job.excerpt}</p>
 									</div>
-									<div style={{ height: 8, background: '#eef2ff', borderRadius: 999, marginTop: 12, overflow: 'hidden' }}>
-										<div style={{ width: `${(mock.stats.rating / 5) * 100}%`, height: '100%', background: '#f59e0b' }} />
+									<span className={`px-4 py-1.5 rounded-full text-xs font-bold ${job.status === 'In Progress' ? 'bg-blue-50 text-blue-600' : 'bg-green-50 text-green-600'
+										}`}>
+										{job.status}
+									</span>
+								</div>
+								<div className="flex flex-wrap items-center justify-between pt-4 border-t border-gray-50 gap-4 mt-2">
+									<div className="flex items-center gap-4 text-xs font-bold text-gray-400">
+										<span className="flex items-center gap-1.5"><MapPin size={14} /> {job.location}</span>
+										<span className="flex items-center gap-1.5"><Calendar size={14} /> {job.time}</span>
 									</div>
+									<span className="text-blue-600 font-extrabold text-lg">{job.price}</span>
 								</div>
 							</div>
+						))}
+					</div>
+				</div>
+
+				{/* Reputation / Rating Sidebar */}
+				<div className="space-y-4">
+					<div className="px-2">
+						<h3 className="text-xl font-bold text-gray-900">Reputation</h3>
+					</div>
+
+					<div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm text-center flex flex-col items-center">
+						<div className="relative mb-6">
+							<div className="w-24 h-24 rounded-full border-4 border-blue-50 flex items-center justify-center relative">
+								<span className="text-3xl font-black text-blue-600">{mock.stats.rating}</span>
+								<div className="absolute inset-0 border-t-4 border-blue-600 rounded-full rotate-45"></div>
+							</div>
+						</div>
+
+						<div className="flex gap-1.5 mb-8">
+							{[1, 2, 3, 4, 5].map(i => (
+								<Star key={i} size={22} className={i <= Math.floor(mock.stats.rating) ? "fill-amber-400 text-amber-400" : "fill-gray-100 text-gray-200"} />
+							))}
+						</div>
+
+						<div className="w-full space-y-3">
+							{[5, 4, 3, 2, 1].map((rating, idx) => (
+								<div key={rating} className="flex items-center gap-3 w-full">
+									<span className="text-sm font-bold text-gray-500 w-4">{rating}</span>
+									<div className="flex-1 bg-gray-50 h-2 rounded-full overflow-hidden">
+										<div
+											className="h-full bg-amber-400"
+											style={{ width: `${[85, 12, 5, 2, 0][idx]}%` }}
+										></div>
+									</div>
+								</div>
+							))}
 						</div>
 					</div>
 				</div>
 			</div>
+
+			{/* 4. Upcoming Jobs */}
+			<div className="space-y-6">
+				<div className="flex items-center justify-between px-2">
+					<h3 className="text-xl font-bold text-gray-900">Upcoming Jobs</h3>
+					<div className="flex gap-4 text-sm font-bold text-gray-500">
+						<button className="text-blue-600 border-b-2 border-blue-600 pb-1">This Week</button>
+						<button>Next Week</button>
+						<button>This Month</button>
+					</div>
+				</div>
+
+				<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+					{mock.upcoming.map(item => (
+						<div key={item.id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all">
+							<div className="flex justify-between items-center mb-4">
+								<span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-xs font-black uppercase tracking-wider">{item.day}</span>
+								<span className="text-sm font-bold text-gray-400">{item.date}</span>
+							</div>
+							<h4 className="text-lg font-bold text-gray-900 mb-1">{item.title}</h4>
+							<p className="text-gray-500 text-sm mb-4">{item.excerpt}</p>
+							<div className="flex items-center gap-2 text-xs font-bold text-gray-400">
+								<Calendar size={14} />
+								{item.time}
+							</div>
+						</div>
+					))}
+				</div>
+			</div>
 		</div>
 	);
-}
+};
 
+export default WorkerDashboard;
