@@ -67,26 +67,28 @@ const TopUpModal = ({ onTopUp, onCancel, loading }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-4">
+      {/* Modal container—full width on mobile, capped on larger screens, scrollable */}
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden max-h-[95dvh] flex flex-col">
 
         {/* Modal header */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-5 text-white flex items-center justify-between">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-4 sm:p-5 text-white flex items-center justify-between flex-shrink-0">
           <div>
-            <h3 className="text-xl font-bold">Top Up Wallet</h3>
-            <p className="text-blue-200 text-sm">Add funds to your employer wallet</p>
+            <h3 className="text-lg sm:text-xl font-bold">Top Up Wallet</h3>
+            <p className="text-blue-200 text-xs sm:text-sm">Add funds to your employer wallet</p>
           </div>
           {/* Close button */}
           <button onClick={onCancel} disabled={loading}
-            className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-lg flex items-center justify-center">
+            className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-lg flex items-center justify-center flex-shrink-0">
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="flex min-h-[420px]">
+        {/* Body—stacks vertically on mobile, side-by-side on md+ */}
+        <div className="flex flex-col md:flex-row overflow-y-auto flex-1">
 
-          {/* Left panel — amount and method */}
-          <div className="w-[44%] border-r border-gray-100 p-5 flex flex-col gap-5">
+          {/* Left panel—amount and method */}
+          <div className="w-full md:w-[44%] md:border-r border-b md:border-b-0 border-gray-100 p-4 sm:p-5 flex flex-col gap-4 sm:gap-5">
 
             {/* Quick select preset amounts */}
             <div>
@@ -118,24 +120,25 @@ const TopUpModal = ({ onTopUp, onCancel, loading }) => {
             {/* Payment method selector — bank or card */}
             <div>
               <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Payment Method</p>
-              <div className="space-y-2">
+              
+              <div className="grid grid-cols-2 md:grid-cols-1 gap-2">
                 {[
                   { id: 'bank', label: 'Bank Transfer',       icon: Building2,  desc: 'Direct from your bank' },
                   { id: 'card', label: 'Debit / Credit Card', icon: CreditCard, desc: 'Visa, Mastercard'       },
                 ].map(({ id, label, icon: Icon, desc }) => (
                   <button key={id} onClick={() => setMethod(id)}
-                    className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left ${
+                    className={`w-full flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-xl border-2 transition-all text-left ${
                       method === id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
                     }`}>
-                    <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${method === id ? 'bg-blue-100' : 'bg-gray-100'}`}>
-                      <Icon className={`w-5 h-5 ${method === id ? 'text-blue-600' : 'text-gray-500'}`} />
+                    <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${method === id ? 'bg-blue-100' : 'bg-gray-100'}`}>
+                      <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${method === id ? 'text-blue-600' : 'text-gray-500'}`} />
                     </div>
-                    <div className="flex-1">
-                      <p className={`text-sm font-semibold ${method === id ? 'text-blue-700' : 'text-gray-700'}`}>{label}</p>
-                      <p className="text-xs text-gray-400">{desc}</p>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-xs sm:text-sm font-semibold truncate ${method === id ? 'text-blue-700' : 'text-gray-700'}`}>{label}</p>
+                      <p className="text-xs text-gray-400 truncate">{desc}</p>
                     </div>
                     {/* Checkmark for selected method */}
-                    {method === id && <CheckCircle className="w-4 h-4 text-blue-500" />}
+                    {method === id && <CheckCircle className="w-4 h-4 text-blue-500 flex-shrink-0" />}
                   </button>
                 ))}
               </div>
@@ -143,7 +146,7 @@ const TopUpModal = ({ onTopUp, onCancel, loading }) => {
           </div>
 
           {/* Right panel — bank details or card form */}
-          <div className="flex-1 p-5 flex flex-col gap-4">
+          <div className="flex-1 p-4 sm:p-5 flex flex-col gap-4">
 
             {/* Bank transfer panel */}
             {method === 'bank' && (
@@ -152,16 +155,16 @@ const TopUpModal = ({ onTopUp, onCancel, loading }) => {
 
                   {/* Bank details header */}
                   <div className="flex items-center gap-2 pb-3 border-b border-gray-200">
-                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
                       <Building2 className="w-4 h-4 text-blue-600" />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-sm font-bold text-gray-800">Bank Transfer Details</p>
                       <p className="text-xs text-gray-400">Transfer to complete top-up</p>
                     </div>
                     {/* Show entered amount if valid */}
                     {amount && Number(amount) >= 500 && (
-                      <span className="ml-auto text-sm font-bold text-blue-600 bg-blue-50 border border-blue-200 px-3 py-1 rounded-lg">
+                      <span className="ml-auto text-xs sm:text-sm font-bold text-blue-600 bg-blue-50 border border-blue-200 px-2 sm:px-3 py-1 rounded-lg whitespace-nowrap">
                         LKR {Number(amount).toLocaleString()}
                       </span>
                     )}
@@ -169,14 +172,14 @@ const TopUpModal = ({ onTopUp, onCancel, loading }) => {
 
                   {/* Each bank detail row with copy button */}
                   {BANK_DETAILS.map(({ label, value }) => (
-                    <div key={label} className="flex items-center justify-between">
-                      <div>
+                    <div key={label} className="flex items-center justify-between gap-2">
+                      <div className="min-w-0 flex-1">
                         <p className="text-xs text-gray-400">{label}</p>
-                        <p className="text-sm font-bold text-gray-800">{value}</p>
+                        <p className="text-sm font-bold text-gray-800 break-all">{value}</p>
                       </div>
                       {/* Copy to clipboard button */}
                       <button onClick={() => copy(value, label)}
-                        className="flex items-center gap-1 px-2.5 py-1 bg-white border border-gray-200 rounded-lg text-xs font-semibold text-gray-500 hover:border-blue-400 hover:text-blue-600 transition-all">
+                        className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1 bg-white border border-gray-200 rounded-lg text-xs font-semibold text-gray-500 hover:border-blue-400 hover:text-blue-600 transition-all">
                         <Copy className="w-3 h-3" />
                         {copied === label ? '✓' : 'Copy'}
                       </button>
@@ -256,7 +259,7 @@ const TopUpModal = ({ onTopUp, onCancel, loading }) => {
                 {/* SSL security note */}
                 <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-100 rounded-xl mt-auto">
                   <Lock className="w-4 h-4 text-green-600 flex-shrink-0" />
-                  <p className="text-xs text-green-700 font-medium">256-bit SSL secured— no real charge.</p>
+                  <p className="text-xs text-green-700 font-medium">256-bit SSL secured — no real charge.</p>
                 </div>
 
                 {/* Cancel and pay buttons */}
