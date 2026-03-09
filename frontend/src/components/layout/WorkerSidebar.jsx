@@ -24,6 +24,7 @@ const workerMenuItems = [
     { path: '/worker/dashboard', icon: Grid, labelKey: 'nav.dashboard', fallback: 'Dashboard' },
     { path: '/Jobs', icon: Briefcase, labelKey: 'nav.findJobs', fallback: 'Job Listings' },
     { path: '/Profile', icon: User, labelKey: 'nav.profile', fallback: 'Profile' },
+    { path: '/Documents', icon: FolderOpen, labelKey: 'nav.documents', fallback: 'Documents' },
     { path: '/Learning', icon: Award, labelKey: 'nav.learning', fallback: 'Learning & Skills' },
     { path: '/worker/wallet', icon: Wallet, labelKey: 'nav.wallet', fallback: 'Wallet' },
     { path: '/Support', icon: HelpCircle, labelKey: 'nav.support', fallback: 'Support' },
