@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { Search, X, MessageCircle, Ticket, Clock } from 'lucide-react';
 
-import MockSidebar from '../../mocks/MockSidebar';
-import MockFooter  from '../../mocks/MockFooter';
 import FAQList     from '../../components/support/FAQList';
 import TicketForm  from '../../components/support/TicketForm';
 import SupportChat from '../../components/support/SupportChat';
@@ -22,7 +20,6 @@ const HelpSupport = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <MockSidebar />
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <main className="flex-1">
@@ -162,7 +159,6 @@ const HelpSupport = () => {
           </div>
         </main>
 
-        <MockFooter />
       </div>
 
       {/* Floating chat widget */}

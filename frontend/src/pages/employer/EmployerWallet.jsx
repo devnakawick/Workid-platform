@@ -2,9 +2,6 @@ import { useState, useEffect } from 'react';
 import { Wallet } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
-import MockSidebar from '../../mocks/MockSidebar';
-import MockFooter  from '../../mocks/MockFooter';
-
 import WalletCard       from '../../components/wallet/WalletCard';
 import EarningsChart    from '../../components/wallet/Earningschart';
 import TransactionList  from '../../components/wallet/TransactionList';
@@ -100,10 +97,7 @@ const EmployerWallet = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {/* Sidebar — hidden on mobile, shown on lg+ */}
-      <div className="hidden lg:block">
-        <MockSidebar />
-      </div>
+
 
       {/* Main content — always full width on mobile */}
       <div className="flex-1 flex flex-col min-h-screen min-w-0">
@@ -147,8 +141,6 @@ const EmployerWallet = () => {
             )}
           </div>
         </main>
-
-        <MockFooter />
       </div>
 
       {/* Top Up Modal */}

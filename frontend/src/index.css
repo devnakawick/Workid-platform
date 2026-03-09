@@ -1,12 +1,11 @@
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
 @media (min-width:1280px) {
   .main-content-with-sidebar {
     margin-left: 260px;
   }
 }
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 @layer base {
   :root {

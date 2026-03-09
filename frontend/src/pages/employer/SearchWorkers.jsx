@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react';
 import { Users, Star, CheckCircle2, UserSearch, UserCheck } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
-import MockSidebar        from '../../mocks/MockSidebar';
-import MockFooter         from '../../mocks/MockFooter';
 import WorkerCard         from '../../components/employer/WorkerCard';
 import WorkerFilters      from '../../components/employer/WorkerFilters';
 import WorkerProfileModal from '../../components/employer/WorkerProfileModal';
@@ -103,7 +101,6 @@ const SearchWorkers = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <MockSidebar />
 
       <div className="flex-1 flex flex-col">
         <main className="flex-1 p-4 md:p-8">
@@ -191,8 +188,6 @@ const SearchWorkers = () => {
 
           </div>
         </main>
-
-        <MockFooter />
       </div>
 
       {/* Worker profile modal — opens when a card is clicked */}

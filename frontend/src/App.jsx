@@ -50,11 +50,7 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       {/* Original routes */}
-      <Route path="/" element={
-        <Layout currentPageName="Jobs">
-          <Jobs />
-        </Layout>
-      } />
+      <Route path="/" element={<LandingPage />} />
       <Route path="/Applications" element={
         <Layout currentPageName="Applications">
           <Applications />

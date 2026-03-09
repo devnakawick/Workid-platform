@@ -4,8 +4,6 @@ import { Briefcase, ArrowLeft } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import { getJobByIdAPI, updateJobAPI } from '../../mocks/jobData';
 import JobForm from '../../components/employer/JobForm';
-import MockSidebar from '../../mocks/MockSidebar';
-import MockFooter from '../../mocks/MockFooter';
 
 const EditJob = () => {
   const navigate = useNavigate();
@@ -64,7 +62,6 @@ const EditJob = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <MockSidebar />
 
       <div className="flex-1 flex flex-col">
         <Toaster
@@ -119,8 +116,6 @@ const EditJob = () => {
 
           </div>
         </main>
-
-        <MockFooter />
       </div>
     </div>
   );

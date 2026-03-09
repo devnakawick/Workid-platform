@@ -1,68 +1,131 @@
-import { Twitter, Facebook, Instagram, Github } from 'lucide-react';
-import './footer.css';
+import { Heart, Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import LanguageSwitcher from '../common/LanguageSwitcher';
-import logo from '@/images/logo.jpeg';
 
 const Footer = () => {
-    const { t } = useTranslation();
-
-    return (
-        <footer className="site-footer">
-            <div className="site-footer-grid">
-                <div className="site-footer-brand">
-                    <div className="brand-wrap">
-                        <img src={logo} alt="WorkID" className="brand-logo" />
-                        <span className="brand-name">WorkID</span>
-                    </div>
-                    <p className="brand-tagline">
-                        {t('footer.tagline', 'Connecting talent with opportunity through a secure and efficient platform. Your identity, your career, your WorkID.')}
-                    </p>
-                </div>
-
-                <div className="site-footer-col">
-                    <h3>{t('footer.platform', 'Platform')}</h3>
-                    <ul>
-                        <li><Link to="/Jobs">{t('nav.findJobs', 'Find Jobs')}</Link></li>
-                        <li><Link to="/Applications">{t('nav.applications', 'My Applications')}</Link></li>
-                        <li><Link to="/Documents">{t('nav.documents', 'Documents')}</Link></li>
-                        <li><Link to="/Learning">{t('nav.learning', 'Learning')}</Link></li>
-                    </ul>
-                </div>
-
-                <div className="site-footer-col">
-                    <h3>{t('footer.support', 'Support')}</h3>
-                    <ul>
-                        <li><Link to="/Settings">{t('nav.settings', 'Settings')}</Link></li>
-                        <li><Link to="/Badges">{t('nav.badges', 'Badges')}</Link></li>
-                        <li><a href="#">{t('footer.helpCenter', 'Help Center')}</a></li>
-                        <li><a href="#">{t('footer.privacyPolicy', 'Privacy Policy')}</a></li>
-                    </ul>
-                </div>
-
-                <div className="site-footer-col">
-                    <h3>{t('footer.connect', 'Connect')}</h3>
-                    <div className="site-footer-socials">
-                        <a href="#"><Twitter size={20} /></a>
-                        <a href="#"><Facebook size={20} /></a>
-                        <a href="#"><Instagram size={20} /></a>
-                        <a href="#"><Github size={20} /></a>
-                    </div>
-                </div>
+  const currentYear = new Date().getFullYear();
+  
+  return (
+    <footer className="bg-gray-900 text-gray-300 mt-auto">
+      
+      {/* Main Footer Content */}
+      <div className="max-w-7xl mx-auto pl-16 pr-4 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          
+          {/* Column 1: About */}
+          <div>
+            <h3 className="text-2xl font-bold text-white mb-4 bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
+              WorkID
+            </h3>
+            <p className="text-sm text-gray-400 mb-4 leading-relaxed">
+              Connecting skilled workers with opportunities across Sri Lanka. Building futures, one job at a time.
+            </p>
+            <div className="flex gap-3">
+              <a 
+                href="#" 
+                className="w-10 h-10 bg-gray-800 hover:bg-blue-600 rounded-lg flex items-center justify-center transition-all hover:scale-110 hover:shadow-lg"
+                aria-label="Facebook"
+              >
+                <Facebook className="w-5 h-5" />
+              </a>
+              <a 
+                href="#" 
+                className="w-10 h-10 bg-gray-800 hover:bg-blue-400 rounded-lg flex items-center justify-center transition-all hover:scale-110 hover:shadow-lg"
+                aria-label="Twitter"
+              >
+                <Twitter className="w-5 h-5" />
+              </a>
+              <a 
+                href="#" 
+                className="w-10 h-10 bg-gray-800 hover:bg-blue-700 rounded-lg flex items-center justify-center transition-all hover:scale-110 hover:shadow-lg"
+                aria-label="LinkedIn"
+              >
+                <Linkedin className="w-5 h-5" />
+              </a>
+              <a 
+                href="#" 
+                className="w-10 h-10 bg-gray-800 hover:bg-pink-600 rounded-lg flex items-center justify-center transition-all hover:scale-110 hover:shadow-lg"
+                aria-label="Instagram"
+              >
+                <Instagram className="w-5 h-5" />
+              </a>
             </div>
-            <div className="site-footer-bottom">
-                <div className="bottom-left">
-                    <p>© {new Date().getFullYear()} WorkID Platform. {t('footer.allRightsReserved', 'All rights reserved.')}</p>
-                    <LanguageSwitcher />
-                </div>
-                <div className="bottom-right">
-                    <span>Powered by DeepMind</span>
-                </div>
-            </div>
-        </footer>
-    );
+          </div>
+          
+          {/* Column 2: Quick Links */}
+          <div>
+            <h4 className="text-white font-semibold mb-4 text-lg">Quick Links</h4>
+            <ul className="space-y-2.5">
+              {['About Us', 'Browse Jobs', 'Find Workers', 'How It Works', 'Pricing'].map((item) => (
+                <li key={item}>
+                  <Link 
+                    to={`/${item.toLowerCase().replace(/\s+/g, '-')}`} 
+                    className="text-sm text-gray-400 hover:text-white hover:pl-2 transition-all flex items-center group"
+                  >
+                    <span className="w-0 group-hover:w-2 h-px bg-blue-500 mr-0 group-hover:mr-2 transition-all"></span>
+                    {item}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          
+          {/* Column 3: Support */}
+          <div>
+            <h4 className="text-white font-semibold mb-4 text-lg">Support</h4>
+            <ul className="space-y-2.5">
+              {['Help Center', 'FAQ', 'Terms of Service', 'Privacy Policy', 'Contact Us'].map((item) => (
+                <li key={item}>
+                  <Link 
+                    to={`/${item.toLowerCase().replace(/\s+/g, '-')}`} 
+                    className="text-sm text-gray-400 hover:text-white hover:pl-2 transition-all flex items-center group"
+                  >
+                    <span className="w-0 group-hover:w-2 h-px bg-blue-500 mr-0 group-hover:mr-2 transition-all"></span>
+                    {item}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          
+          {/* Column 4: Contact */}
+          <div>
+            <h4 className="text-white font-semibold mb-4 text-lg">Contact Info</h4>
+            <ul className="space-y-4">
+              <li className="flex items-start gap-3 group">
+                <MapPin className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                <span className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">
+                  123 Main Street
+                </span>
+              </li>
+              <li className="flex items-center gap-3 group">
+                <Phone className="w-5 h-5 text-green-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                <a href="tel:+94112345678" className="text-sm text-gray-400 hover:text-white transition-colors">
+                  +94 11 234 5678
+                </a>
+              </li>
+              <li className="flex items-center gap-3 group">
+                <Mail className="w-5 h-5 text-red-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                <a href="mailto:support@workid.lk" className="text-sm text-gray-400 hover:text-white transition-colors">
+                  support@workid.lk
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      {/* Bottom Bar */}
+      <div className="border-t border-gray-800">
+        <div className="max-w-7xl mx-auto pl-8 pr-4 py-4">
+          <div className="flex items-center pl-8">
+            <p className="text-sm text-gray-400">
+              © {currentYear} WorkID. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
 };
-
 
 export default Footer;

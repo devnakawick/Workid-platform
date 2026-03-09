@@ -4,8 +4,6 @@ import { Briefcase, Plus, Clock, HourglassIcon, CheckCircle2 } from 'lucide-reac
 import toast, { Toaster } from 'react-hot-toast';
 import { getAllJobsAPI, deleteJobAPI }  from '../../mocks/jobData';
 import { getAllApplicationsAPI }   from '../../mocks/applicationData';
-import MockSidebar from '../../mocks/MockSidebar';
-import MockFooter from '../../mocks/MockFooter';
 import JobCard from '../../components/employer/ManageJobCard';
 import JobFilters from '../../components/employer/ManageJobFilters';
 import DeleteConfirmModal from '../../components/employer/DeleteConfirmModal';
@@ -119,7 +117,6 @@ const ManageJobs = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <MockSidebar />
       <div className="flex-1 flex flex-col">
         <main className="flex-1 p-4 md:p-8">
           <Toaster position="top-right" />
@@ -203,7 +200,6 @@ const ManageJobs = () => {
 
           </div>
         </main>
-        <MockFooter />
       </div>
 
       {/* Delete confirmation modal */}

@@ -5,8 +5,6 @@ import { MOCK_APPLICATIONS, MOCK_JOBS } from '../../mocks/applicationData';
 import ApplicationFilters from '../../components/employer/ApplicationFilters';
 import ApplicationInbox   from '../../components/employer/ApplicantsList';
 import ApplicationDetail  from '../../components/employer/ApplicantsDetail';
-import MockSidebar from '../../mocks/MockSidebar';
-import MockFooter  from '../../mocks/MockFooter';
 
 const ReviewApplications = () => {
   const [searchParams] = useSearchParams();
@@ -78,7 +76,6 @@ const ReviewApplications = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <MockSidebar />
 
       <div className="flex-1 flex flex-col min-w-0">
         <main className="flex-1 p-4 md:p-8 flex flex-col">
@@ -150,7 +147,6 @@ const ReviewApplications = () => {
 
           </div>
         </main>
-        <MockFooter />
       </div>
     </div>
   );

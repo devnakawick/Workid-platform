@@ -57,7 +57,9 @@ export default function Layout({ children, currentPageName }) {
             </div>
 
             {/* Footer */}
-            <Footer />
+            <div className="main-content-with-sidebar">
+                <Footer />
+            </div>
         </div>
     );
 }
