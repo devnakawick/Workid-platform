@@ -57,7 +57,7 @@ class QueryParser:
             'budget': self._extract_budget(cleaned),
             'budget_preference': self._extract_budget_preference(cleaned),
             'urgency': self._extract_urgency(cleaned),
-            'keywords': self.extract_keywords(cleaned),
+            'keywords': self._extract_keywords(cleaned),
             'original_query': query
         }
 
@@ -120,8 +120,8 @@ class QueryParser:
         text_lower = text.lower()
 
         for district in self.districts:
-            if district.lower() in text_lower:
-                return district
+            if district in text_lower:
+                return district.capitalize()
             
         return None
     

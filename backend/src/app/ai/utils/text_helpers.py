@@ -19,7 +19,7 @@ def clean_text(text: str) -> str:
     # Convert to lowercase
     text = text.lower()
 
-    # Remoce extra whitespace
+    # Remove extra whitespace
     text = re.sub(r'[^\w\s]', '', text, flags=re.UNICODE)   # remove punctuation
     text = re.sub(r'\s+', ' ', text)    # normalize all whitespace to single space
 
