@@ -20,6 +20,14 @@ from app.schemas.application import (
     ApplicationResponse,
     ApplicationListResponse
 )
+from app.schemas.ai import (
+    NLPSearchRequest,
+    NLPSearchResponse,
+    NLPSearchExecuteResponse,
+    ParsedQuery,
+    APIParameters,
+    SearchSuggestions
+)
 
 __all__ = [
     # Worker
@@ -29,16 +37,23 @@ __all__ = [
     "WorkerAvailabilityUpdate",
     "DocumentUploadResponse",
     "WorkerStatsResponse",
-    "WorkerSearchResponse"
+    "WorkerSearchResponse",
     # Job
     "JobCreate", 
     "JobUpdate",
     "JobStatusUpdate",
     "JobResponse",
     "JobListResponse",
-    "JobSearchResponse"
+    "JobSearchResponse",
     # Application
     "ApplicationCreate",
     "ApplicationResponse",
-    "ApplicationListResponse"
+    "ApplicationListResponse",
+    # AI
+    "NLSearchRequest",
+    "NLSearchResponse",
+    "NLSearchExecuteResponse",
+    "ParsedQuery",
+    "APIParameters",
+    "SearchSuggestions"
 ]

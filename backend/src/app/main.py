@@ -10,6 +10,7 @@ from app.config import settings
 from app.database import create_tables
 from app.routes import auth, dashboard
 from app.routes import worker, jobs, employer
+from app.routes import ai
 
 # Configure logging
 logging.basicConfig(
@@ -47,6 +48,9 @@ app.include_router(dashboard.routes, prefix="/api/dashboard", tags=["Dashboard"]
 app.include_router(worker.router)
 app.include_router(jobs.router)
 app.include_router(employer.router)
+
+# AI routers
+app.include_router(ai.router)
 
 
 # Member 3: Include payment, messaging, admin routers here
