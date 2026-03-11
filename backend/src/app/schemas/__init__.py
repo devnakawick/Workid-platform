@@ -30,7 +30,10 @@ from app.schemas.ai import (
     SkillExtractionRequest,
     SkillExtractionResponse,
     CategoryValidationRequest,
-    CategoryValidationResponse
+    CategoryValidationResponse,
+    SpamCheckRequest,
+    SpamCheckResponse,
+    FraudCheckResponse
 )
 
 __all__ = [
@@ -63,5 +66,8 @@ __all__ = [
     "SkillExtractionRequest",
     "SkillExtractionResponse",
     "CategoryValidationRequest",
-    "CategoryValidationResponse"
+    "CategoryValidationResponse",
+    "SpamCheckRequest",
+    "SpamCheckResponse",
+    "FraudCheckResponse"
 ]

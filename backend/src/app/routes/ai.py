@@ -14,8 +14,13 @@ from app.schemas.ai import (
     SkillExtractionRequest,
     SkillExtractionResponse,
     CategoryValidationRequest,
-    CategoryValidationResponse
+    CategoryValidationResponse,
+    SpamCheckRequest,
+    SpamCheckResponse,
+    FraudCheckResponse
 )
+from app.models.user import User
+from app.utils.dependencies import get_current_user
 from app.services.ai_service import AIService
 from app.services.job_service import JobService
 
@@ -155,4 +160,64 @@ async def suggest_category(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to suggest category: {str(e)}"
+        )
+    
+@router.post("/spam/check", response_model=SpamCheckResponse)
+async def check_spam(
+    request: SpamCheckRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Check if job posting is spam/fake
+    """
+    try:
+        result = ai_service.check_spam(
+            job_title=request.job_title,
+            job_description=request.job_description,
+            budget=request.budget
+        )
+        return SpamCheckResponse(**result)
+    
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Spam check failed: {str(e)}"
+        )
+    
+@router.get("/fraud/check-employer/{employer_id}", response_model=FraudCheckResponse)
+async def check_employer_fraud(
+    employer_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Check employer account for fraudulent behavior
+    """
+    try:
+        result = ai_service.check_employer_fraud(db, employer_id)
+        return FraudCheckResponse(**result)
+    
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Fraud check failed: {str(e)}"
+        )
+    
+@router.get("/fraud/check-worker/{worker_id}", response_model=FraudCheckResponse)
+async def check_worker_fraud(
+    worker_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Check worker account for fraudulent behavior
+    """
+    try:
+        result = ai_service.check_worker_fraud(db, worker_id)
+        return FraudCheckResponse(**result)
+    
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Fraud check failed: {str(e)}"
         )

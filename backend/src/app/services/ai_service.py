@@ -5,6 +5,8 @@ AI Service Layer
 from typing import Dict, Any
 from app.ai.nlp.query_parser import QueryParser, convert_to_api
 from app.ai.nlp.skill_tagger import SkillTagger
+from app.ai.safety.spam_detector import SpamDetector
+from app.ai.safety.fraud_detection import FraudDetector
 from app.ai.config import SRI_LANKAN_CITIES
 
 class AIService:
@@ -16,6 +18,8 @@ class AIService:
         """Initialize AI service with parser"""
         self.query_parser = QueryParser()
         self.skill_tagger = SkillTagger()
+        self.spam_detector = SpamDetector()
+        self.fraud_detector = FraudDetector()
 
     def parse_search_query(
         self, 
@@ -72,3 +76,34 @@ class AIService:
         Quick category suggestion
         """
         return self.skill_tagger.suggest_category(text)
+    
+    def check_spam(
+        self,
+        job_title: str,
+        job_description: str,
+        budget: float = None
+    ) -> Dict[str, Any]:
+        """
+        Check if job posting is spam
+        """
+        return self.spam_detector.detect(job_title, job_description, budget)
+    
+    def check_employer_fraud(
+        self,
+        db,
+        employer_id: int
+    ) -> Dict[str, Any]:
+        """
+        Check employer for fraudulent bahavior
+        """
+        return self.fraud_detector.check_employer_behavior(db, employer_id)
+    
+    def check_worker_fraud(
+        self,
+        db,
+        worker_id: int
+    ) -> Dict[str, Any]:
+        """
+        Check worker for fraudulent behavior
+        """
+        return self.fraud_detector.check_worker_behavior(db, worker_id)

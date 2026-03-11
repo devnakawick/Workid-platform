@@ -197,3 +197,62 @@ class CategoryValidationResponse(BaseModel):
                 "suggestion": None
             }
         }
+
+# ======= Spam & Fraud Detection =======
+
+class SpamCheckRequest(BaseModel):
+    """Request for spam detection"""
+    job_title: str = Field(..., min_length=3, max_length=200)
+    job_description: str = Field(..., min_length=10, max_length=5000)
+    budget: Optional[float] = Field(None, description="Job budget")
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "job_title": "Plumber needed",
+                "job_description": "Need plumber to fix kitchen sink",
+                "budget": 3000
+            }
+        }
+
+class SpamCheckResponse(BaseModel):
+    """Response for spam detection"""
+    is_spam: bool
+    spam_score: float = Field(..., ge=0.0, le=1.0)
+    confidence: str     # high, medium, low
+    reasons: List[str]
+    recommendation: str
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "is_spam": False,
+                "spam_score": 0.15,
+                "confidence": "low",
+                "reasons": [],
+                "recommendation": "Job appears legitimate"
+            }
+        }
+
+class FraudCheckResponse(BaseModel):
+    """Response for fraud detection"""
+    is_suspicious: bool
+    fraud_score: float = Field(..., ge=0.0, le=1.0)
+    flags: List[str]
+    details: Dict[str, Any]
+    recommendation: str
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "is_suspicious": False,
+                "fraud_score": 0.25,
+                "flags": [],
+                "details": {
+                    "recent_jobs_24h": 2,
+                    "total_jobs": 5,
+                    "account_age_days": 30
+                },
+                "recommendation": "Account behavior appears normal"
+            }
+        }
