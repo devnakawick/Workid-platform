@@ -82,7 +82,9 @@ SKILL_KEYWORDS = {
 SPAM_KEYWORDS = [
     "earn money fast", "work from home guaranteed", "no experience needed", 
     "earn lakhs", "deposit required", "pay first", "register now", 
-    "limited offer", "act now", "guaranteed income", "mlm", "pyramid" 
+    "limited offer", "act now", "guaranteed income", "mlm", "pyramid",
+    "earn money daily", "earn daily", "great opportunity", "start earning",
+    "no skills required", "easy money", "work from home"
 ]
 
 # Minimum job description length 
