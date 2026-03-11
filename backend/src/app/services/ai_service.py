@@ -4,6 +4,7 @@ AI Service Layer
 
 from typing import Dict, Any
 from app.ai.nlp.query_parser import QueryParser, convert_to_api
+from app.ai.nlp.skill_tagger import SkillTagger
 from app.ai.config import SRI_LANKAN_CITIES
 
 class AIService:
@@ -14,6 +15,7 @@ class AIService:
     def __init__(self):
         """Initialize AI service with parser"""
         self.query_parser = QueryParser()
+        self.skill_tagger = SkillTagger()
 
     def parse_search_query(
         self, 
@@ -48,3 +50,25 @@ class AIService:
             return SRI_LANKAN_CITIES[city]
         
         return {"district": None, "province": None}
+
+    def extract_skills(self, text: str) -> Dict[str, Any]:
+        """
+        Extract skills from job description
+        """
+        return self.skill_tagger.extract(text)
+    
+    def validate_job_category(
+        self,
+        text: str,
+        claimed_category: str
+    ) -> Dict[str, Any]:
+        """
+        Validate if job category matches description
+        """
+        return self.skill_tagger.validate_category(text, claimed_category)
+
+    def suggest_job_category(self, text: str) -> str:
+        """
+        Quick category suggestion
+        """
+        return self.skill_tagger.suggest_category(text)

@@ -10,7 +10,11 @@ from app.database import get_db
 from app.schemas.ai import (
     NLPSearchRequest,
     NLPSearchResponse,
-    NLPSearchExecuteResponse
+    NLPSearchExecuteResponse,
+    SkillExtractionRequest,
+    SkillExtractionResponse,
+    CategoryValidationRequest,
+    CategoryValidationResponse
 )
 from app.services.ai_service import AIService
 from app.services.job_service import JobService
@@ -91,4 +95,64 @@ async def execute_nl_search(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Search failed: {str(e)}"
+        )
+    
+@router.post("/skills/extract", response_model=SkillExtractionResponse)
+async def extract_skills(
+    request: SkillExtractionRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Extract skills from job description
+    """
+    try:
+        result = ai_service.extract_skills(request.text)
+        return SkillExtractionResponse(**result)
+    
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to extract skills: {str(e)}"
+        )
+    
+@router.post("/category/validate", response_model=CategoryValidationResponse)
+async def validate_category(
+    request: CategoryValidationRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Validate if job catefory matches description
+    """
+    try:
+        result = ai_service.validate_job_category(
+            text=request.text,
+            claimed_category=request.claimed_category
+        )
+        return CategoryValidationResponse(**result)
+    
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to validate category: {str(e)}"
+        )
+    
+@router.get("/category/suggest")
+async def suggest_category(
+    text: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Quick category suggestion
+    """
+    try:
+        category = ai_service.suggest_job_category(text)
+        return {
+            "suggested_category": category,
+            "text_analyzed": text[:100]  # Show first 100 chars
+        }
+    
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to suggest category: {str(e)}"
         )

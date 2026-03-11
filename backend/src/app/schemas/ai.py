@@ -124,3 +124,76 @@ class NLPSearchExecuteResponse(BaseModel):
                 "jobs": []
         }
     }
+
+# ======= Skill Extraction =======
+
+class SkillExtractionRequest(BaseModel):
+    """Request schema for skill extraction"""
+    text: str = Field(
+        ...,
+        min_length=10,
+        max_length=5000,
+        description="Text to extract skills from  job description"
+    )
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "text": "Need plumber to fix kitchen sink and bathroom pipes. Should have drainage experience."
+            }
+        }
+
+class SkillExtractionResponse(BaseModel):
+    """
+    Response schema for skill extraction
+    """
+    category: Optional[str] = Field(None, description="Detected job category")
+    skills: List[str] = Field(default=[], description="List of skills found")
+    confidence: float = Field(default=0.0, description="Confidence score (0-1)")
+    all_matches: Dict[str, List[str]] = Field(default={}, description="All category matches found")
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "category": "plumbing",
+                "skills": ["pipe", "sink", "drainage"],
+                "confidence": 0.85,
+                "all_matches": {
+                    "plumbing": ["pipe", "sink", "drainage", "bathroom"]
+                }
+            }
+        }
+
+class CategoryValidationRequest(BaseModel):
+    """
+    Request schema for category validation
+    """
+    text: str = Field(..., min_length=10, description="Job description")
+    claimed_category: str = Field(..., description="Category employer selected")
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "text": "Need plumber to fix pipes",
+                "claimed_category": "plumbing"
+            }
+        }
+
+class CategoryValidationResponse(BaseModel):
+    """
+    Response schema for category validation
+    """
+    is_valid: bool = Field(..., description="Is the claimed category correct?")
+    detected_category: Optional[str] = Field(None, description="Category detected from text")
+    confidence: float = Field(default=0.0, description="Confidence in detection")
+    suggestion: Optional[str] = Field(None, description="Suggestion if category is wrong")
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "is_valid": True,
+                "detected_category": "plumbing",
+                "confidence": 0.85,
+                "suggestion": None
+            }
+        }

@@ -26,7 +26,11 @@ from app.schemas.ai import (
     NLPSearchExecuteResponse,
     ParsedQuery,
     APIParameters,
-    SearchSuggestions
+    SearchSuggestions,
+    SkillExtractionRequest,
+    SkillExtractionResponse,
+    CategoryValidationRequest,
+    CategoryValidationResponse
 )
 
 __all__ = [
@@ -55,5 +59,9 @@ __all__ = [
     "NLSearchExecuteResponse",
     "ParsedQuery",
     "APIParameters",
-    "SearchSuggestions"
+    "SearchSuggestions",
+    "SkillExtractionRequest",
+    "SkillExtractionResponse",
+    "CategoryValidationRequest",
+    "CategoryValidationResponse"
 ]
