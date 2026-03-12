@@ -7,11 +7,18 @@ from app.models.user import User
 from app.models.job import JobStatus
 from app.services.job_service import JobService
 from app.services.worker_service import WorkerService
+from app.services.employer_service import EmployerService
 from app.schemas.job import (
     JobCreate, 
     JobUpdate, 
     JobStatusUpdate, JobResponse,
     JobListResponse
+)
+from app.schemas.employer import (
+    EmployerProfileCreate,
+    EmployerProfileUpdate, 
+    EmployerProfileResponse,
+    EmployerStatsResponse
 )
 from app.schemas.application import ApplicationResponse
 from app.schemas.worker import WorkerSearchResponse
@@ -22,6 +29,85 @@ router = APIRouter(
     tags=["Employer"]
 )
 
+# ======= Employer Profile Endpoints =======
+
+@router.get("/profile", response_model=EmployerProfileResponse)
+async def get_employer_profile(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Get employer profile
+    """
+    employer = EmployerService.get_employer_by_user(db, current_user.id)
+    if not employer:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Employer profile not found. Please create your profile first."
+        )
+    
+    return employer
+
+@router.post("/profile", response_model=EmployerProfileResponse, status_code=status.HTTP_201_CREATED)
+async def create_employer_profile(
+    profile_data: EmployerProfileCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Create employer profile
+    """
+    employer = EmployerService.create_employer_profile(
+        db=db,
+        user_id=current_user.id,
+        profile_data=profile_data.model_dump()
+    )
+
+    return employer
+
+@router.put("/profile", response_model=EmployerProfileResponse)
+async def update_employer_profile(
+    profile_data: EmployerProfileUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Update employer profile
+    """
+    employer = EmployerService.get_employer_by_user(db, current_user.id)
+    if not employer:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Employer profile not found."
+        )
+
+    updated_employer = EmployerService.update_employer_profile(
+        db=db,
+        employer_id=employer.id,
+        update_data=profile_data.model_dump(exclude_unset=True)
+    )
+
+    return updated_employer
+
+@router.get("/stats", response_model=EmployerStatsResponse)
+async def get_employer_stats(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Get employer dashboard statistics
+    """
+    employer = EmployerService.get_employer_by_user(db, current_user.id)
+    if not employer:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Employer profile not found."
+        )
+    
+    stats = EmployerService.get_employer_stats(db, employer.id)
+    
+    return stats
+    
 # ======= Employer Job Management =======
 @router.post("/jobs", response_model=JobResponse, status_code=status.HTTP_201_CREATED)
 async def create_job(

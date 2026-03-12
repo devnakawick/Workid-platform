@@ -8,7 +8,7 @@ import logging
 from app.models.user import User, UserType
 from app.models.worker import Worker
 from app.models.employer import Employer
-#from app.models.wallet import Wallet
+from app.models.wallet import Wallet
 from app.schemas.auth import (
     SendOTPRequest, VerifyOTPRequest, 
     WorkerSignupRequest, EmployerSignupRequest
@@ -186,7 +186,14 @@ class AuthService:
                 email=request.email,
                 phone_number=user.phone_number,
                 city=request.city,
-                skills=request.skills or []
+                district=request.district,
+                nic_number=request.nic_number,
+                primary_skill=request.primary_skill,
+                other_skills=request.other_skills or [],
+                experience_years=request.experience_years,
+                daily_rate=request.daily_rate,
+                hourly_rate=request.hourly_rate,
+                bio=request.bio
             )
             self.db.add(worker)
             
@@ -242,11 +249,12 @@ class AuthService:
             # Create employer profile
             employer = Employer(
                 user_id=user.id,
-                contact_person=request.full_name,
-                company_name=request.company_name,
+                full_name=request.full_name,
                 email=request.email,
                 phone_number=user.phone_number,
-                city=request.city
+                city=request.city,
+                district=request.district,
+                address=request.address
             )
             self.db.add(employer)
             

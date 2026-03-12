@@ -1,12 +1,14 @@
-from pydantic import BaseModel, Field, validator, EmailStr
-from typing import Optional
+
+from pydantic import BaseModel, EmailStr, Field, field_validator
+from typing import List, Optional
 from datetime import datetime
 import re
 
 class SendOTPRequest(BaseModel):
     phone_number: str
 
-    @validator('phone_number')
+    @field_validator('phone_number')
+    @classmethod
     def validate_phone(cls, v):
         v = v.replace(' ', '').replace('-', '')
 
@@ -27,9 +29,10 @@ class SignupRequest(BaseModel):
     """Base signup request schema"""
     phone_number: str = Field(..., min_length=9, max_length=15)
     full_name: str = Field(..., min_length=2, max_length=100)
-    email: Optional[str] = None
+    email: Optional[EmailStr] = None
     
-    @validator('email')
+    @field_validator('email')
+    @classmethod
     def validate_email(cls, v):
         if v:
             pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
@@ -44,16 +47,24 @@ class WorkerSignupRequest(SignupRequest):
     phone_number: str
     password: str
     city: Optional[str] = None
-    skills: Optional[list[str]] = None
+    district: Optional[str] = None
+    nic_number: str = Field(..., min_length=10, max_length=12)
+    primary_skill: str = Field(..., description="Primary skill category")
+    other_skills: Optional[List[str]] = []
+    experience_years: Optional[int] = Field(0, ge=0)
+    daily_rate: Optional[float] = Field(None, ge=0)
+    hourly_rate: Optional[float] = Field(None, ge=0)
+    bio: Optional[str] = None
 
 class EmployerSignupRequest(SignupRequest):
     """Employer signup request"""
-    company_name: str
-    email: EmailStr
+    full_name: str
+    email: str
     phone_number: str
     password: str
-    company_name: Optional[str] = None
     city: Optional[str] = None
+    district: Optional[str] = None
+    address: Optional[str] = None
 
 class TokenResponse(BaseModel):
     """Token response schema"""

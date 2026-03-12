@@ -1,0 +1,248 @@
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from "@/components/ui/select";
+import { useAuth } from '@/lib/AuthContext';
+
+export default function Settings() {
+    const { user, updateUser } = useAuth();
+    const { t, i18n } = useTranslation();
+    const fileInputRef = React.useRef(null);
+    const [avatarPreview, setAvatarPreview] = useState(user?.avatar || null);
+
+    const [formData, setFormData] = useState({
+        full_name: user?.name || 'John Doe',
+        email: user?.email || 'john.doe@gmail.com',
+        phone: user?.phone || '077-1234567',
+        location: user?.location || 'Colombo 07',
+        role: user?.role || 'Plumber',
+        experience: user?.experience || '5 Years Experience',
+        notifications: {
+            jobAlerts: true,
+            appUpdates: true,
+            weeklySummary: true,
+        },
+        language: 'English (UK)'
+    });
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setAvatarPreview(reader.result);
+                toast.success('Photo uploaded! Click Save to confirm.');
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleSave = () => {
+        updateUser({
+            name: formData.full_name,
+            email: formData.email,
+            phone: formData.phone,
+            location: formData.location,
+            experience: formData.experience,
+            avatar: avatarPreview
+            // Note: 'role' is intentionally excluded — it's permanent and cannot be changed.
+        });
+        toast.success('Changes saved successfully! ✓');
+    };
+
+    return (
+        <div className="max-w-4xl mx-auto space-y-6 pb-20">
+            {/* 1. Account Section */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <div className="p-8">
+                    <div className="mb-8">
+                        <h2 className="text-2xl font-bold text-gray-900">Account</h2>
+                        <p className="text-gray-500 text-sm mt-1">Update your personal information and profile picture...</p>
+                    </div>
+
+                    <div className="flex items-center gap-6 mb-10">
+                        <div className="relative">
+                            <div className="w-24 h-24 rounded-full bg-orange-100 flex items-center justify-center overflow-hidden border-4 border-white shadow-sm">
+                                {avatarPreview ? (
+                                    <img src={avatarPreview} alt="Profile" className="w-full h-full object-cover" />
+                                ) : (
+                                    <img
+                                        src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${formData.full_name}&backgroundColor=ffadad`}
+                                        alt="Profile"
+                                        className="w-full h-full object-cover"
+                                    />
+                                )}
+                            </div>
+                        </div>
+                        <div className="flex gap-3">
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                className="hidden"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                            />
+                            <Button
+                                onClick={() => fileInputRef.current.click()}
+                                className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 rounded-xl"
+                            >
+                                Change Photo
+                            </Button>
+                            <Button
+                                variant="outline"
+                                onClick={() => setAvatarPreview(null)}
+                                className="bg-gray-50 border-gray-100 text-gray-600 font-bold px-6 rounded-xl hover:bg-gray-100"
+                            >
+                                Remove
+                            </Button>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                        <div className="space-y-2">
+                            <Label htmlFor="full-name" className="text-sm font-bold text-gray-700">Full Name</Label>
+                            <Input
+                                id="full-name"
+                                value={formData.full_name}
+                                onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+                                className="h-12 border-gray-100 bg-white rounded-lg focus:ring-blue-500"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="email" className="text-sm font-bold text-gray-700">Email Address</Label>
+                            <Input
+                                id="email"
+                                type="email"
+                                value={formData.email}
+                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                className="h-12 border-gray-100 bg-white rounded-lg focus:ring-blue-500"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="phone" className="text-sm font-bold text-gray-700">Phone Number</Label>
+                            <Input
+                                id="phone"
+                                value={formData.phone}
+                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                className="h-12 border-gray-100 bg-white rounded-lg focus:ring-blue-500"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="location" className="text-sm font-bold text-gray-700">Location</Label>
+                            <Input
+                                id="location"
+                                value={formData.location}
+                                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                                className="h-12 border-gray-100 bg-white rounded-lg focus:ring-blue-500"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="experience" className="text-sm font-bold text-gray-700">Experience</Label>
+                            <Input
+                                id="experience"
+                                value={formData.experience}
+                                onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
+                                className="h-12 border-gray-100 bg-white rounded-lg focus:ring-blue-500"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-blue-50/50 p-6 flex justify-end border-t border-gray-50/50">
+                    <Button
+                        onClick={handleSave}
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-10 py-6 text-lg rounded-xl shadow-lg shadow-blue-200"
+                    >
+                        Save Change
+                    </Button>
+                </div>
+            </div>
+
+            {/* 2. Notifications Section */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
+                <div className="mb-8">
+                    <h2 className="text-2xl font-bold text-gray-900">Notifications</h2>
+                    <p className="text-gray-500 text-sm mt-1">Manage how you receive notifications from us</p>
+                </div>
+
+                <div className="divide-y divide-gray-50">
+                    <div className="py-5 flex items-center justify-between">
+                        <div className="space-y-0.5">
+                            <p className="text-base font-bold text-gray-900">New Job Alerts</p>
+                            <p className="text-sm text-gray-500">Get notified about jobs that matches your skills.</p>
+                        </div>
+                        <Switch
+                            checked={formData.notifications.jobAlerts}
+                            onCheckedChange={(checked) => setFormData({
+                                ...formData,
+                                notifications: { ...formData.notifications, jobAlerts: checked }
+                            })}
+                            className="data-[state=checked]:bg-blue-600"
+                        />
+                    </div>
+                    <div className="py-5 flex items-center justify-between">
+                        <div className="space-y-0.5">
+                            <p className="text-base font-bold text-gray-900">Application Updates</p>
+                            <p className="text-sm text-gray-500">Receive updates on your job applications.</p>
+                        </div>
+                        <Switch
+                            checked={formData.notifications.appUpdates}
+                            onCheckedChange={(checked) => setFormData({
+                                ...formData,
+                                notifications: { ...formData.notifications, appUpdates: checked }
+                            })}
+                            className="data-[state=checked]:bg-blue-600"
+                        />
+                    </div>
+                    <div className="py-5 flex items-center justify-between">
+                        <div className="space-y-0.5">
+                            <p className="text-base font-bold text-gray-900">Weekly Summary</p>
+                            <p className="text-sm text-gray-500">A weekly digest of your activity and opportunities.</p>
+                        </div>
+                        <Switch
+                            checked={formData.notifications.weeklySummary}
+                            onCheckedChange={(checked) => setFormData({
+                                ...formData,
+                                notifications: { ...formData.notifications, weeklySummary: checked }
+                            })}
+                            className="data-[state=checked]:bg-blue-600"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            {/* 3. Language & Region Section */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
+                <div className="mb-8">
+                    <h2 className="text-2xl font-bold text-gray-900">Language & Region</h2>
+                    <p className="text-gray-500 text-sm mt-1">Choose your preferred language for the application.</p>
+                </div>
+
+                <div className="max-w-md space-y-2">
+                    <Label className="text-sm font-bold text-gray-700">Language</Label>
+                    <Select defaultValue="en">
+                        <SelectTrigger className="h-12 border-gray-100 focus:ring-blue-500">
+                            <SelectValue placeholder="Select Language" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="en">English (UK)</SelectItem>
+                            <SelectItem value="si">Sinhala</SelectItem>
+                            <SelectItem value="ta">Tamil</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div>
+        </div>
+    );
+}
