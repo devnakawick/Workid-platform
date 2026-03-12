@@ -16,6 +16,11 @@ from app.routes import escrow
 from app.routes import worker_wallet
 from app.routes import payment
 from app.routes import mock_gateway
+from app.routes import support
+from app.routes import admin
+from app.routes import messaging
+from fastapi.responses import JSONResponse
+from fastapi.requests import Request
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -46,6 +51,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/health")
+def health_check():
+    return {
+        "status": "ok",
+        "service": "WorkID Backend",
+        "version": "1.0"
+    }
+
 # Serve uploaded files as static files
 os.makedirs("uploads", exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
@@ -62,8 +75,9 @@ app.include_router(mock_gateway.router)
 app.include_router(worker.router)
 app.include_router(jobs.router)
 app.include_router(employer.router)
-
-
+app.include_router(support.router)
+app.include_router(admin.router)
+app.include_router(messaging.router)
 
 @app.on_event("startup")
 async def startup_event():
@@ -111,5 +125,16 @@ async def global_exception_handler(request: Request, exc: Exception):
         content={
             "detail": "An internal server error occurred",
             "type": "internal_server_error"
+        }
+    )
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+
+    return JSONResponse(
+        status_code=500,
+        content={
+            "message": "Internal server error",
+            "detail": str(exc)
         }
     )

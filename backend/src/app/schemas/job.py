@@ -2,7 +2,25 @@ from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional
 from datetime import datetime
 from decimal import Decimal
-from app.models.job import JobStatus, UrgencyLevel, PaymentType
+from enum import Enum
+
+
+class JobStatus(str, Enum):
+    open = "open"
+    assigned = "assigned"
+    completed = "completed"
+    cancelled = "cancelled"
+
+
+class UrgencyLevel(str, Enum):
+    low = "low"
+    medium = "medium"
+    high = "high"
+
+
+class PaymentType(str, Enum):
+    hourly = "hourly"
+    fixed = "fixed"
 
 # ======= Job Create / Update =======
 
@@ -72,7 +90,7 @@ class JobCreate(BaseModel):
         description="UTC datetime"
     )
     urgency: UrgencyLevel = Field(
-        default=UrgencyLevel.MEDIUM,
+        default=UrgencyLevel.medium,
         description="How urgent is this job?"
     )
 
@@ -83,7 +101,7 @@ class JobCreate(BaseModel):
         description="Total budget in Rs."
     )
     payment_type: PaymentType = Field(
-        default=PaymentType.FIXED,
+        default=PaymentType.fixed,
         description="fixed, daily, or negotiable"
     )
 

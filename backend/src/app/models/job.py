@@ -13,6 +13,13 @@ class JobStatus(str, enum.Enum):
     COMPLETED = "completed"
     CANCELLED = "cancelled"
 
+class UrgencyLevel(str, enum.Enum):
+    """Job urgency level enumeration"""
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    URGENT = "urgent"
+
 class Job(Base):
     """Job model"""
     __tablename__ = "jobs"

@@ -2,7 +2,33 @@ from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional
 from datetime import date, datetime
 from uuid import UUID
-from app.models.worker import SkillCategory, DocumentType, DocumentStatus
+from app.models.worker import Worker
+from enum import Enum
+
+
+class SkillCategory(str, Enum):
+    plumbing = "plumbing"
+    electrical = "electrical"
+    carpentry = "carpentry"
+    painting = "painting"
+    masonry = "masonry"
+    cleaning = "cleaning"
+    gardening = "gardening"
+    delivery = "delivery"
+    other = "other"
+
+
+class DocumentType(str, Enum):
+    nic = "nic"
+    police_clearance = "police_clearance"
+    certificate = "certificate"
+    other = "other"
+
+
+class DocumentStatus(str, Enum):
+    pending = "pending"
+    approved = "approved"
+    rejected = "rejected"
 
 # ======= Worker Profile Schemas =======
 
@@ -21,7 +47,7 @@ class WorkerProfileCreate(BaseModel):
     postal_code: Optional[str] = Field(None, max_length=10)
 
     # Skills
-    primary_skill: SkillCategory = Field(..., description="Main skill")
+    primary_skill: SkillCategory
     other_skills: List[str] = Field(default=[], description="Additional skills")
     experience_years: int = Field(default=0, ge=0, le=50, description="Year of experience")
 
