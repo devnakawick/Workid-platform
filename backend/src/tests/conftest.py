@@ -18,6 +18,7 @@ from app.models.user import User
 from app.models.worker import Worker, SkillCategory
 from app.models.employer import Employer
 from app.models.job import Job, JobStatus, UrgencyLevel
+from app.models.application import Application
 
 # ======= Test Database Setup =======
 
@@ -118,6 +119,8 @@ def worker_profile(db, worker_user):
     worker = Worker(
         user_id=worker_user.id,
         full_name="John Doe",
+        email="john.doe@example.com",
+        phone_number="+94771234567",
         nic_number="912345678V",
         city="Dehiwala",
         district="Colombo",
@@ -144,6 +147,8 @@ def employer_profile(db, employer_user):
     employer = Employer(
         user_id=employer_user.id,
         full_name="Jane Doe",
+        email="jane.doe@example.com",
+        phone_number="+94779876543",
         city="Ratmalana",
         district="Colombo",
         is_verified=True,

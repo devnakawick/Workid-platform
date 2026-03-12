@@ -25,6 +25,7 @@ class DocumentStatus(str, enum.Enum):
 class Worker(Base):
     """Worker profile model"""
     __tablename__ = "workers"
+<<<<<<< HEAD
     
     # Primary Key
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
@@ -40,6 +41,32 @@ class Worker(Base):
     skills = Column(Text, nullable=True)  # JSON string of skills
     
     # Professional Information
+=======
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), unique=True, nullable=False)
+
+    # Basic Info
+    full_name = Column(String, nullable=False)
+    nic_number = Column(String, unique=True, nullable=False)
+    date_of_birth = Column(DateTime)
+    email = Column(String, nullable=False)
+    phone_number = Column(String, nullable=False)
+
+    # Contact & Location
+    address = Column(Text)
+    city = Column(String, nullable=False, index=True)
+    district = Column(String, nullable=False, index=True)
+    postal_code = Column(String)
+
+    # Work Details
+    primary_skill = Column(Enum(SkillCategory, name="skill_category"), nullable=False)
+    other_skills = Column(JSON, default=list)  
+    experience_years = Column(Integer, default=0)
+
+    # Payment
+    daily_rate = Column(Float)
+>>>>>>> 1fb5c6ad02bb1f37949f4eb99509eaf2d133737f
     hourly_rate = Column(Float, nullable=True)
     experience_years = Column(Integer, nullable=True)
     education = Column(Text, nullable=True)

@@ -8,6 +8,7 @@ from app.database import Base
 class Employer(Base):
     """Employer profile model"""
     __tablename__ = "employers"
+<<<<<<< HEAD
     
     # Primary Key
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
@@ -41,6 +42,33 @@ class Employer(Base):
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
+=======
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), unique=True, nullable=False)
+
+    # Basic Info
+    full_name = Column(String, nullable=False)
+    email = Column(String, nullable=False, unique=True)
+    phone_number = Column(String, nullable=False)
+
+    # Contact & Location
+    address = Column(Text)
+    city = Column(String, nullable=False, index=True)
+    district = Column(String, nullable=False, index=True)
+    postal_code = Column(String)
+
+    # Trust Indicators
+    is_verified = Column(Boolean, default=False)
+    rating = Column(Float, default=0.0)
+    total_jobs_posted = Column(Integer, default=0)
+
+    # Metadata
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_active = Column(DateTime, default=datetime.utcnow)
+
+>>>>>>> 1fb5c6ad02bb1f37949f4eb99509eaf2d133737f
     # Relationships
     user = relationship("User", back_populates="employer_profile")
     jobs = relationship("Job", back_populates="employer")

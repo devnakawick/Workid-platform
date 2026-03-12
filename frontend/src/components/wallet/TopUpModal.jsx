@@ -1,0 +1,286 @@
+import { useState } from 'react';
+import { CreditCard, Building2, X, CheckCircle, Copy, Lock, CheckCircle2 } from 'lucide-react';
+
+// Quick amount options
+const QUICK_AMOUNTS = [1000, 5000, 10000, 25000, 50000];
+
+// Bank account details for transfer
+const BANK_DETAILS = [
+  { label: 'Bank Name',      value: 'Bank of Ceylon (BOC)' },
+  { label: 'Account Name',   value: 'WorkID (Pvt) Ltd'     },
+  { label: 'Account Number', value: '8001234567890'         },
+  { label: 'Branch',         value: 'Colombo Main'         },
+  { label: 'Reference',      value: 'WRKID-EMP-001'        },
+];
+
+const TopUpModal = ({ onTopUp, onCancel, loading }) => {
+
+  // Form state
+  const [amount,     setAmount]     = useState('');
+  const [method,     setMethod]     = useState('bank');
+  const [error,      setError]      = useState('');
+  const [copied,     setCopied]     = useState('');
+  const [showCvv,    setShowCvv]    = useState(false);
+  const [success,    setSuccess]    = useState(false);
+  const [paidAmount, setPaidAmount] = useState(0);
+  const [card,       setCard]       = useState({ number: '', name: '', expiry: '', cvv: '' });
+  const [cardErrors, setCardErrors] = useState({});
+
+  // Format card number with spaces
+  const fmtCard   = (v) => v.replace(/\D/g, '').slice(0, 16).replace(/(.{4})/g, '$1 ').trim();
+
+  // Format expiry as MM/YY
+  const fmtExpiry = (v) => { const d = v.replace(/\D/g, '').slice(0, 4); return d.length >= 3 ? `${d.slice(0,2)}/${d.slice(2)}` : d; };
+
+  // Detect card type from number
+  const cardType  = () => { const n = card.number.replace(/\s/g,''); return n.startsWith('4') ? 'Visa' : n.startsWith('5') ? 'Mastercard' : ''; };
+
+  // Copy value to clipboard with temporary tick
+  const copy      = (val, key) => { navigator.clipboard.writeText(val); setCopied(key); setTimeout(() => setCopied(''), 2000); };
+
+  // Update card field and clear its error
+  const inp       = (field, val) => { setCard(p => ({ ...p, [field]: val })); setCardErrors(p => ({ ...p, [field]: '' })); };
+
+  // Input style — red border on error
+  const inputCls  = (err) => `w-full px-3 py-2.5 border-2 rounded-xl text-sm focus:outline-none transition-all ${err ? 'border-red-400 bg-red-50' : 'border-gray-200 focus:border-blue-500'}`;
+
+  // Validate form and submit top up
+  const handleSubmit = async () => {
+    const num = Number(amount);
+    if (!num || num < 500)  { setError('Minimum top-up is LKR 500');     return; }
+    if (num > 500000)       { setError('Maximum top-up is LKR 500,000'); return; }
+
+    // Validate card fields if card method selected
+    if (method === 'card') {
+      const e = {};
+      if (card.number.replace(/\s/g,'').length < 16) e.number = 'Invalid card number';
+      if (!card.name.trim())                          e.name   = 'Enter cardholder name';
+      if (card.expiry.length < 5)                     e.expiry = 'Invalid expiry';
+      if (card.cvv.length < 3)                        e.cvv    = 'Invalid CVV';
+      if (Object.keys(e).length) { setCardErrors(e); return; }
+    }
+
+    setError('');
+    setPaidAmount(num);
+    await onTopUp({ amount: num, method });
+    setSuccess(true);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-4">
+      {/* Modal container—full width on mobile, capped on larger screens, scrollable */}
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden max-h-[95dvh] flex flex-col">
+
+        {/* Modal header */}
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-4 sm:p-5 text-white flex items-center justify-between flex-shrink-0">
+          <div>
+            <h3 className="text-lg sm:text-xl font-bold">Top Up Wallet</h3>
+            <p className="text-blue-200 text-xs sm:text-sm">Add funds to your employer wallet</p>
+          </div>
+          {/* Close button */}
+          <button onClick={onCancel} disabled={loading}
+            className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-lg flex items-center justify-center flex-shrink-0">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Body—stacks vertically on mobile, side-by-side on md+ */}
+        <div className="flex flex-col md:flex-row overflow-y-auto flex-1">
+
+          {/* Left panel—amount and method */}
+          <div className="w-full md:w-[44%] md:border-r border-b md:border-b-0 border-gray-100 p-4 sm:p-5 flex flex-col gap-4 sm:gap-5">
+
+            {/* Quick select preset amounts */}
+            <div>
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Quick Select</p>
+              <div className="flex flex-wrap gap-2">
+                {QUICK_AMOUNTS.map(v => (
+                  <button key={v} onClick={() => { setAmount(String(v)); setError(''); }}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-semibold border transition-all ${
+                      amount === String(v)
+                        ? 'bg-blue-600 text-white border-blue-600'
+                        : 'bg-gray-50 text-gray-700 border-gray-200 hover:border-blue-300'
+                    }`}>
+                    {v.toLocaleString()}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Manual amount input */}
+            <div>
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Amount (LKR)</p>
+              <input type="number" value={amount} placeholder="Min. 500"
+                onChange={e => { setAmount(e.target.value); setError(''); }}
+                className={inputCls(error)} />
+              {/* Show validation error */}
+              {error && <p className="mt-1 text-xs text-red-500 font-medium">{error}</p>}
+            </div>
+
+            {/* Payment method selector — bank or card */}
+            <div>
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Payment Method</p>
+              
+              <div className="grid grid-cols-2 md:grid-cols-1 gap-2">
+                {[
+                  { id: 'bank', label: 'Bank Transfer',       icon: Building2,  desc: 'Direct from your bank' },
+                  { id: 'card', label: 'Debit / Credit Card', icon: CreditCard, desc: 'Visa, Mastercard'       },
+                ].map(({ id, label, icon: Icon, desc }) => (
+                  <button key={id} onClick={() => setMethod(id)}
+                    className={`w-full flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-xl border-2 transition-all text-left ${
+                      method === id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                    }`}>
+                    <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${method === id ? 'bg-blue-100' : 'bg-gray-100'}`}>
+                      <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${method === id ? 'text-blue-600' : 'text-gray-500'}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-xs sm:text-sm font-semibold truncate ${method === id ? 'text-blue-700' : 'text-gray-700'}`}>{label}</p>
+                      <p className="text-xs text-gray-400 truncate">{desc}</p>
+                    </div>
+                    {/* Checkmark for selected method */}
+                    {method === id && <CheckCircle className="w-4 h-4 text-blue-500 flex-shrink-0" />}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Right panel — bank details or card form */}
+          <div className="flex-1 p-4 sm:p-5 flex flex-col gap-4">
+
+            {/* Bank transfer panel */}
+            {method === 'bank' && (
+              <div className="flex-1 flex flex-col gap-4">
+                <div className="flex-1 bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col gap-3">
+
+                  {/* Bank details header */}
+                  <div className="flex items-center gap-2 pb-3 border-b border-gray-200">
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Building2 className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-gray-800">Bank Transfer Details</p>
+                      <p className="text-xs text-gray-400">Transfer to complete top-up</p>
+                    </div>
+                    {/* Show entered amount if valid */}
+                    {amount && Number(amount) >= 500 && (
+                      <span className="ml-auto text-xs sm:text-sm font-bold text-blue-600 bg-blue-50 border border-blue-200 px-2 sm:px-3 py-1 rounded-lg whitespace-nowrap">
+                        LKR {Number(amount).toLocaleString()}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Each bank detail row with copy button */}
+                  {BANK_DETAILS.map(({ label, value }) => (
+                    <div key={label} className="flex items-center justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs text-gray-400">{label}</p>
+                        <p className="text-sm font-bold text-gray-800 break-all">{value}</p>
+                      </div>
+                      {/* Copy to clipboard button */}
+                      <button onClick={() => copy(value, label)}
+                        className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1 bg-white border border-gray-200 rounded-lg text-xs font-semibold text-gray-500 hover:border-blue-400 hover:text-blue-600 transition-all">
+                        <Copy className="w-3 h-3" />
+                        {copied === label ? '✓' : 'Copy'}
+                      </button>
+                    </div>
+                  ))}
+
+                  {/* Reference warning note */}
+                  <div className="mt-auto pt-3 border-t border-gray-200">
+                    <p className="text-xs text-yellow-700 font-medium bg-yellow-50 border border-yellow-100 rounded-lg p-2.5">
+                      Use <span className="font-bold">WRKID-EMP-001</span> as reference. Wallet tops up within 24 hours.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Cancel and confirm buttons */}
+                <div className="flex gap-3">
+                  <button onClick={onCancel} disabled={loading}
+                    className="flex-1 py-2.5 border-2 border-gray-200 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-50 disabled:opacity-50 transition-all">
+                    Cancel
+                  </button>
+                  <button onClick={handleSubmit} disabled={loading || !amount}
+                    className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold shadow-md disabled:opacity-50 transition-all">
+                    {loading ? 'Processing...' : 'Done ✓'}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Card payment form */}
+            {method === 'card' && (
+              <>
+                {/* Card number with card type detection */}
+                <div>
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">
+                    Card Number {cardType() && <span className="normal-case text-blue-600 ml-1">{cardType()}</span>}
+                  </p>
+                  <input type="text" value={card.number} placeholder="1234 5678 9012 3456"
+                    onChange={e => inp('number', fmtCard(e.target.value))}
+                    className={`${inputCls(cardErrors.number)} font-mono`} />
+                  {cardErrors.number && <p className="mt-1 text-xs text-red-500">{cardErrors.number}</p>}
+                </div>
+
+                {/* Cardholder name */}
+                <div>
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Cardholder Name</p>
+                  <input type="text" value={card.name} placeholder="Name on card"
+                    onChange={e => inp('name', e.target.value)}
+                    className={inputCls(cardErrors.name)} />
+                  {cardErrors.name && <p className="mt-1 text-xs text-red-500">{cardErrors.name}</p>}
+                </div>
+
+                {/* Expiry and CVV side by side */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Expiry</p>
+                    <input type="text" value={card.expiry} placeholder="MM/YY"
+                      onChange={e => inp('expiry', fmtExpiry(e.target.value))}
+                      className={`${inputCls(cardErrors.expiry)} font-mono`} />
+                    {cardErrors.expiry && <p className="mt-1 text-xs text-red-500">{cardErrors.expiry}</p>}
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">CVV</p>
+                    <div className="relative">
+                      {/* Toggle CVV visibility with lock icon */}
+                      <input type={showCvv ? 'text' : 'password'} value={card.cvv} placeholder="•••"
+                        onChange={e => inp('cvv', e.target.value.replace(/\D/g,'').slice(0,4))}
+                        className={`${inputCls(cardErrors.cvv)} font-mono pr-10`} />
+                      <button onClick={() => setShowCvv(!showCvv)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                        <Lock className="w-4 h-4" />
+                      </button>
+                    </div>
+                    {cardErrors.cvv && <p className="mt-1 text-xs text-red-500">{cardErrors.cvv}</p>}
+                  </div>
+                </div>
+
+                {/* SSL security note */}
+                <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-100 rounded-xl mt-auto">
+                  <Lock className="w-4 h-4 text-green-600 flex-shrink-0" />
+                  <p className="text-xs text-green-700 font-medium">256-bit SSL secured — no real charge.</p>
+                </div>
+
+                {/* Cancel and pay buttons */}
+                <div className="flex gap-3">
+                  <button onClick={onCancel} disabled={loading}
+                    className="flex-1 py-2.5 border-2 border-gray-200 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-50 disabled:opacity-50 transition-all">
+                    Cancel
+                  </button>
+                  <button onClick={handleSubmit} disabled={loading || !amount}
+                    className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold shadow-md disabled:opacity-50 transition-all">
+                    {loading ? 'Processing...' : `Pay LKR ${Number(amount||0).toLocaleString()}`}
+                  </button>
+                </div>
+              </>
+            )}
+
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default TopUpModal;

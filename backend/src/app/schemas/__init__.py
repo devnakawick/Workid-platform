@@ -7,6 +7,12 @@ from app.schemas.worker import (
     WorkerStatsResponse,
     WorkerSearchResponse
 )
+from app.schemas.employer import (
+    EmployerProfileCreate,
+    EmployerProfileUpdate,
+    EmployerProfileResponse,
+    EmployerStatsResponse
+)
 from app.schemas.job import (
     JobCreate,
     JobUpdate,
@@ -29,14 +35,19 @@ __all__ = [
     "WorkerAvailabilityUpdate",
     "DocumentUploadResponse",
     "WorkerStatsResponse",
-    "WorkerSearchResponse"
+    "WorkerSearchResponse",
+    # Employer
+    "EmployerProfileCreate",
+    "EmployerProfileUpdate",
+    "EmployerProfileResponse",
+    "EmployerStatsResponse",
     # Job
     "JobCreate", 
     "JobUpdate",
     "JobStatusUpdate",
     "JobResponse",
     "JobListResponse",
-    "JobSearchResponse"
+    "JobSearchResponse",
     # Application
     "ApplicationCreate",
     "ApplicationResponse",

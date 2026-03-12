@@ -37,6 +37,8 @@ class WorkerProfileCreate(BaseModel):
     Schemas for creating a worker profile 
     """
     full_name: str = Field(..., min_length=3, max_length=100, description="Full name as on NIC")
+    email: str = Field(..., max_length=255, description="Email address")
+    phone_number: str = Field(..., min_length=9, max_length=15, description="Phone number")
     nic_number: str = Field(..., min_length=10, max_length=12, description="NIN number (old or new format)")
     date_of_birth: Optional[date] = Field(None, description="Date of birth")
 
@@ -121,6 +123,8 @@ class WorkerProfileResponse(BaseModel):
     user_id: UUID
 
     full_name: str
+    email: str
+    phone_number: str
     nic_number: str
     date_of_birth: Optional[date]
 
