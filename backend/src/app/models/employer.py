@@ -1,4 +1,6 @@
-from sqlalchemy import Column, String, Text, DateTime, ForeignKey
+from xmlrpc.client import Boolean
+
+from sqlalchemy import Column, Float, Integer, String, Text, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from datetime import datetime
@@ -8,7 +10,6 @@ from app.database import Base
 class Employer(Base):
     """Employer profile model"""
     __tablename__ = "employers"
-<<<<<<< HEAD
     
     # Primary Key
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
@@ -42,7 +43,6 @@ class Employer(Base):
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
-=======
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), unique=True, nullable=False)
@@ -68,7 +68,6 @@ class Employer(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     last_active = Column(DateTime, default=datetime.utcnow)
 
->>>>>>> 1fb5c6ad02bb1f37949f4eb99509eaf2d133737f
     # Relationships
     user = relationship("User", back_populates="employer_profile")
     jobs = relationship("Job", back_populates="employer")
