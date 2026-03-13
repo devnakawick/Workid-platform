@@ -4,12 +4,14 @@ import WorkerSidebar from './components/layout/WorkerSidebar';
 import EmployerSidebar from './components/layout/EmployerSidebar';
 import Footer from './components/layout/Footer';
 import DashboardHeader from './components/layout/DashboardHeader';
+import { useAuth } from '@/lib/AuthContext';
 
 import './components/layout/sidebar.css';
 import './components/layout/footer.css';
 
 export default function Layout({ children, currentPageName }) {
     const location = useLocation();
+    const { user } = useAuth();
 
     // Pages that don't need the full layout (no sidebar, no footer)
     const authPages = ['/login', '/signup-employer', '/signup-worker'];
@@ -20,10 +22,9 @@ export default function Layout({ children, currentPageName }) {
         return <div>{children}</div>;
     }
 
-    // Determine which sidebar to show based on route
-    const isEmployerRoute = location.pathname.startsWith('/employer');
-    const isWorkerRoute = location.pathname.startsWith('/worker') ||
-        ['/Jobs', '/Profile', '/Learning', '/Wallet', '/Support', '/Settings', '/Applications', '/Documents', '/Badges', '/Notifications', '/Messages'].includes(location.pathname);
+    // Determine which sidebar to show based on user role or route
+    const isEmployerRoute = location.pathname.startsWith('/employer') || (user?.role === 'Employer');
+    const isWorkerRoute = location.pathname.startsWith('/worker') || (user?.role !== 'Employer');
 
     const Sidebar = isEmployerRoute ? EmployerSidebar : WorkerSidebar;
 

@@ -25,9 +25,9 @@ export default function Login() {
     const newErrors = {};
 
     // Validation
-    if (!email.trim()) {
+    if (role === 'employer' && !email.trim()) {
       newErrors.email = 'Email is required';
-    } else if (!validateEmail(email)) {
+    } else if (email.trim() && !validateEmail(email)) {
       newErrors.email = 'Please enter a valid email address';
     }
 
@@ -107,7 +107,7 @@ export default function Login() {
           <form onSubmit={handleSignIn} className="space-y-4">
             {/* Email Input */}
             <Input
-              label="Email Address"
+              label={role === 'worker' ? "Email Address (Optional)" : "Email Address"}
               type="email"
               placeholder="you@example.com"
               value={email}

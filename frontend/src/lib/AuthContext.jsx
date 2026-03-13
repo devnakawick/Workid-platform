@@ -16,19 +16,26 @@ export const AuthProvider = ({ children }) => {
             setIsLoadingPublicSettings(false);
             setIsLoadingAuth(false);
             setIsAuthenticated(true);
-            setUser({
-                id: 'demo_user',
-                name: 'John Doe',
-                email: 'john.doe@gmail.com',
-                role: 'Employer',
-                phone: '077-1234567',
-                location: 'Colombo 07',
-                experience: '5 Years Experience',
-                notificationsCount: 3,
-                messagesCount: 5,
-                isAvailable: true,
-                avatar: null
-            });
+            const savedUser = localStorage.getItem('user');
+            if (savedUser) {
+                setUser(JSON.parse(savedUser));
+            } else {
+                const defaultUser = {
+                    id: 'demo_user',
+                    name: 'John Doe',
+                    email: 'john.doe@gmail.com',
+                    role: 'Employer',
+                    phone: '077-1234567',
+                    location: 'Colombo 07',
+                    experience: '5 Years Experience',
+                    notificationsCount: 3,
+                    messagesCount: 5,
+                    isAvailable: true,
+                    avatar: null
+                };
+                setUser(defaultUser);
+                localStorage.setItem('user', JSON.stringify(defaultUser));
+            }
             setAppPublicSettings({ id: 'demo_app', public_settings: {} });
         };
 
@@ -37,11 +44,16 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         // Mock logout - simply refreshing the page in standalone mode
+        localStorage.removeItem('user');
         window.location.reload();
     };
 
     const updateUser = (data) => {
-        setUser(prev => ({ ...prev, ...data }));
+        setUser(prev => {
+            const updated = { ...prev, ...data };
+            localStorage.setItem('user', JSON.stringify(updated));
+            return updated;
+        });
     };
 
     return (
