@@ -155,7 +155,7 @@ export default function SignupWorker() {
 
             {/* Password Input */}
             <Input
-              label="Password"
+              label="Create Password"
               type="password"
               placeholder="••••••••"
               name="password"

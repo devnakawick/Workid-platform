@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
 import logo from '@/images/logo.jpeg';
-import { Mail, Lock } from 'lucide-react';
+import { Mail, Lock, Phone } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function Login() {
@@ -25,10 +25,17 @@ export default function Login() {
     const newErrors = {};
 
     // Validation
-    if (role === 'employer' && !email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (email.trim() && !validateEmail(email)) {
-      newErrors.email = 'Please enter a valid email address';
+    // Validation
+    if (role === 'employer') {
+      if (!email.trim()) {
+        newErrors.email = 'Email is required';
+      } else if (!validateEmail(email)) {
+        newErrors.email = 'Please enter a valid email address';
+      }
+    } else if (role === 'worker') {
+      if (!email.trim()) {
+        newErrors.email = 'Phone number is required';
+      }
     }
 
     if (!password.trim()) {
@@ -105,11 +112,11 @@ export default function Login() {
           )}
 
           <form onSubmit={handleSignIn} className="space-y-4">
-            {/* Email Input */}
+            {/* Email/Phone Input */}
             <Input
-              label={role === 'worker' ? "Email Address (Optional)" : "Email Address"}
-              type="email"
-              placeholder="you@example.com"
+              label={role === 'worker' ? "Phone Number" : "Email Address"}
+              type={role === 'worker' ? "tel" : "email"}
+              placeholder={role === 'worker' ? "07X XXX XXXX" : "you@example.com"}
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
@@ -118,7 +125,7 @@ export default function Login() {
                 }
               }}
               error={errors.email}
-              icon={<Mail size={18} />}
+              icon={role === 'worker' ? <Phone size={18} /> : <Mail size={18} />}
             />
 
             {/* Password Input */}

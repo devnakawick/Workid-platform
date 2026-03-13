@@ -153,7 +153,7 @@ export default function SignupEmployer() {
 
             {/* Password Input */}
             <Input
-              label="Password"
+              label="Create Password"
               type="password"
               placeholder="••••••••"
               name="password"
