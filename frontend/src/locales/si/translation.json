@@ -290,5 +290,31 @@
             "Journeyman License": "Journeyman බලපත්‍රය",
             "own tools": "තමන්ගේම මෙවලම්"
         }
+    },
+    "employerDashboard": {
+        "stats": {
+            "postedJobs": "පළ කළ රැකියා",
+            "postedJobsChange": "මේ සතියේ +2",
+            "applications": "අයදුම්පත්",
+            "applicationsChange": "මේ සතියේ +3",
+            "moneySpent": "වියදම් කළ මුදල",
+            "moneySpentChange": "සම්පූර්ණ ප්‍රමාණයෙන් 47%",
+            "hired": "බඳවා ගත් අය",
+            "hiredChange": "මේ සතියේ +1"
+        },
+        "recentlyPosted": "මෑතකදී පළ කරන ලද",
+        "recentNotifications": "මෑත දැනුම්දීම්",
+        "recentApplications": "මෑත අයදුම්පත්",
+        "viewAll": "සියල්ල බලන්න",
+        "viewAllApplications": "සියලුම අයදුම්පත් බලන්න",
+        "filter": "පෙරහන්",
+        "table": {
+            "applicant": "අයදුම්කරු",
+            "jobPosting": "රැකියා පළ කිරීම",
+            "experience": "අත්දැකීම්",
+            "appliedDate": "අයදුම් කළ දිනය",
+            "status": "තත්ත්වය",
+            "actions": "ක්‍රියාමාර්ග"
+        }
     }
 }

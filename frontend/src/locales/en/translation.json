@@ -290,5 +290,31 @@
             "Install, maintain, and repair heating, ventilation, and air conditioning systems.": "Install, maintain, and repair heating, ventilation, and air conditioning systems.",
             "Residential and commercial plumbing repairs and installations.": "Residential and commercial plumbing repairs and installations."
         }
+    },
+    "employerDashboard": {
+        "stats": {
+            "postedJobs": "Posted Jobs",
+            "postedJobsChange": "+2 this week",
+            "applications": "Applications",
+            "applicationsChange": "+3 this week",
+            "moneySpent": "Money Spent",
+            "moneySpentChange": "47% of total",
+            "hired": "Hired",
+            "hiredChange": "+1 this week"
+        },
+        "recentlyPosted": "Recently Posted",
+        "recentNotifications": "Recent Notifications",
+        "recentApplications": "Recent Applications",
+        "viewAll": "View all",
+        "viewAllApplications": "View All Applications",
+        "filter": "Filter",
+        "table": {
+            "applicant": "Applicant",
+            "jobPosting": "Job Posting",
+            "experience": "Experience",
+            "appliedDate": "Applied Date",
+            "status": "Status",
+            "actions": "Actions"
+        }
     }
 }

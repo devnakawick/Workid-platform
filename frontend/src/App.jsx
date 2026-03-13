@@ -25,7 +25,7 @@ import OtpVerification from './pages/auth/OtpVerification';
 // New employer pages from feature branch
 import PostJob from './pages/employer/PostJob';
 import ManageJobs from './pages/employer/ManageJobs';
-import EditJob  from './pages/employer/EditJob';
+import EditJob from './pages/employer/EditJob';
 import EmployerWallet from './pages/employer/EmployerWallet';
 import ReviewApplications from './pages/employer/ReviewApplications';
 import SearchWorkers from './pages/employer/SearchWorkers';
@@ -33,6 +33,7 @@ import HelpSupport from './pages/employer/HelpSupport';
 
 // New worker pages from feature branch
 import WorkerWallet from './pages/worker/WorkerWallet';
+import LanguageSwitcher from './components/common/LanguageSwitcher';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings } = useAuth();
@@ -168,8 +169,10 @@ function App() {
         <AuthenticatedApp />
       </Router>
       <Toaster position="top-center" richColors closeButton />
+      <LanguageSwitcher />
     </AuthProvider>
   )
 }
 
 export default App
+
