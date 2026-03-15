@@ -256,3 +256,49 @@ class FraudCheckResponse(BaseModel):
                 "recommendation": "Account behavior appears normal"
             }
         }
+
+# ======= Anomaly Detection =======
+
+class WageAnomalyRequest(BaseModel):
+    """Request for wage anomaly detection"""
+    category: str = Field(..., description="Job category")
+    budget: float = Field(..., description="Proposed budget")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "category": "plumbing",
+                "budget": 3000
+            }
+        }
+
+class WageAnomalyResponse(BaseModel):
+    """Response for wage anomalt detection"""
+    is_anomaly: bool
+    reason: str
+    severity: str
+    details: Optional[Dict[str, Any]] = None
+    recommendation: Optional[str] = None
+
+# ======= Content Moderation =======
+
+class ContentModerationRequest(BaseModel):
+    """Request for content moderation"""
+    text: str = Field(..., min_length=5, max_length=5000)
+    text_type: str = Field(default="job_description", description="Type of content")
+
+    class Config: 
+        json_schema_extra = {
+            "example": {
+                "text": "Need experienced worker for construction",
+                "text_type": "job_description"
+            }
+        }
+
+class ContentModerationResponse(BaseModel):
+    """Response for content moderation"""
+    is_appropriate: bool
+    issues: List[Dict[str, Any]]
+    severity: str
+    issue_count: int
+    recommendation: str

@@ -33,7 +33,11 @@ from app.schemas.ai import (
     CategoryValidationResponse,
     SpamCheckRequest,
     SpamCheckResponse,
-    FraudCheckResponse
+    FraudCheckResponse,
+    WageAnomalyRequest,
+    WageAnomalyResponse,
+    ContentModerationRequest,
+    ContentModerationResponse
 )
 
 __all__ = [
@@ -57,9 +61,9 @@ __all__ = [
     "ApplicationResponse",
     "ApplicationListResponse",
     # AI
-    "NLSearchRequest",
-    "NLSearchResponse",
-    "NLSearchExecuteResponse",
+    "NLPSearchRequest",
+    "NLPSearchResponse",
+    "NLPSearchExecuteResponse",
     "ParsedQuery",
     "APIParameters",
     "SearchSuggestions",
@@ -69,5 +73,9 @@ __all__ = [
     "CategoryValidationResponse",
     "SpamCheckRequest",
     "SpamCheckResponse",
-    "FraudCheckResponse"
+    "FraudCheckResponse",
+    "WageAnomalyRequest",
+    "WageAnomalyResponse",
+    "ContentModerationRequest",
+    "ContentModerationResponse"    
 ]
