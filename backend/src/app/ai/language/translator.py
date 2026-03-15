@@ -190,4 +190,5 @@ def detect_and_translate(text: str) -> Dict:
     Detect and translate in one call
     """
     translator = Translator()
-    return translator.detect_and_translate(text)
+    result = translator.detect_and_translate(text)
+    return result
