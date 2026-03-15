@@ -1,46 +1,57 @@
 """
 Text Processing Utilities
+
+Helper functions for text cleaning, normalization, and processing
 """
 
 import re
 import unicodedata
-from typing import List
-from unidecode import unidecode
-from nltk.corpus import stopwords
+from typing import List, Set
 
-def clean_text(text: str) -> str:
+
+def clean_text(text: str) -> str:   
     """
-    Clean and normalize text by converting to lowercase, removing extra whitespace, 
-    and removing special characters.
+    Clean and normalize text 
     """
     if not text:
         return ""
+    
+    # Normalize Unicode
+    text = unicodedata.normalize('NFC', text)
     
     # Convert to lowercase
     text = text.lower()
 
     # Remove extra whitespace
-    text = re.sub(r'[^\w\s]', '', text, flags=re.UNICODE)   # remove punctuation
-    text = re.sub(r'\s+', ' ', text)    # normalize all whitespace to single space
+    text = re.sub(r'\s+', ' ', text) 
+    text = text.strip()   
 
-    return text.strip()
+    return text
 
 def remove_stopwords(text: str, language: str = "en") -> str:
     """
     Remove common stopwords (the, is, are, etc.)
     """
-
-    # Get stopwords for language
-    if language == "en":
-        stop_words = set(stopwords.words('english'))
-    else: 
-        # For sinhala and tamil, english will be used for now
-        # TODO: Add Sinhala/Tamil stopwords later
-        stop_words = set(stopwords.words('english'))
+    # English stopwords
+    english_stopwords = {
+        'i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves',
+        'you', 'your', 'yours', 'yourself', 'yourselves', 'he', 'him',
+        'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its',
+        'itself', 'they', 'them', 'their', 'theirs', 'themselves',
+        'what', 'which', 'who', 'whom', 'this', 'that', 'these', 'those',
+        'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being',
+        'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing',
+        'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as',
+        'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about',
+        'against', 'between', 'into', 'through', 'during', 'before',
+        'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in',
+        'out', 'on', 'off', 'over', 'under', 'again', 'further',
+        'then', 'once', 'need', 'want', 'looking'
+    }
 
     # Remove stopwords
     words = text.split()
-    filtered = [w for w in words if w.lower() not in stop_words]
+    filtered = [w for w in words if w.lower() not in english_stopwords]
 
     return " ".join(filtered)
 
@@ -48,9 +59,21 @@ def extract_numbers(text: str) -> List[float]:
     """
     Extract all numbers from text
     """
-    # Find all numbers (integers and decimals)
-    numbers = re.findall(r'\d+\.?\d*', text)
-    return [float(n) for n in numbers]
+    # Pattern got numbers
+    pattern = r'\d+(?:,\d{3})*(?:\.\d+)?'
+    matches = re.findall(pattern, text)
+
+    # Convert to float
+    numbers = []
+    for match in matches:
+        try:
+            # Remove commas
+            num = float(match.replace(',', ''))
+            numbers.append(num)
+        except ValueError:
+            continue
+
+    return numbers
 
 def normalize_unicode(text: str) -> str:
     """
@@ -58,36 +81,20 @@ def normalize_unicode(text: str) -> str:
 
     Handle Sinhala / Tamil text properly
     """
-    if not text:
-        return ""
-    
-    # Normalize unicode
-    text = unicodedata.normalize('NFKD', text)
-    text = "".join(c for c in text if not unicodedata.combining(c))
-    return text
+    return unicodedata.normalize('NFC', text)
 
 def tokenize(text: str) -> List[str]:
     """
     Split text into tokens (words)
     """
-    from nltk.tokenize import word_tokenize
-    import nltk
+    tokens = re.findall(r'\b\w+\b', text.lower())
+    return tokens
 
-    try:
-        nltk.data.find('tokenizers/punkt')
-    except LookupError:
-        nltk.download('punkt')
-
-    if not text:
-        return []
-    
-    return word_tokenize(text)
-
-def get_word_frequencies(text: str) -> dict[str, int]:
+def get_word_frequencies(text: str) -> dict:
     """
     Count frequency of each word
     """
-    words = clean_text(text).split()
+    words = tokenize(text)
     frequency = {}
 
     for word in words:
@@ -100,11 +107,8 @@ def truncate_text(text: str, max_length: int = 100) -> str:
     """
     Truncate text to max length
     """
-    if not text or len(text) <= max_length:
+    if len(text) <= max_length:
         return text
-    
-    if max_length <= 3:
-        return text[:max_length]
     
     return text[:max_length - 3] + "..."
 
@@ -119,14 +123,15 @@ def calculate_text_similarity(text1: str, text2: str) -> float:
     """
     Calculate similarity between two texts
     """
-    words1 = set(clean_text(text1).split())
-    words2 = set(clean_text(text2).split())
+    tokens1 = set(tokenize(text1))
+    tokens2 = set(tokenize(text2))
 
-    if not words1 or not words2:
+    if not tokens1 or not tokens2:
         return 0.0
 
     # Jaccard similarity
-    intersection = words1.intersection(words2)
-    union = words1.union(words2)
+    intersection = tokens1.intersection(tokens2)
+    union = tokens1.union(tokens2)
 
-    return len(intersection) / len(union)
+    similarity = len(intersection) / len(union) if union else 0.0
+    return similarity
