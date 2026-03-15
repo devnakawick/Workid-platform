@@ -8,11 +8,6 @@ from typing import Dict, List, Optional
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 
-from app.models.job import Job
-from app.models.employer import Employer
-from app.models.worker import Worker
-from app.models.application import Application, ApplicationStatus
-
 from app.ai.config import (
     MAX_JOBS_PER_DAY,
     MAX_APPLICATIONS_PER_DAY,
@@ -38,6 +33,10 @@ class FraudDetector:
         """
         Check employer for suspicious behavior
         """
+        from app.models.job import Job
+        from app.models.employer import Employer
+        from app.models.application import Application, ApplicationStatus
+
         flags = []
         score = 0.0
 
@@ -52,7 +51,7 @@ class FraudDetector:
             Job.created_at >= yesterday
         ).count()
 
-        if recent_jobs > self.max_applications_per_day:
+        if recent_jobs > self.max_jobs_per_day:
             flags.append('excessive_posting')
             score += 0.5
 
@@ -115,6 +114,9 @@ class FraudDetector:
         """
         Check worker for suspicious behavior
         """
+        from app.models.application import Application
+        from app.models.worker import Worker
+
         flags = []
         score = 0.0
 
