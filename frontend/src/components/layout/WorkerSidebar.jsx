@@ -22,7 +22,8 @@ import { useTranslation } from 'react-i18next';
 
 const workerMenuItems = [
     { path: '/worker/dashboard', icon: Grid, labelKey: 'nav.dashboard', fallback: 'Dashboard' },
-    { path: '/Jobs', icon: Briefcase, labelKey: 'nav.findJobs', fallback: 'Job Listings' },
+    { path: '/worker/current-jobs', icon: Briefcase, labelKey: 'nav.myJobs', fallback: 'My Active Jobs' },
+    { path: '/Jobs', icon: Briefcase, labelKey: 'nav.findJobs', fallback: 'Find Jobs' },
     { path: '/Profile', icon: User, labelKey: 'nav.profile', fallback: 'Profile' },
     { path: '/Documents', icon: FolderOpen, labelKey: 'nav.documents', fallback: 'Documents' },
     { path: '/Learning', icon: Award, labelKey: 'nav.learning', fallback: 'Learning & Skills' },

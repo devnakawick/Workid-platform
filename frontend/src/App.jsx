@@ -34,6 +34,8 @@ import HelpSupport from './pages/employer/HelpSupport';
 // New worker pages from feature branch
 import WorkerWallet from './pages/worker/WorkerWallet';
 import LanguageSwitcher from './components/common/LanguageSwitcher';
+import WorkerCurrentJobsPage from './pages/worker/WorkerCurrentJobsPage';
+import WorkerJobDetailsPage from './pages/worker/WorkerJobDetailsPage';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings } = useAuth();
@@ -154,6 +156,16 @@ const AuthenticatedApp = () => {
       <Route path="/worker/wallet" element={
         <Layout currentPageName="Worker Wallet">
           <WorkerWallet />
+        </Layout>
+      } />
+      <Route path="/worker/current-jobs" element={
+        <Layout currentPageName="Current Jobs">
+          <WorkerCurrentJobsPage />
+        </Layout>
+      } />
+      <Route path="/worker/job-details/:jobId" element={
+        <Layout currentPageName="Job Progress">
+          <WorkerJobDetailsPage />
         </Layout>
       } />
 
