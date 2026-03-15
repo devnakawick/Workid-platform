@@ -8,7 +8,7 @@ import logging
 from app.models.user import User, UserType
 from app.models.worker import Worker
 from app.models.employer import Employer
-#from app.models.wallet import Wallet
+from app.models.wallet import Wallet
 from app.schemas.auth import (
     SendOTPRequest, VerifyOTPRequest, 
     WorkerSignupRequest, EmployerSignupRequest

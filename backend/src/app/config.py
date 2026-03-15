@@ -35,16 +35,23 @@ class Settings(BaseSettings):
     # Pagination
     DEFAULT_PAGE_SIZE: int = 20
     MAX_PAGE_SIZE: int = 100
-
+    
+    # Payment (PayHere)
+    PAYHERE_MERCHANT_ID: str = ""
+    PAYHERE_MERCHANT_SECRET: str = ""
+    
+    # Application
     APP_NAME: str = "WorkID Platform"
     APP_VERSION: str = "1.0.0"
     ENVIRONMENT: str = "development"
     DEBUG: bool = True
 
-    class Config:
-        env_file = BASE_DIR / ".env"
-        extra = "ignore"
-        env_file_encoding = "utf-8" 
+    model_config = SettingsConfigDict(
+        env_file= BASE_DIR / ".env",
+        extra="ignore",
+        env_file_encoding="utf-8",
+        case_sensitive=True
+    ) 
 
 
 @lru_cache

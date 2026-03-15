@@ -6,8 +6,12 @@ import re
 class SendOTPRequest(BaseModel):
     phone_number: str
 
+<<<<<<< HEAD
+    @validator('phone_number')
+=======
     @field_validator('phone_number')
     @classmethod
+>>>>>>> 1fb5c6ad02bb1f37949f4eb99509eaf2d133737f
     def validate_phone(cls, v):
         v = v.replace(' ', '').replace('-', '')
 
