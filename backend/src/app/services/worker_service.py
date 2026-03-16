@@ -125,7 +125,7 @@ class WorkerService:
 
         return db.query(WorkerDocument)\
             .filter(WorkerDocument.worker_id == worker_id)\
-            .order_by(WorkerDocument.uploaded_at.desc())\
+            .order_by(WorkerDocument.created_at.desc())\
             .all()
     
     @staticmethod

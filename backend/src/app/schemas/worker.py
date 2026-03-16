@@ -119,7 +119,7 @@ class WorkerProfileResponse(BaseModel):
     """
     Schema for worker profile response
     """
-    id: int
+    id: UUID
     user_id: UUID
 
     full_name: str
@@ -143,8 +143,8 @@ class WorkerProfileResponse(BaseModel):
     bio: Optional[str]
     profile_photo: Optional[str]
 
-    is_verified: bool
-    is_available: bool
+    is_verified: str
+    is_available: str
     rating: float
     total_jobs_completed: int
 
@@ -180,7 +180,7 @@ class DocumentUploadResponse(BaseModel):
     file_name: str
     file_url: str
     status: DocumentStatus
-    uploaded_at: datetime
+    created_at: datetime
 
     class Config:
         from_attributes = True

@@ -19,10 +19,18 @@ from app.routes import mock_gateway
 from app.routes import support
 from app.routes import admin
 from app.routes import messaging
+from app.routes import ai
 from fastapi.responses import JSONResponse
 from fastapi.requests import Request
 from dotenv import load_dotenv
 load_dotenv()
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 # Create FastAPI app
 app = FastAPI(
@@ -54,7 +62,7 @@ app.add_middleware(
 @app.get("/health")
 def health_check():
     return {
-        "status": "ok",
+        "status": "healthy",
         "service": "WorkID Backend",
         "version": "1.0"
     }
@@ -78,6 +86,7 @@ app.include_router(employer.router)
 app.include_router(support.router)
 app.include_router(admin.router)
 app.include_router(messaging.router)
+app.include_router(ai.router)
 
 @app.on_event("startup")
 async def startup_event():

@@ -1,6 +1,4 @@
-from xmlrpc.client import Boolean
-
-from sqlalchemy import Column, Float, Integer, String, Text, DateTime, ForeignKey
+from sqlalchemy import Column, Float, Integer, String, Text, DateTime, ForeignKey, Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from datetime import datetime

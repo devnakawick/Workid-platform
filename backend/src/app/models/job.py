@@ -37,21 +37,26 @@ class Job(Base):
     skills_required = Column(Text, nullable=True)  # JSON string of required skills
     
     # Location
+    city = Column(String(50), nullable=True)
+    district = Column(String(50), nullable=True)
     location = Column(String(100), nullable=True)
     is_remote = Column(String(10), default="no")  # yes, no, hybrid
     
     # Compensation
+    budget = Column(Float, nullable=True)
     budget_min = Column(Float, nullable=True)
     budget_max = Column(Float, nullable=True)
     payment_type = Column(String(20), default="fixed")  # fixed, hourly
     
     # Duration
     duration = Column(String(50), nullable=True)  # e.g., "2 weeks", "1 month"
+    estimated_duration_hours = Column(Integer, nullable=True)
     start_date = Column(DateTime, nullable=True)
     end_date = Column(DateTime, nullable=True)
     
     # Status
     status = Column(SQLEnum(JobStatus), default=JobStatus.OPEN)
+    urgency = Column(SQLEnum(UrgencyLevel), default=UrgencyLevel.MEDIUM)
     
     # Visibility
     is_featured = Column(String(10), default="no")  # yes, no
@@ -60,6 +65,11 @@ class Job(Base):
     # Application Settings
     max_applications = Column(Integer, nullable=True)
     application_deadline = Column(DateTime, nullable=True)
+    expires_at = Column(DateTime, nullable=True)
+    
+    # Location Coordinates
+    latitude = Column(Float, nullable=True)
+    longitude = Column(Float, nullable=True)
     
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
