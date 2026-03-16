@@ -106,7 +106,7 @@ class TestJobDetails:
         assert response.status_code == 200
 
         data = response.json()
-        assert data["id"] == sample_job.id
+        assert data["id"] == str(sample_job.id)
         assert data["title"] == "Need plumber to fix kitchen sink"
         assert data["category"] == "plumbing"
         assert data["city"] == "Mount Lavinia"
@@ -136,7 +136,7 @@ class TestJobDetails:
         """
         Test: Returns 404 for non-existing jobs
         """
-        response = client.get("/api/jobs/99999")
+        response = client.get("/api/jobs/00000000-0000-0000-0000-000000000000")
 
         assert response.status_code == 404
 
@@ -169,8 +169,8 @@ class TestApplyToJob:
         assert response.status_code == 201
 
         data = response.json()
-        assert data["job_id"] == sample_job.id
-        assert data["worker_id"] == worker_profile.id
+        assert data["job_id"] == str(sample_job.id)
+        assert data["worker_id"] == str(worker_profile.id)
         assert data["status"] == "pending"
         assert float(data["proposed_rate"]) == 3000.00
 
@@ -440,7 +440,7 @@ class TestViewApplications:
 
         assert response.status_code == 200
         assert len(response.json()) == 1
-        assert response.json()[0]["worker_id"] == worker_profile.id
+        assert response.json()[0]["worker_id"] == str(worker_profile.id)
 
         print("View job applications: Pass")
 

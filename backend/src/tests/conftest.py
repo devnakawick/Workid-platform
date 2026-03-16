@@ -154,8 +154,8 @@ def worker_profile(db, worker_user):
         experience_years=5,
         daily_rate=2500.00,
         bio="Experienced plumber in Dehiwala",
-        is_available="yes",
-        is_verified="yes",
+        is_available=True,
+        is_verified=False,
         rating=4.5,
         total_jobs_completed=10
     )
