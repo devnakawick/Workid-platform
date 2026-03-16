@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Text, Float, Integer, DateTime, ForeignKey, Enum as SQLEnum, JSON
+from sqlalchemy import Column, String, Text, Float, Integer, DateTime, ForeignKey, Enum as SQLEnum, JSON, Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from datetime import datetime
@@ -80,9 +80,12 @@ class Worker(Base):
     profile_image_url = Column(String(255), nullable=True)
     
     # Status
-    is_available = Column(String(10), default="yes")  # yes, no, busy
-    is_verified = Column(String(10), default="no")  # yes, no, pending
+    is_available = Column(Boolean, default=True)  # True, False
+    is_verified = Column(Boolean, default=False)  # True, False
     last_active = Column(DateTime, nullable=True)
+    
+    # Additional fields for schema compatibility
+    profile_photo = Column(String(255), nullable=True)
     
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)

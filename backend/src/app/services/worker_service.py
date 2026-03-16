@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from app.models.worker import Worker, WorkerDocument, DocumentType, DocumentStatus
 from typing import List, Optional, Dict
-from datetime import datetime
+from datetime import datetime, timezone
 
 ALLOWED_WORKER_UPDATE_FIELDS = {
     "full_name",
@@ -59,7 +59,7 @@ class WorkerService:
             if key in ALLOWED_WORKER_UPDATE_FIELDS:
                 setattr(worker, key, value)
 
-        worker.updated_at = datetime.utcnow()
+        worker.updated_at = datetime.now(timezone.utc)
         db.commit()
         db.refresh(worker)
         return worker
@@ -74,7 +74,7 @@ class WorkerService:
             )
         
         worker.is_available = is_available
-        worker.last_active = datetime.utcnow()
+        worker.last_active = datetime.now(timezone.utc)
         db.commit()
         db.refresh(worker)
         return worker
@@ -102,7 +102,7 @@ class WorkerService:
         document = WorkerDocument(
             worker_id=worker_id,
             document_type=document_type,
-            file_url=file_url,
+            file_path=file_url,  # file_url contains the path
             file_name=file_name,
             status=DocumentStatus.PENDING
         )

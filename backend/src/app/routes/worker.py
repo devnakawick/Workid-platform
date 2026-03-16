@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
 from sqlalchemy.orm import Session
 from typing import List, Optional
+from uuid import UUID
 
 from app.database import get_db
 from app.models.user import User
@@ -146,10 +147,10 @@ async def upload_document(
         "id": document.id,
         "worker_id": str(document.worker_id),
         "document_type": document.document_type,
-        "file_url": document.file_url,
+        "file_url": document.file_path,  # Return file_path as file_url for API
         "file_name": document.file_name,
         "status": document.status,
-        "uploaded_at": document.uploaded_at.isoformat(),
+        "uploaded_at": document.created_at.isoformat(),  # Use created_at instead of uploaded_at
         "verified_at": document.verified_at.isoformat() if document.verified_at else None
     }
 
@@ -169,11 +170,25 @@ async def get_worker_documents(
         )
     
     documents = WorkerService.get_worker_documents(db, worker.id)
-    return documents
+    
+    # Transform to match schema
+    return [
+        {
+            "id": doc.id,
+            "worker_id": doc.worker_id,
+            "document_type": doc.document_type,
+            "file_name": doc.file_name,
+            "file_url": doc.file_path,  # Return file_path as file_url
+            "status": doc.status,
+            "uploaded_at": doc.created_at.isoformat(),
+            "verified_at": doc.verified_at.isoformat() if doc.verified_at else None
+        }
+        for doc in documents
+    ]
 
 @router.delete("/documents/{document_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_document(
-    document_id: int, 
+    document_id: UUID, 
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
