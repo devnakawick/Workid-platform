@@ -67,6 +67,10 @@ class Job(Base):
     application_deadline = Column(DateTime, nullable=True)
     expires_at = Column(DateTime, nullable=True)
     
+    # Counters
+    views_count = Column(Integer, default=0)
+    applications_count = Column(Integer, default=0)
+    
     # Location Coordinates
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)

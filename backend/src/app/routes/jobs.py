@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
+from uuid import UUID
 
 from app.database import get_db
 from app.models.user import User
@@ -122,56 +123,6 @@ async def get_recommended_jobs(
     )
     return jobs
 
-@router.get("/{job_id}", response_model=JobListResponse)
-async def get_job_details(
-    job_id: int, 
-    db: Session = Depends(get_db)
-):
-    """
-    Get full details of a specific job
-    """
-    job = JobService.get_job_by_id(db, job_id)
-    if not job:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Job #{job_id} not found"
-        )
-    
-    # Track view
-    JobService.increment_view_count(db, job_id)
-
-    return job
-
-# ======= Applications (Worker Side) =======
-
-@router.post("/{job_id}/apply", response_model=ApplicationResponse, status_code=status.HTTP_201_CREATED)
-async def apply_to_job(
-    job_id: int,
-    application_data: ApplicationCreate,
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    """
-    Apply to a job
-    """
-    # Get worker profile
-    worker = WorkerService.get_worker_by_user(db, current_user.id)
-    if not worker:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Worker profile not found. Please create your profile first."
-        )
-    
-    # Submit application
-    application = JobService.apply_to_job(
-        db=db,
-        job_id=job_id,
-        worker_id=worker.id,
-        application_data=application_data.model_dump(exclude_unset=True)
-    )
-
-    return application
-
 @router.get("/applications/mine", response_model=List[ApplicationListResponse])
 async def get_my_applications(
     status_filter: Optional[ApplicationStatus] = Query(
@@ -200,9 +151,60 @@ async def get_my_applications(
 
     return applications
 
+@router.get("/{job_id}", response_model=JobListResponse)
+async def get_job_details(
+    job_id: UUID, 
+    db: Session = Depends(get_db)
+):
+    """
+    Get full details of a specific job
+    """
+    job = JobService.get_job_by_id(db, job_id)
+    if not job:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Job #{job_id} not found"
+        )
+    
+    # Track view
+    JobService.increment_view_count(db, job_id)
+
+    return job
+
+# ======= Applications (Worker Side) =======
+
+@router.post("/{job_id}/apply", response_model=ApplicationResponse, status_code=status.HTTP_201_CREATED)
+async def apply_to_job(
+    job_id: UUID,
+    application_data: ApplicationCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Apply to a job
+    """
+    # Get worker profile
+    worker = WorkerService.get_worker_by_user(db, current_user.id)
+    if not worker:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Worker profile not found. Please create your profile first."
+        )
+    
+    # Submit application
+    application = JobService.apply_to_job(
+        db=db,
+        job_id=job_id,
+        worker_id=worker.id,
+        application_data=application_data.model_dump(exclude_unset=True)
+    )
+
+    return application
+
+
 @router.delete("/applications/{application_id}/withdraw", status_code=status.HTTP_200_OK)
 async def withdraw_application(
-    application_id: int,
+    application_id: UUID,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):

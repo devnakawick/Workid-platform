@@ -26,20 +26,24 @@ class Application(Base):
     
     # Application Details
     cover_letter = Column(Text, nullable=True)
+    message = Column(Text, nullable=True)  # Alias for cover_letter used by API
     proposed_rate = Column(Float, nullable=True)
     proposed_duration = Column(String(50), nullable=True)
     availability = Column(Text, nullable=True)
+    available_from = Column(DateTime, nullable=True)
     
     # Status
     status = Column(SQLEnum(ApplicationStatus), default=ApplicationStatus.PENDING)
     
     # Employer Feedback
     employer_notes = Column(Text, nullable=True)
+    rejection_reason = Column(Text, nullable=True)
     
     # Timestamps
     applied_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     responded_at = Column(DateTime, nullable=True)
+    reviewed_at = Column(DateTime, nullable=True)
     
     # Relationships
     job = relationship("Job", back_populates="applications")
