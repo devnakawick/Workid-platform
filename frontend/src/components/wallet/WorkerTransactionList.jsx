@@ -15,26 +15,26 @@ const WorkerTransactionList = ({ transactions, filters, onFilterChange }) => {
   // Icon, color and sign config per transaction type
   const typeConfig = {
     earning: {
-      icon:        <ArrowDownCircle className="w-4 h-4 text-blue-500" />,
-      iconBg:      'bg-blue-50',
+      icon: <ArrowDownCircle className="w-4 h-4 text-blue-500" />,
+      iconBg: 'bg-blue-50',
       amountColor: 'text-blue-600',
-      sign:        '+',
-      label:       'Earning',
+      sign: '+',
+      label: 'Earning',
     },
     withdrawal: {
-      icon:        <Banknote className="w-4 h-4 text-red-500" />,
-      iconBg:      'bg-red-50',
+      icon: <Banknote className="w-4 h-4 text-red-500" />,
+      iconBg: 'bg-red-50',
       amountColor: 'text-red-600',
-      sign:        '−',
-      label:       'Withdrawal',
+      sign: '−',
+      label: 'Withdrawal',
     },
   };
 
   // Status badge styles per status
   const statusStyle = {
     completed: 'bg-green-50  text-green-700  border border-green-100',
-    pending:   'bg-yellow-50 text-yellow-700 border border-yellow-100',
-    failed:    'bg-red-50    text-red-600    border border-red-100',
+    pending: 'bg-yellow-50 text-yellow-700 border border-yellow-100',
+    failed: 'bg-red-50    text-red-600    border border-red-100',
   };
 
   return (
@@ -87,7 +87,7 @@ const WorkerTransactionList = ({ transactions, filters, onFilterChange }) => {
 
               <tbody className="divide-y divide-gray-100">
                 {transactions.map((txn) => {
-                  const cfg       = typeConfig[txn.type] || typeConfig.earning;
+                  const cfg = typeConfig[txn.type] || typeConfig.earning;
                   const isPending = txn.status === 'pending';
 
                   return (
@@ -157,7 +157,7 @@ const WorkerTransactionList = ({ transactions, filters, onFilterChange }) => {
           {/* ── Mobile card list — visible below lg ── */}
           <div className="lg:hidden divide-y divide-gray-100">
             {transactions.map((txn) => {
-              const cfg       = typeConfig[txn.type] || typeConfig.earning;
+              const cfg = typeConfig[txn.type] || typeConfig.earning;
               const isPending = txn.status === 'pending';
 
               return (

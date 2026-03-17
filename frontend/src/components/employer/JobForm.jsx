@@ -3,7 +3,7 @@ import { FileText, Wallet, MapPin, Banknote, Clock, Users, ClipboardList, Plus, 
 import toast from 'react-hot-toast';
 import { categories } from '../../mocks/jobData';
 
-const JobForm = ({ 
+const JobForm = ({
   initialData = {
     title: '',
     description: '',
@@ -28,7 +28,7 @@ const JobForm = ({
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     // Clear error when user starts typing
     if (fieldErrors[name]) {
       setFieldErrors(prev => ({ ...prev, [name]: '' }));
@@ -37,27 +37,27 @@ const JobForm = ({
 
   const addRequirement = () => {
     const requirement = requirementInput.trim();
-    
+
     if (!requirement) {
       toast.error('Please enter a requirement');
       return;
     }
-    
+
     if (requirement.length < 3) {
       toast.error('Requirement must be at least 3 characters');
       return;
     }
-    
+
     if (formData.requirements.includes(requirement)) {
       toast.error('This requirement is already added');
       return;
     }
-    
+
     setFormData(prev => ({
       ...prev,
       requirements: [...prev.requirements, requirement]
     }));
-    
+
     setRequirementInput('');
     toast.success('Requirement added');
   };
@@ -142,7 +142,7 @@ const JobForm = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       toast.error('Please fix the errors below');
       return;
@@ -165,7 +165,7 @@ const JobForm = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      
+
       {/* CARD 1: JOB BASICS  */}
       <div className="bg-white rounded-xl shadow-md p-8 hover:shadow-lg transition-shadow">
         <div className="flex items-center mb-6 pb-4 border-b-2 border-gray-100">
@@ -189,11 +189,10 @@ const JobForm = ({
               name="title"
               value={formData.title}
               onChange={handleChange}
-              className={`w-full px-4 py-3 border-2 rounded-lg text-base transition-all ${
-                fieldErrors.title 
-                  ? 'border-red-500 focus:border-red-600 focus:ring-red-100' 
+              className={`w-full px-4 py-3 border-2 rounded-lg text-base transition-all ${fieldErrors.title
+                  ? 'border-red-500 focus:border-red-600 focus:ring-red-100'
                   : 'border-gray-300 focus:border-blue-500 focus:ring-blue-100'
-              } focus:outline-none focus:ring-3`}
+                } focus:outline-none focus:ring-3`}
               placeholder="e.g., Experienced Mason Needed for House Construction"
               maxLength={100}
             />
@@ -211,11 +210,10 @@ const JobForm = ({
               name="category"
               value={formData.category}
               onChange={handleChange}
-              className={`w-full px-4 py-3 border-2 rounded-lg text-base transition-all ${
-                fieldErrors.category 
-                  ? 'border-red-500 focus:border-red-600 focus:ring-red-100' 
+              className={`w-full px-4 py-3 border-2 rounded-lg text-base transition-all ${fieldErrors.category
+                  ? 'border-red-500 focus:border-red-600 focus:ring-red-100'
                   : 'border-gray-300 focus:border-blue-500 focus:ring-blue-100'
-              } focus:outline-none focus:ring-3`}
+                } focus:outline-none focus:ring-3`}
             >
               <option value="">Select a category</option>
               {categories.map(cat => (
@@ -228,7 +226,7 @@ const JobForm = ({
                 {fieldErrors.category}
               </span>
             )}
-            
+
             {formData.category === 'Other' && (
               <div className="mt-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Custom Category *</label>
@@ -237,11 +235,10 @@ const JobForm = ({
                   name="customCategory"
                   value={formData.customCategory}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 border-2 rounded-lg text-base transition-all ${
-                    fieldErrors.customCategory 
-                      ? 'border-red-500 focus:border-red-600 focus:ring-red-100' 
+                  className={`w-full px-4 py-3 border-2 rounded-lg text-base transition-all ${fieldErrors.customCategory
+                      ? 'border-red-500 focus:border-red-600 focus:ring-red-100'
                       : 'border-gray-300 focus:border-blue-500 focus:ring-blue-100'
-                  } focus:outline-none focus:ring-3`}
+                    } focus:outline-none focus:ring-3`}
                   placeholder="Enter your custom category"
                   maxLength={50}
                 />
@@ -262,11 +259,10 @@ const JobForm = ({
               value={formData.description}
               onChange={handleChange}
               rows={6}
-              className={`w-full px-4 py-3 border-2 rounded-lg text-base resize-none transition-all ${
-                fieldErrors.description 
-                  ? 'border-red-500 focus:border-red-600 focus:ring-red-100' 
+              className={`w-full px-4 py-3 border-2 rounded-lg text-base resize-none transition-all ${fieldErrors.description
+                  ? 'border-red-500 focus:border-red-600 focus:ring-red-100'
                   : 'border-gray-300 focus:border-blue-500 focus:ring-blue-100'
-              } focus:outline-none focus:ring-3`}
+                } focus:outline-none focus:ring-3`}
               placeholder="Describe the job requirements, responsibilities, and what you're looking for in detail..."
               maxLength={1000}
             />
@@ -308,11 +304,10 @@ const JobForm = ({
               name="location"
               value={formData.location}
               onChange={handleChange}
-              className={`w-full px-4 py-3 border-2 rounded-lg text-base transition-all ${
-                fieldErrors.location 
-                  ? 'border-red-500 focus:border-red-600 focus:ring-red-100' 
+              className={`w-full px-4 py-3 border-2 rounded-lg text-base transition-all ${fieldErrors.location
+                  ? 'border-red-500 focus:border-red-600 focus:ring-red-100'
                   : 'border-gray-300 focus:border-blue-500 focus:ring-blue-100'
-              } focus:outline-none focus:ring-3`}
+                } focus:outline-none focus:ring-3`}
               placeholder="e.g., Colombo, Sri Lanka"
               maxLength={100}
             />
@@ -328,11 +323,10 @@ const JobForm = ({
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               <Banknote className="w-4 h-4 inline mr-1" /> Payment Rate *
             </label>
-            <div className={`flex items-center border-2 rounded-lg overflow-hidden transition-all ${
-              fieldErrors.salary 
-                ? 'border-red-500 focus-within:border-red-600 focus-within:ring-3 focus-within:ring-red-100' 
+            <div className={`flex items-center border-2 rounded-lg overflow-hidden transition-all ${fieldErrors.salary
+                ? 'border-red-500 focus-within:border-red-600 focus-within:ring-3 focus-within:ring-red-100'
                 : 'border-gray-300 focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-100'
-            }`}>
+              }`}>
               <span className="px-4 py-3 bg-gray-50 border-r-2 border-gray-300 font-semibold text-gray-700">LKR</span>
               <input
                 type="number"
@@ -376,11 +370,10 @@ const JobForm = ({
               name="duration"
               value={formData.duration}
               onChange={handleChange}
-              className={`w-full px-4 py-3 border-2 rounded-lg text-base transition-all ${
-                fieldErrors.duration 
-                  ? 'border-red-500 focus:border-red-600 focus:ring-red-100' 
+              className={`w-full px-4 py-3 border-2 rounded-lg text-base transition-all ${fieldErrors.duration
+                  ? 'border-red-500 focus:border-red-600 focus:ring-red-100'
                   : 'border-gray-300 focus:border-blue-500 focus:ring-blue-100'
-              } focus:outline-none focus:ring-3`}
+                } focus:outline-none focus:ring-3`}
               placeholder="e.g., 2 months, 3 weeks, 10 days"
               maxLength={50}
             />
@@ -420,11 +413,10 @@ const JobForm = ({
             onChange={handleChange}
             min="1"
             max="50"
-            className={`w-full px-4 py-3 border-2 rounded-lg text-base transition-all ${
-              fieldErrors.workersNeeded 
-                ? 'border-red-500 focus:border-red-600 focus:ring-red-100' 
+            className={`w-full px-4 py-3 border-2 rounded-lg text-base transition-all ${fieldErrors.workersNeeded
+                ? 'border-red-500 focus:border-red-600 focus:ring-red-100'
                 : 'border-gray-300 focus:border-blue-500 focus:ring-blue-100'
-            } focus:outline-none focus:ring-3`}
+              } focus:outline-none focus:ring-3`}
             placeholder="Number of workers"
           />
           {fieldErrors.workersNeeded && (
@@ -481,7 +473,7 @@ const JobForm = ({
               No additional requirements added yet
             </div>
           )}
-          
+
           <div className="flex flex-col sm:flex-row gap-2">
             <input
               type="text"
@@ -512,8 +504,8 @@ const JobForm = ({
       {/* CARD 5: FORM ACTIONS */}
       <div className="bg-white rounded-xl shadow-md p-6 md:p-8 hover:shadow-lg transition-shadow border-2 border-blue-100">
         <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={loading}
             className="flex-1 px-6 md:px-8 py-3 md:py-4 bg-blue-600 text-white rounded-lg text-base md:text-lg font-bold hover:bg-blue-700 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
           >
@@ -526,7 +518,7 @@ const JobForm = ({
               submitButtonText
             )}
           </button>
-          
+
           <button
             type="button"
             onClick={onCancel}
@@ -539,7 +531,7 @@ const JobForm = ({
 
         <div className="mt-4 md:mt-6 p-3 md:p-4 bg-blue-50 rounded-lg border border-blue-200">
           <p className="text-xs md:text-sm text-blue-900 leading-relaxed">
-            <strong className="font-bold">Tip:</strong> Be specific and detailed in your job description to attract the right workers. 
+            <strong className="font-bold">Tip:</strong> Be specific and detailed in your job description to attract the right workers.
             Include work hours, safety requirements, and any special conditions.
           </p>
         </div>
