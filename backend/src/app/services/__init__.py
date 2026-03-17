@@ -3,11 +3,13 @@ from app.services.worker_service import WorkerService
 from app.services.employer_service import EmployerService
 from app.services.job_service import JobService
 from app.services.auth_service import AuthService
+from app.services.ai_service import AIService
 
 __all__ = [
     "FileService",
     "WorkerService",
     "EmployerService",
     "JobService",
-    "AuthService"
+    "AuthService",
+    "AIService"
 ]

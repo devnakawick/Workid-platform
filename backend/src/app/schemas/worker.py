@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional
 from datetime import date, datetime
 from uuid import UUID
-from app.models.worker import Worker
+from app.models.worker import Worker, DocumentType, DocumentStatus
 from enum import Enum
 
 
@@ -17,18 +17,6 @@ class SkillCategory(str, Enum):
     delivery = "delivery"
     other = "other"
 
-
-class DocumentType(str, Enum):
-    nic = "nic"
-    police_clearance = "police_clearance"
-    certificate = "certificate"
-    other = "other"
-
-
-class DocumentStatus(str, Enum):
-    pending = "pending"
-    approved = "approved"
-    rejected = "rejected"
 
 # ======= Worker Profile Schemas =======
 
@@ -119,7 +107,7 @@ class WorkerProfileResponse(BaseModel):
     """
     Schema for worker profile response
     """
-    id: int
+    id: UUID
     user_id: UUID
 
     full_name: str
@@ -150,7 +138,7 @@ class WorkerProfileResponse(BaseModel):
 
     created_at: datetime
     updated_at: datetime
-    last_active: datetime
+    last_active: Optional[datetime]
 
     class Config:
         from_attributes = True  # Allows Pydantic to read from SQLAlchemy models
@@ -174,13 +162,14 @@ class DocumentUploadResponse(BaseModel):
     """
     Schemas for document upload response
     """
-    id: int
-    worker_id: int
+    id: UUID
+    worker_id: UUID
     document_type: DocumentType
     file_name: str
     file_url: str
     status: DocumentStatus
     uploaded_at: datetime
+    verified_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
@@ -217,7 +206,7 @@ class WorkerSearchResponse(BaseModel):
     """
     Schemas for worker search results (for employer)
     """
-    id: int
+    id: UUID
     full_name: str
     district: str
     primary_skill: SkillCategory
@@ -229,8 +218,8 @@ class WorkerSearchResponse(BaseModel):
     total_jobs_completed: int
     is_verified: bool
     is_available: bool
+    city: str
     bio: Optional[str]
-    profile_photo: Optional[str]
 
     class Config:
         from_attributes = True

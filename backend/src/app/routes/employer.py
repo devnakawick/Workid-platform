@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
+from uuid import UUID
 
 from app.database import get_db
 from app.models.user import User
@@ -160,7 +161,7 @@ async def get_my_jobs(
 
 @router.get("/jobs/{job_id}", response_model=JobResponse)
 async def get_job_detail(
-    job_id: int,
+    job_id: UUID,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -180,7 +181,7 @@ async def get_job_detail(
 
 @router.put("/jobs/{job_id}", response_model=JobResponse)
 async def update_job(
-    job_id: int,
+    job_id: UUID,
     job_data: JobUpdate,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -201,7 +202,7 @@ async def update_job(
 
 @router.patch("/jobs/{job_id}/status", response_model=JobResponse)
 async def update_job_status(
-    job_id: int, 
+    job_id: UUID, 
     status_data: JobStatusUpdate,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -222,7 +223,7 @@ async def update_job_status(
 
 @router.delete("/jobs/{job_id}", status_code=status.HTTP_200_OK)
 async def delete_job(
-    job_id: int, 
+    job_id: UUID, 
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -242,7 +243,7 @@ async def delete_job(
 # ======= Application Review =======
 @router.get("/jobs/{job_id}/applications", response_model=List[ApplicationResponse])
 async def get_job_applications(
-    job_id: int, 
+    job_id: UUID, 
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -305,7 +306,7 @@ async def search_workers(
 
 @router.get("/workers/{worker_id}", response_model=WorkerSearchResponse)
 async def get_worker_profile(
-    worker_id: int,
+    worker_id: UUID,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):

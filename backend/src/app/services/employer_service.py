@@ -6,7 +6,7 @@ from app.models.job import Job, JobStatus
 from app.models.application import Application, ApplicationStatus
 from typing import List, Optional, Dict
 from uuid import UUID
-from datetime import datetime
+from datetime import datetime, timezone
 
 ALLOWED_EMPLOYER_UPDATE_FIELDS = {
     "full_name", 
@@ -70,7 +70,7 @@ class EmployerService:
             if key in ALLOWED_EMPLOYER_UPDATE_FIELDS:
                 setattr(employer, key, value)
         
-        employer.updated_at = datetime.utcnow()
+        employer.updated_at = datetime.now(timezone.utc)
         db.commit()
         db.refresh(employer)
         return employer

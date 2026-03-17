@@ -1,10 +1,23 @@
-from sqlalchemy import Column, String, Text, Float, Integer, DateTime, ForeignKey, Enum as SQLEnum
+from sqlalchemy import Column, String, Text, Float, Integer, DateTime, ForeignKey, Enum as SQLEnum, JSON, Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from datetime import datetime
 import uuid
 import enum
 from app.database import Base
+
+class SkillCategory(str, enum.Enum):
+    """Skill category enumeration"""
+    PLUMBING = "plumbing"
+    ELECTRICAL = "electrical"
+    CARPENTRY = "carpentry"
+    MASONRY = "masonry"
+    PAINTING = "painting"
+    GARDENING = "gardening"
+    CLEANING = "cleaning"
+    DRIVING = "driving"
+    GENERAL_LABOR = "general_labor"
+    OTHER = "other"
 
 class DocumentType(str, enum.Enum):
     """Document type enumeration"""
@@ -25,7 +38,6 @@ class DocumentStatus(str, enum.Enum):
 class Worker(Base):
     """Worker profile model"""
     __tablename__ = "workers"
-<<<<<<< HEAD
     
     # Primary Key
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
@@ -36,50 +48,44 @@ class Worker(Base):
     # Personal Information
     full_name = Column(String(100), nullable=True)
     email = Column(String(100), nullable=True)
+    nic_number = Column(String, unique=True, nullable=False)
+    date_of_birth = Column(DateTime)
+    phone_number = Column(String, nullable=False)  
+    
+    # Contact & Location
+    address = Column(Text)
     city = Column(String(50), nullable=True)
+    district = Column(String, nullable=False, index=True)
+    postal_code = Column(String)
+    
     bio = Column(Text, nullable=True)
     skills = Column(Text, nullable=True)  # JSON string of skills
     
     # Professional Information
-=======
-
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), unique=True, nullable=False)
-
-    # Basic Info
-    full_name = Column(String, nullable=False)
-    nic_number = Column(String, unique=True, nullable=False)
-    date_of_birth = Column(DateTime)
-    email = Column(String, nullable=False)
-    phone_number = Column(String, nullable=False)
-
-    # Contact & Location
-    address = Column(Text)
-    city = Column(String, nullable=False, index=True)
-    district = Column(String, nullable=False, index=True)
-    postal_code = Column(String)
-
-    # Work Details
-    primary_skill = Column(Enum(SkillCategory, name="skill_category"), nullable=False)
+    primary_skill = Column(SQLEnum(SkillCategory, name="skill_category"), nullable=False)
     other_skills = Column(JSON, default=list)  
     experience_years = Column(Integer, default=0)
 
     # Payment
     daily_rate = Column(Float)
->>>>>>> 1fb5c6ad02bb1f37949f4eb99509eaf2d133737f
     hourly_rate = Column(Float, nullable=True)
-    experience_years = Column(Integer, nullable=True)
     education = Column(Text, nullable=True)
     
     # Rating
     rating = Column(Float, default=0.0)
     total_reviews = Column(Integer, default=0)
+    total_jobs_completed = Column(Integer, default=0)
     
     # Profile Image
     profile_image_url = Column(String(255), nullable=True)
     
     # Status
-    is_available = Column(String(10), default="yes")  # yes, no, busy
+    is_available = Column(Boolean, default=True)  # True, False
+    is_verified = Column(Boolean, default=False)  # True, False
+    last_active = Column(DateTime, nullable=True)
+    
+    # Additional fields for schema compatibility
+    profile_photo = Column(String(255), nullable=True)
     
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)

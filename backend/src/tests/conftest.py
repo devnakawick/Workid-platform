@@ -8,9 +8,27 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event, String
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
+from sqlalchemy.dialects.postgresql import UUID
+import uuid
+
+# Custom UUID type for SQLite
+class SQLiteUUID(String):
+    def bind_processor(self, dialect):
+        def process(value):
+            if value is None:
+                return None
+            return str(value)
+        return process
+    
+    def result_processor(self, dialect, coltype):
+        def process(value):
+            if value is None:
+                return None
+            return uuid.UUID(value)
+        return process
 
 from app.main import app
 from app.database import Base, get_db
@@ -29,6 +47,13 @@ engine = create_engine(
     connect_args={"check_same_thread": False},
     poolclass=StaticPool
 )
+
+# SQLite UUID handling
+@event.listens_for(engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
 
 TestingSessionLocal = sessionmaker(
     autocommit=False,
@@ -130,7 +155,7 @@ def worker_profile(db, worker_user):
         daily_rate=2500.00,
         bio="Experienced plumber in Dehiwala",
         is_available=True,
-        is_verified=True,
+        is_verified=False,
         rating=4.5,
         total_jobs_completed=10
     )
