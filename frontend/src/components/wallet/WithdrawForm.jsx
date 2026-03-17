@@ -13,10 +13,10 @@ const BANKS = [
 const WithdrawForm = ({ balance, onConfirm, onCancel, loading }) => {
 
   // Form state
-  const [amount,    setAmount]    = useState('');
-  const [bank,      setBank]      = useState('');
-  const [errors,    setErrors]    = useState({});
-  const [success,   setSuccess]   = useState(false);
+  const [amount, setAmount] = useState('');
+  const [bank, setBank] = useState('');
+  const [errors, setErrors] = useState({});
+  const [success, setSuccess] = useState(false);
   const [withdrawn, setWithdrawn] = useState(0);
 
   // Format numbers to LKR style
@@ -112,13 +112,12 @@ const WithdrawForm = ({ balance, onConfirm, onCancel, loading }) => {
                 key={q}
                 onClick={() => { setAmount(String(q)); setErrors({}); }}
                 disabled={q > balance}
-                className={`px-3 py-1.5 rounded-lg text-sm font-semibold border transition-all ${
-                  Number(amount) === q
+                className={`px-3 py-1.5 rounded-lg text-sm font-semibold border transition-all ${Number(amount) === q
                     ? 'bg-blue-600 text-white border-blue-600 shadow-md'
                     : q > balance
-                    ? 'opacity-40 cursor-not-allowed bg-gray-50 text-gray-400 border-gray-200'
-                    : 'bg-white text-gray-700 border-gray-200 hover:border-blue-400 hover:text-blue-600'
-                }`}
+                      ? 'opacity-40 cursor-not-allowed bg-gray-50 text-gray-400 border-gray-200'
+                      : 'bg-white text-gray-700 border-gray-200 hover:border-blue-400 hover:text-blue-600'
+                  }`}
               >
                 {q.toLocaleString()}
               </button>
@@ -140,9 +139,8 @@ const WithdrawForm = ({ balance, onConfirm, onCancel, loading }) => {
               placeholder="0.00"
               min="500"
               max={balance}
-              className={`w-full py-3 pl-14 pr-4 border-2 rounded-xl text-lg font-bold text-gray-900 focus:outline-none transition-all ${
-                errors.amount ? 'border-red-400 bg-red-50' : 'border-gray-200 focus:border-blue-500'
-              }`}
+              className={`w-full py-3 pl-14 pr-4 border-2 rounded-xl text-lg font-bold text-gray-900 focus:outline-none transition-all ${errors.amount ? 'border-red-400 bg-red-50' : 'border-gray-200 focus:border-blue-500'
+                }`}
             />
           </div>
           {errors.amount && <p className="mt-1.5 text-xs text-red-500 font-medium">{errors.amount}</p>}
@@ -158,9 +156,8 @@ const WithdrawForm = ({ balance, onConfirm, onCancel, loading }) => {
             <select
               value={bank}
               onChange={(e) => { setBank(e.target.value); setErrors({}); }}
-              className={`w-full py-3 pl-10 pr-4 border-2 rounded-xl text-sm bg-white text-gray-900 focus:outline-none transition-all appearance-none ${
-                errors.bank ? 'border-red-400 bg-red-50' : 'border-gray-200 focus:border-blue-500'
-              }`}
+              className={`w-full py-3 pl-10 pr-4 border-2 rounded-xl text-sm bg-white text-gray-900 focus:outline-none transition-all appearance-none ${errors.bank ? 'border-red-400 bg-red-50' : 'border-gray-200 focus:border-blue-500'
+                }`}
             >
               <option value="">Select your bank</option>
               {BANKS.map(b => (
