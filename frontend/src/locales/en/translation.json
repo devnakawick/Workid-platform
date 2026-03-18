@@ -28,11 +28,20 @@
         }
     },
     "nav": {
+        "dashboard": "Dashboard",
+        "postJob": "Post Job",
+        "manageJobs": "Manage Jobs",
+        "applications": "Applications",
+        "findWorkers": "Find Workers",
+        "myJobs": "My Active Jobs",
         "findJobs": "Find Jobs",
-        "myApplications": "My Applications",
+        "profile": "Profile",
         "documents": "Documents",
-        "learning": "Learning",
+        "learning": "Learning & Skills",
         "badges": "Badges",
+        "wallet": "Wallet",
+        "support": "Support",
+        "settings": "Settings",
         "logout": "Logout"
     },
     "jobs": {

@@ -28,11 +28,20 @@
         }
     },
     "nav": {
+        "dashboard": "දළ විශ්ලේෂණය",
+        "postJob": "රැකියාවක් පළ කරන්න",
+        "manageJobs": "රැකියා කළමනාකරණය",
+        "applications": "අයදුම්පත්",
+        "findWorkers": "සේවකයින් සොයන්න",
+        "myJobs": "මගේ සක්‍රීය රැකියා",
         "findJobs": "රැකියා සොයන්න",
-        "myApplications": "මගේ අයදුම්පත්",
+        "profile": "පැතිකඩ",
         "documents": "ලේඛන",
-        "learning": "ඉගෙනීම",
+        "learning": "ඉගෙනීම සහ කුසලතා",
         "badges": "ලාංඡන",
+        "wallet": "පසුම්බිය",
+        "support": "සහාය",
+        "settings": "සැකසුම්",
         "logout": "පිටවන්න"
     },
     "jobs": {
