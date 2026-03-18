@@ -58,8 +58,8 @@ class EmployerProfileResponse(BaseModel):
     """
     Schema for employer profile response
     """
-    id: UUID
-    user_id: UUID
+    id: int
+    user_id: int
 
     full_name: str
     email: str

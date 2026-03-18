@@ -56,7 +56,7 @@ router = APIRouter(prefix="/api/jobs", tags=["jobs"])
 
 @router.post("/{job_id}/location/update")
 async def update_location(
-    job_id: uuid.UUID,
+    job_id: int,
     location: LocationUpdate,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -138,7 +138,7 @@ async def update_location(
 
 @router.get("/{job_id}/location", response_model=LocationResponse)
 async def get_job_locations(
-    job_id: uuid.UUID,
+    job_id: int,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -197,7 +197,7 @@ async def get_job_locations(
 @router.websocket("/{job_id}/location/ws")
 async def location_websocket(
     websocket: WebSocket,
-    job_id: uuid.UUID,
+    job_id: int,
     db: Session = Depends(get_db)
 ):
     """
@@ -260,7 +260,7 @@ async def location_websocket(
 
 # ============== HELPER FUNCTIONS =============
 
-def clear_job_location(job_id: uuid.UUID):
+def clear_job_location(job_id: int):
     """
     Clear location data when job is completed
     Called by progress service
@@ -397,7 +397,7 @@ async def get_my_applications(
 
 @router.get("/{job_id}", response_model=JobListResponse)
 async def get_job_details(
-    job_id: UUID, 
+    job_id: int, 
     db: Session = Depends(get_db)
 ):
     """
@@ -419,7 +419,7 @@ async def get_job_details(
 
 @router.post("/{job_id}/apply", response_model=ApplicationResponse, status_code=status.HTTP_201_CREATED)
 async def apply_to_job(
-    job_id: UUID,
+    job_id: int,
     application_data: ApplicationCreate,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -448,7 +448,7 @@ async def apply_to_job(
 
 @router.delete("/applications/{application_id}/withdraw", status_code=status.HTTP_200_OK)
 async def withdraw_application(
-    application_id: UUID,
+    application_id: int,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):

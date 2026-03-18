@@ -38,9 +38,9 @@ from pydantic import BaseModel, Field
 
 class ApplicationResponse(BaseModel):
     """Application response schema"""
-    id: str
-    job_id: str
-    worker_id: str
+    id: int
+    job_id: int
+    worker_id: int
     worker_name: str
     worker_rating: float
     status: str
@@ -73,7 +73,7 @@ router = APIRouter(prefix="/api/employer", tags=["employer"])
 
 @router.get("/jobs/{job_id}/applications", response_model=List[ApplicationResponse])
 async def get_job_applications(
-    job_id: uuid.UUID,
+    job_id: int,
     current_user: User = Depends(get_current_employer),
     db: Session = Depends(get_db)
 ):
@@ -106,17 +106,17 @@ async def get_job_applications(
         worker = app.worker
         
         # Calculate worker rating
-        rating_info = JobProgressService.calculate_average_rating(db, worker.user_id)
+        rating_info = ProgressService.calculate_average_rating(db, worker.user_id)
         
         result.append({
     
-            "id": str(app.id),
-            "job_id": str(app.job_id),
-            "worker_id": str(app.worker_id),
+            "id": app.id,
+            "job_id": app.job_id,
+            "worker_id": app.worker_id,
             "worker_name": worker.full_name,
             "worker_rating": rating_info["average_rating"],
             "status": app.status.value,
-            "applied_at": app.created_at.isoformat(),
+            "applied_at": app.applied_at.isoformat(),
             "cover_letter": app.cover_letter
         })
     
@@ -125,7 +125,7 @@ async def get_job_applications(
 
 @router.post("/applications/{application_id}/accept")
 async def accept_application(
-    application_id: uuid.UUID,
+    application_id: int,
     current_user: User = Depends(get_current_employer),
     db: Session = Depends(get_db)
 ):
@@ -176,7 +176,7 @@ async def accept_application(
     job.status = "accepted"  # Update job status
     
     # Create job progress record
-    job_progress = JobProgressService.create_job_progress(
+    job_progress = ProgressService.create_job_progress(
         db=db,
         job_id=job.id,
         worker_id=application.worker_id
@@ -196,16 +196,16 @@ async def accept_application(
     
     return {
         "message": "Application accepted successfully",
-        "job_id": str(job.id),
-        "worker_id": str(application.worker_id),
-        "progress_id": str(job_progress.id),
+        "job_id": job.id,
+        "worker_id": application.worker_id,
+        "progress_id": job_progress.id,
         "status": job_progress.status.value
     }
 
 
 @router.post("/applications/{application_id}/reject")
 async def reject_application(
-    application_id: uuid.UUID,
+    application_id: int,
     current_user: User = Depends(get_current_employer),
     db: Session = Depends(get_db)
 ):
@@ -242,7 +242,7 @@ async def reject_application(
     
     return {
         "message": "Application rejected successfully",
-        "application_id": str(application.id)
+        "application_id": application.id
     }
 
 # ============================================
@@ -251,7 +251,7 @@ async def reject_application(
 
 @router.post("/jobs/{job_id}/rate-worker")
 async def rate_worker(
-    job_id: uuid.UUID,
+    job_id: int,
     request: RateWorkerRequest,
     current_user: User = Depends(get_current_employer),
     db: Session = Depends(get_db)
@@ -276,7 +276,7 @@ async def rate_worker(
         )
     
     # Get job progress
-    progress = JobProgressService.get_job_progress(db, job_id)
+    progress = ProgressService.get_job_progress(db, job_id)
     
     if not progress:
         raise HTTPException(
@@ -288,7 +288,7 @@ async def rate_worker(
     worker = progress.worker
     
     # Create rating
-    rating = JobProgressService.create_rating(
+    rating = ProgressService.create_rating(
         db=db,
         job_id=job_id,
         rater_id=current_user.id,
@@ -437,7 +437,7 @@ async def get_my_jobs(
 
 @router.get("/jobs/{job_id}", response_model=JobResponse)
 async def get_job_detail(
-    job_id: UUID,
+    job_id: int,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -457,7 +457,7 @@ async def get_job_detail(
 
 @router.put("/jobs/{job_id}", response_model=JobResponse)
 async def update_job(
-    job_id: UUID,
+    job_id: int,
     job_data: JobUpdate,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -478,13 +478,13 @@ async def update_job(
 
 @router.patch("/jobs/{job_id}/status", response_model=JobResponse)
 async def update_job_status(
-    job_id: UUID, 
+    job_id: int, 
     status_data: JobStatusUpdate,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """
-    Chenge job status
+    Change job status
     """
     employer = _get_employer_or_404(db, current_user.id)
 
@@ -499,7 +499,7 @@ async def update_job_status(
 
 @router.delete("/jobs/{job_id}", status_code=status.HTTP_200_OK)
 async def delete_job(
-    job_id: UUID, 
+    job_id: int, 
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -515,35 +515,6 @@ async def delete_job(
     )
 
     return {"message": f"Job #{job_id} has been cancelled successfully"}
-
-# ======= Application Review =======
-@router.get("/jobs/{job_id}/applications", response_model=List[ApplicationResponse])
-async def get_job_applications(
-    job_id: UUID, 
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    """
-    View all applications for a specific job
-    """
-    employer = _get_employer_or_404(db, current_user.id)
-
-    # Verify employer owns this job
-    job = JobService.get_job_by_id(db, job_id)
-    if not job or job.employer_id != employer.id:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Job not found"
-        )
-    
-    # Get all applications for this job
-    from app.models.application import Application
-    applications = db.query(Application)\
-        .filter(Application.job_id == job_id)\
-        .order_by(Application.applied_at.desc())\
-        .all()
-    
-    return applications
 
 # ======= Worker Discovery =======
 
@@ -582,7 +553,7 @@ async def search_workers(
 
 @router.get("/workers/{worker_id}", response_model=WorkerSearchResponse)
 async def get_worker_profile(
-    worker_id: UUID,
+    worker_id: int,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
