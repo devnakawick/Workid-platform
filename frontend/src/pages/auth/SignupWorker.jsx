@@ -15,6 +15,7 @@ export default function SignupWorker() {
     phone: '',
     password: '',
     confirmPassword: '',
+    agreeTerms: false,
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -26,6 +27,12 @@ export default function SignupWorker() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (e.target.type === 'checkbox') {
+      setFormData(prev => ({ ...prev, [name]: e.target.checked }));
+      if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
+      return;
+    }
+
     let finalValue = value;
     if (name === 'phone') {
       finalValue = value.replace(/\D/g, '').slice(0, 10);
@@ -78,6 +85,10 @@ export default function SignupWorker() {
       newErrors.confirmPassword = 'Passwords do not match';
     }
 
+    if (!formData.agreeTerms) {
+      newErrors.agreeTerms = 'You must agree to the Terms of Service and Privacy Policy';
+    }
+
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length > 0) {
@@ -109,9 +120,10 @@ export default function SignupWorker() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-14 h-14 mb-4">
-            <img src={logo} alt="WorkID" className="w-14 h-14 rounded-xl object-cover shadow-md" />
+            <button onClick={() => navigate('/')} className="cursor-pointer">
+              <img src={logo} alt="WorkID" className="w-14 h-14 rounded-xl object-cover shadow-md" />
+            </button>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">WorkID</h1>
           <p className="text-gray-500">{t('auth.signUpTitle', { role: t('auth.worker') })}</p>
         </div>
 
@@ -185,6 +197,35 @@ export default function SignupWorker() {
               error={errors.confirmPassword}
               icon={<Lock size={18} />}
             />
+
+            {/* Terms and Privacy Checkbox */}
+            <div className="flex items-start gap-3 mt-4">
+              <div className="flex items-center h-5 mt-1">
+                <input
+                  id="agreeTerms"
+                  name="agreeTerms"
+                  type="checkbox"
+                  checked={formData.agreeTerms}
+                  onChange={handleChange}
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer"
+                />
+              </div>
+              <div className="text-sm">
+                <label htmlFor="agreeTerms" className="font-medium text-gray-700 cursor-pointer block mb-1">
+                  I Agree to the{' '}
+                  <a href="/terms?from=worker" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    Terms
+                  </a>
+                  {' '}and{' '}
+                  <a href="/privacy?from=worker" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    Privacy Policy
+                  </a>.
+                </label>
+                {errors.agreeTerms && (
+                  <p className="mt-1 text-xs text-red-600 font-medium">{errors.agreeTerms}</p>
+                )}
+              </div>
+            </div>
 
             {/* Sign Up Button */}
             <Button

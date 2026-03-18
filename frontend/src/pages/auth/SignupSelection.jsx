@@ -20,7 +20,6 @@ export default function SignupSelection() {
                         <img src={logo} alt="WorkID" className="h-20 w-auto rounded-3xl shadow-xl border-4 border-white" />
                     </button>
                     <div className="space-y-2">
-                        <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter italic">WorkID</h1>
                         <p className="text-slate-500 font-medium text-lg max-w-md mx-auto">{t('landing.getStartedDialogDesc')}</p>
                     </div>
                 </div>

@@ -76,9 +76,10 @@ export default function Login() {
         {/* Header */}
         <div className="text-center mb-8 px-4">
           <div className="inline-flex items-center justify-center w-14 h-14 mb-4">
-            <img src={logo} alt="WorkID" className="w-14 h-14 rounded-xl object-cover shadow-md" />
+            <button onClick={() => navigate('/')} className="cursor-pointer">
+              <img src={logo} alt="WorkID" className="w-14 h-14 rounded-xl object-cover shadow-md" />
+            </button>
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">WorkID</h1>
           <p className="text-gray-500 text-sm md:text-base font-medium">{t('auth.signInTitle')}</p>
         </div>
 

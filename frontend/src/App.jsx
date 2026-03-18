@@ -13,6 +13,8 @@ import Login from './pages/auth/Login';
 import SignupEmployer from './pages/auth/SignupEmployer';
 import SignupWorker from './pages/auth/SignupWorker';
 import SignupSelection from './pages/auth/SignupSelection';
+import TermsOfService from './pages/TermsOfService';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 import Applications from './pages/Application';
 import Badges from './pages/Badges';
 import Documents from './pages/Documents';
@@ -55,6 +57,8 @@ const AuthenticatedApp = () => {
     <Routes>
       {/* Original routes */}
       <Route path="/" element={<LandingPage />} />
+      <Route path="/terms" element={<TermsOfService />} />
+      <Route path="/privacy" element={<PrivacyPolicy />} />
       <Route path="/Applications" element={
         <Layout currentPageName="Applications">
           <Applications />
