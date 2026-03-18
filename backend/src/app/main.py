@@ -6,6 +6,7 @@ from fastapi.staticfiles import StaticFiles
 import logging
 import os
 
+from app.routes import auth, dashboard, ai
 from app.config import settings
 #from src.app.database import create_tables
 from app.routes import auth, dashboard
@@ -78,6 +79,7 @@ app.include_router(escrow.routes)
 app.include_router(worker_wallet.routes)
 app.include_router(payment.router)
 app.include_router(mock_gateway.router)
+app.include_router(ai.router) 
 
 # Include additional routers
 app.include_router(worker.router)
