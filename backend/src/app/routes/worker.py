@@ -2,9 +2,14 @@ from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File,
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from uuid import UUID
+import uuid
 
 from app.database import get_db
 from app.models.user import User
+from app.models.job import Job
+from app.models.job_progress import JobProgress, JobProgressStatus
+from app.models.rating import Rating
+from app.services.progress_service import ProgressService
 from app.models.worker import DocumentType
 from app.services.worker_service import WorkerService
 from app.services.file_service import FileService
@@ -17,12 +22,299 @@ from app.schemas.worker import (
     WorkerStatsResponse
 )
 from app.utils.dependencies import get_current_user
+from app.utils.dependencies import get_current_worker 
+from pydantic import BaseModel, Field
+
+
+# ======== PYDANTIC SCHEMAS ========
+
+class ActiveJobResponse(BaseModel):
+    """Active job response"""
+    job_id: str
+    title: str
+    status: str
+    scheduled_time: str | None
+    employer_name: str
+    location: dict
+    
+    class Config:
+        from_attributes = True
+
+
+class JobDetailResponse(BaseModel):
+    """Detailed job response"""
+    job_id: str
+    title: str
+    description: str
+    budget: float
+    status: str
+    employer: dict
+    location: dict
+    progress_status: str | None
+    
+    class Config:
+        from_attributes = True
+
+
+class RateEmployerRequest(BaseModel):
+    """Request to rate employer"""
+    rating: int = Field(..., ge=1, le=5, description="Rating from 1 to 5")
+    review: str | None = Field(None, max_length=1000, description="Optional review")
+
 
 # create router
 router = APIRouter(
     prefix="/api/worker",
     tags=["Worker"]
 )
+
+router = APIRouter(prefix="/api/worker", tags=["worker"])
+
+# ============================================
+# ACTIVE JOBS
+# ============================================
+
+@router.get("/jobs/active", response_model=List[ActiveJobResponse])
+async def get_active_jobs(
+    current_user: User = Depends(get_current_worker),
+    db: Session = Depends(get_db)
+):
+    """
+    Get all active jobs for the current worker
+    
+    Returns jobs that are:
+    - Accepted
+    - In progress (traveling, working)
+    - Waiting for payment
+    """
+    # Get worker
+    worker = current_user.worker
+    
+    # Get active job progress records
+    active_progress = db.query(JobProgress).filter(
+        JobProgress.worker_id == worker.id,
+        JobProgress.status.in_([
+            JobProgressStatus.ACCEPTED,
+            JobProgressStatus.WORKER_TRAVELING,
+            JobProgressStatus.IN_PROGRESS,
+            JobProgressStatus.WAITING_PAYMENT
+        ])
+    ).all()
+    
+    # Format response
+    result = []
+    for progress in active_progress:
+        job = progress.job
+        employer = job.employer
+        
+        result.append({
+            "job_id": str(job.id),
+            "title": job.title,
+            "status": progress.status.value,
+            "scheduled_time": job.scheduled_time.isoformat() if job.scheduled_time else None,
+            "employer_name": employer.company_name if hasattr(employer, 'company_name') else "Employer",
+            "location": {
+                "lat": job.latitude,
+                "lng": job.longitude,
+                "address": job.address
+            }
+        })
+    
+    return result
+
+
+# ============================================
+# JOB PROGRESS UPDATES
+# ============================================
+
+@router.post("/jobs/{job_id}/start-travel")
+async def start_travel(
+    job_id: uuid.UUID,
+    current_user: User = Depends(get_current_worker),
+    db: Session = Depends(get_db)
+):
+    """
+    Worker starts traveling to job location
+    
+    Status: accepted → worker_traveling
+    Location sharing starts
+    """
+    worker = current_user.worker
+    
+    # Update progress
+    progress = JobProgressService.start_travel(
+        db=db,
+        job_id=job_id,
+        worker_id=worker.id
+    )
+    
+    return {
+        "message": "Travel started successfully",
+        "job_id": str(job_id),
+        "status": progress.status.value,
+        "location_sharing_enabled": progress.location_sharing_enabled
+    }
+
+
+@router.post("/jobs/{job_id}/start-job")
+async def start_job(
+    job_id: uuid.UUID,
+    current_user: User = Depends(get_current_worker),
+    db: Session = Depends(get_db)
+):
+    """
+    Worker starts the job (arrived at location)
+    
+    Status: worker_traveling → in_progress
+    """
+    worker = current_user.worker
+    
+    # Update progress
+    progress = JobProgressService.start_job(
+        db=db,
+        job_id=job_id,
+        worker_id=worker.id
+    )
+    
+    return {
+        "message": "Job started successfully",
+        "job_id": str(job_id),
+        "status": progress.status.value,
+        "started_at": progress.started_at.isoformat() if progress.started_at else None
+    }
+
+
+@router.post("/jobs/{job_id}/complete-job")
+async def complete_job(
+    job_id: uuid.UUID,
+    current_user: User = Depends(get_current_worker),
+    db: Session = Depends(get_db)
+):
+    """
+    Worker marks job as complete
+    
+    Status: in_progress → waiting_payment
+    Worker waits for employer to process payment
+    """
+    worker = current_user.worker
+    
+    # Update progress
+    progress = JobProgressService.complete_job(
+        db=db,
+        job_id=job_id,
+        worker_id=worker.id
+    )
+    
+    return {
+        "message": "Job marked as complete. Waiting for payment confirmation.",
+        "job_id": str(job_id),
+        "status": progress.status.value,
+        "completed_at": progress.completed_at.isoformat() if progress.completed_at else None
+    }
+
+
+# ============================================
+# RATING SYSTEM
+# ============================================
+
+@router.post("/jobs/{job_id}/rate-employer")
+async def rate_employer(
+    job_id: uuid.UUID,
+    request: RateEmployerRequest,
+    current_user: User = Depends(get_current_worker),
+    db: Session = Depends(get_db)
+):
+    """
+    Rate an employer after job completion
+    
+    Can only rate after:
+    - Job is completed
+    - Payment has been received
+    """
+    worker = current_user.worker
+    
+    # Verify job belongs to worker
+    progress = db.query(JobProgress).filter(
+        JobProgress.job_id == job_id,
+        JobProgress.worker_id == worker.id
+    ).first()
+    
+    if not progress:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Job not found or unauthorized"
+        )
+    
+    # Get employer user ID
+    job = progress.job
+    employer = job.employer
+    
+    # Create rating
+    rating = JobProgressService.create_rating(
+        db=db,
+        job_id=job_id,
+        rater_id=current_user.id,
+        rated_user_id=employer.user_id,
+        rating_value=request.rating,
+        review=request.review
+    )
+    
+    return {
+        "message": "Rating submitted successfully",
+        "rating_id": str(rating.id),
+        "rating": rating.rating,
+        "review": rating.review
+    }
+
+
+# ============================================
+# JOB DETAILS
+# ============================================
+
+@router.get("/jobs/{job_id}", response_model=JobDetailResponse)
+async def get_job_details(
+    job_id: uuid.UUID,
+    current_user: User = Depends(get_current_worker),
+    db: Session = Depends(get_db)
+):
+    """
+    Get detailed information about a specific job
+    
+    Includes job details, employer info, and progress status
+    """
+    # Get job
+    job = db.query(Job).filter(Job.id == job_id).first()
+    
+    if not job:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Job not found"
+        )
+    
+    # Get progress if exists
+    progress = JobProgressService.get_job_progress(db, job_id)
+    
+    # Get employer info
+    employer = job.employer
+    
+    return {
+        "job_id": str(job.id),
+        "title": job.title,
+        "description": job.description,
+        "budget": job.payment,
+        "status": job.status,
+        "employer": {
+            "name": employer.company_name if hasattr(employer, 'company_name') else "Employer",
+            "rating": JobProgressService.calculate_average_rating(db, employer.user_id)["average_rating"]
+        },
+        "location": {
+            "lat": job.latitude,
+            "lng": job.longitude,
+            "address": job.address
+        },
+        "progress_status": progress.status.value if progress else None
+    }
+
 
 # ======= Profile Endpoints =======
 @router.get("/profile", response_model=WorkerProfileResponse)

@@ -2,10 +2,16 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from uuid import UUID
+import uuid
 
 from app.database import get_db
 from app.models.user import User
+from app.models.job import Job
 from app.models.job import JobStatus
+from app.models.application import Application, ApplicationStatus
+from app.models.job_progress import JobProgress
+from app.models.rating import Rating
+from app.services.progress_service import ProgressService
 from app.services.job_service import JobService
 from app.services.worker_service import WorkerService
 from app.services.employer_service import EmployerService
@@ -24,11 +30,281 @@ from app.schemas.employer import (
 from app.schemas.application import ApplicationResponse
 from app.schemas.worker import WorkerSearchResponse
 from app.utils.dependencies import get_current_user
+from app.utils.dependencies import get_current_employer
+
+from pydantic import BaseModel, Field
+
+# ========= PYDANTIC SCHEMAS =========
+
+class ApplicationResponse(BaseModel):
+    """Application response schema"""
+    id: str
+    job_id: str
+    worker_id: str
+    worker_name: str
+    worker_rating: float
+    status: str
+    applied_at: str
+    cover_letter: str | None
+    
+    class Config:
+        from_attributes = True
+
+
+class AcceptApplicationRequest(BaseModel):
+    """Request to accept application"""
+    pass
+
+
+class RateWorkerRequest(BaseModel):
+    """Request to rate worker"""
+    rating: int = Field(..., ge=1, le=5, description="Rating from 1 to 5")
+    review: str | None = Field(None, max_length=1000, description="Optional review")
+
 
 router = APIRouter(
     prefix="/api/employer",
     tags=["Employer"]
 )
+
+router = APIRouter(prefix="/api/employer", tags=["employer"])
+
+# ======= APPLICATION MANAGEMENT =======
+
+@router.get("/jobs/{job_id}/applications", response_model=List[ApplicationResponse])
+async def get_job_applications(
+    job_id: uuid.UUID,
+    current_user: User = Depends(get_current_employer),
+    db: Session = Depends(get_db)
+):
+    """
+    Get all applications for a specific job
+    
+    Only the employer who posted the job can view applications
+    """
+    # Verify job belongs to employer
+    job = db.query(Job).filter(
+        Job.id == job_id,
+        Job.employer_id == current_user.id
+    ).first()
+    
+    if not job:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Job not found or unauthorized"
+        )
+    
+    # Get applications
+    applications = db.query(Application).filter(
+        Application.job_id == job_id
+    ).all()
+    
+    # Format response
+    result = []
+    for app in applications:
+        # Get worker info
+        worker = app.worker
+        
+        # Calculate worker rating
+        rating_info = JobProgressService.calculate_average_rating(db, worker.user_id)
+        
+        result.append({
+    
+            "id": str(app.id),
+            "job_id": str(app.job_id),
+            "worker_id": str(app.worker_id),
+            "worker_name": worker.full_name,
+            "worker_rating": rating_info["average_rating"],
+            "status": app.status.value,
+            "applied_at": app.created_at.isoformat(),
+            "cover_letter": app.cover_letter
+        })
+    
+    return result
+
+
+@router.post("/applications/{application_id}/accept")
+async def accept_application(
+    application_id: uuid.UUID,
+    current_user: User = Depends(get_current_employer),
+    db: Session = Depends(get_db)
+):
+    """
+    Accept a worker's application
+    
+    Actions performed:
+    1. Update application status to 'accepted'
+    2. Assign worker to job
+    3. Create job progress record
+    4. Update job status to 'accepted'
+    """
+    # Get application
+    application = db.query(Application).filter(
+        Application.id == application_id
+    ).first()
+    
+    if not application:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Application not found"
+        )
+    
+    # Verify job belongs to employer
+    job = db.query(Job).filter(
+        Job.id == application.job_id,
+        Job.employer_id == current_user.id
+    ).first()
+    
+    if not job:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to accept this application"
+        )
+    
+    # Check if already accepted
+    if application.status == ApplicationStatus.ACCEPTED:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Application already accepted"
+        )
+    
+    # Update application
+    application.status = ApplicationStatus.ACCEPTED
+    
+    # Assign worker to job
+    job.assigned_worker_id = application.worker_id
+    job.status = "accepted"  # Update job status
+    
+    # Create job progress record
+    job_progress = JobProgressService.create_job_progress(
+        db=db,
+        job_id=job.id,
+        worker_id=application.worker_id
+    )
+    
+    # Reject all other applications for this job
+    other_applications = db.query(Application).filter(
+        Application.job_id == application.job_id,
+        Application.id != application.id,
+        Application.status == ApplicationStatus.PENDING
+    ).all()
+    
+    for other_app in other_applications:
+        other_app.status = ApplicationStatus.REJECTED
+    
+    db.commit()
+    
+    return {
+        "message": "Application accepted successfully",
+        "job_id": str(job.id),
+        "worker_id": str(application.worker_id),
+        "progress_id": str(job_progress.id),
+        "status": job_progress.status.value
+    }
+
+
+@router.post("/applications/{application_id}/reject")
+async def reject_application(
+    application_id: uuid.UUID,
+    current_user: User = Depends(get_current_employer),
+    db: Session = Depends(get_db)
+):
+    """
+    Reject a worker's application
+    """
+    # Get application
+    application = db.query(Application).filter(
+        Application.id == application_id
+    ).first()
+    
+    if not application:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Application not found"
+        )
+    
+    # Verify job belongs to employer
+    job = db.query(Job).filter(
+        Job.id == application.job_id,
+        Job.employer_id == current_user.id
+    ).first()
+    
+    if not job:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to reject this application"
+        )
+    
+    # Update application
+    application.status = ApplicationStatus.REJECTED
+    
+    db.commit()
+    
+    return {
+        "message": "Application rejected successfully",
+        "application_id": str(application.id)
+    }
+
+# ============================================
+# RATING SYSTEM
+# ============================================
+
+@router.post("/jobs/{job_id}/rate-worker")
+async def rate_worker(
+    job_id: uuid.UUID,
+    request: RateWorkerRequest,
+    current_user: User = Depends(get_current_employer),
+    db: Session = Depends(get_db)
+):
+    """
+    Rate a worker after job completion
+    
+    Can only rate after:
+    - Job is completed
+    - Payment has been made
+    """
+    # Verify job belongs to employer
+    job = db.query(Job).filter(
+        Job.id == job_id,
+        Job.employer_id == current_user.id
+    ).first()
+    
+    if not job:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Job not found or unauthorized"
+        )
+    
+    # Get job progress
+    progress = JobProgressService.get_job_progress(db, job_id)
+    
+    if not progress:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Job progress not found"
+        )
+    
+    # Get worker user ID
+    worker = progress.worker
+    
+    # Create rating
+    rating = JobProgressService.create_rating(
+        db=db,
+        job_id=job_id,
+        rater_id=current_user.id,
+        rated_user_id=worker.user_id,
+        rating_value=request.rating,
+        review=request.review
+    )
+    
+    return {
+        "message": "Rating submitted successfully",
+        "rating_id": str(rating.id),
+        "rating": rating.rating,
+        "review": rating.review
+    }
+
+
 
 # ======= Employer Profile Endpoints =======
 
