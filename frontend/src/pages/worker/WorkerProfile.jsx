@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Star, MapPin, Phone, Briefcase, Calendar, CheckCircle2, ShieldCheck, Mail, Edit3 } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 export default function WorkerProfile() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [showAllReviews, setShowAllReviews] = useState(false);
 
   const mock = {
     experience: '5 Years Experience',
@@ -157,7 +158,7 @@ export default function WorkerProfile() {
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
             <h3 className="text-xl font-bold text-gray-900 mb-8">What Employers Say</h3>
             <div className="space-y-6">
-              {mock.reviews.map((r, idx) => (
+              {(showAllReviews ? mock.reviews : mock.reviews.slice(0, 2)).map((r, idx) => (
                 <div key={idx} className="p-6 rounded-2xl border border-gray-100 hover:border-blue-100 transition-all group">
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex items-center gap-3">
@@ -179,8 +180,12 @@ export default function WorkerProfile() {
               ))}
             </div>
 
-            <Button variant="ghost" className="w-full mt-6 text-blue-600 font-bold hover:bg-blue-50 rounded-xl py-6">
-              View All Reviews
+            <Button
+              variant="ghost"
+              className="w-full mt-6 text-blue-600 font-bold hover:bg-blue-50 rounded-xl py-6"
+              onClick={() => setShowAllReviews(!showAllReviews)}
+            >
+              {showAllReviews ? "Show Less" : "View All Reviews"}
             </Button>
           </div>
         </div>

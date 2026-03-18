@@ -121,11 +121,20 @@ export default function Login() {
               placeholder={role === 'worker' ? t('auth.phonePlaceholder') : t('auth.emailPlaceholder')}
               value={email}
               onChange={(e) => {
-                setEmail(e.target.value);
+                let val = e.target.value;
+                if (role === 'worker') {
+                  // Only allow digits and limit to 10
+                  val = val.replace(/\D/g, '').slice(0, 10);
+                } else {
+                  // Strip whitespace for email
+                  val = val.replace(/\s/g, '');
+                }
+                setEmail(val);
                 if (errors.email) {
                   setErrors({ ...errors, email: '' });
                 }
               }}
+              maxLength={role === 'worker' ? 10 : undefined}
               error={errors.email}
               icon={role === 'worker' ? <Phone size={18} /> : <Mail size={18} />}
             />
@@ -168,7 +177,7 @@ export default function Login() {
             <p className="text-gray-600 text-sm">
               {t('auth.noAccount')}{' '}
               <button
-                onClick={() => navigate('/landing')}
+                onClick={() => navigate('/signup')}
                 className="text-indigo-600 hover:text-indigo-700 font-semibold transition-colors"
               >
                 {t('auth.signUp')}

@@ -153,6 +153,17 @@
 	padding: 6px 4px;
 	box-shadow: 0 -6px 18px rgba(15, 23, 42, 0.1);
 	padding-bottom: env(safe-area-inset-bottom, 8px);
+	overflow-x: auto;
+	/* Enable horizontal scrolling */
+	-webkit-overflow-scrolling: touch;
+	/* Smooth scrolling on iOS */
+	scrollbar-width: none;
+	/* Hide scrollbar for Firefox */
+}
+
+.mobile-bottom-nav::-webkit-scrollbar {
+	display: none;
+	/* Hide scrollbar for Chrome/Safari */
 }
 
 @media (min-width: 1280px) {
@@ -164,19 +175,25 @@
 .mobile-nav-inner {
 	display: flex;
 	align-items: center;
-	justify-content: space-around;
-	width: 100%;
+	justify-content: flex-start;
+	/* Alignment for scrollable list */
+	min-width: 100%;
+	width: max-content;
+	/* Allow content to expand beyond viewport */
+	padding: 0 4px;
 }
 
 .mobile-link {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	padding: 6px 2px;
-	min-width: 50px;
+	padding: 6px 4px;
+	min-width: 64px;
+	/* Ensure enough space for each item */
 	text-decoration: none;
 	color: #9ca3af;
-	flex: 1;
+	flex: 0 0 auto;
+	/* Prevent shrinking */
 }
 
 .mobile-link .mobile-label {

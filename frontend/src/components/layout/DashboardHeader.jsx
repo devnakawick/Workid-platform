@@ -4,6 +4,7 @@ import { Bell, Mail } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuth } from '@/lib/AuthContext';
+import logo from '@/images/logo.jpeg';
 
 const DashboardHeader = ({
     subtitle = "Here's what's happening today!",
@@ -26,17 +27,33 @@ const DashboardHeader = ({
     };
 
     return (
-        <header className="flex flex-col md:flex-row items-start md:items-center justify-between px-4 md:px-8 py-4 md:py-6 bg-white border-b border-gray-100 sticky top-0 z-50 gap-4">
-            {!hideHeaderInfo ? (
-                <div className="w-full md:w-auto">
-                    <h1 className="text-xl md:text-2xl font-bold text-gray-900 truncate">
-                        {t('common.welcomeBack', { name })}
-                    </h1>
-                    <p className="text-gray-500 text-xs md:text-sm mt-0.5 truncate">{subtitle}</p>
-                </div>
-            ) : <div />}
+        <header className="flex items-center justify-between px-4 md:px-8 py-3 md:py-4 bg-white border-b border-gray-100 sticky top-0 z-50 gap-4">
+            <div className="flex items-center gap-2 md:gap-4 min-w-0">
+                {/* Mobile Logo Branding - Only visible on screens < 1280px */}
+                <button
+                    type="button"
+                    onClick={() => navigate('/landing')}
+                    className="flex xl:hidden items-center gap-2 group transition-all flex-shrink-0"
+                    aria-label="WorkID"
+                >
+                    <img src={logo} alt="WorkID" className="h-7 w-auto md:h-8 rounded-lg shadow-sm" />
+                    <span className="hidden sm:inline text-blue-600 font-black text-lg tracking-tighter">WorkID</span>
+                </button>
 
-            <div className="flex items-center justify-between md:justify-end w-full md:w-auto gap-4 md:gap-6 overflow-x-auto pb-1 md:pb-0">
+                {/* Divider on mobile */}
+                <div className="xl:hidden h-5 w-px bg-gray-200 flex-shrink-0 mx-1" />
+
+                {!hideHeaderInfo ? (
+                    <div className="min-w-0">
+                        <h1 className="text-sm md:text-2xl font-bold text-gray-900 truncate leading-tight">
+                            {t('common.welcomeBack', { name })}
+                        </h1>
+                        <p className="hidden md:block text-gray-500 text-xs md:text-sm mt-0.5 truncate">{subtitle}</p>
+                    </div>
+                ) : <div />}
+            </div>
+
+            <div className="flex items-center gap-3 md:gap-6 ml-auto">
                 {/* Icons */}
                 {!hideIcons && (
                     <div className="flex items-center gap-2 md:gap-4">

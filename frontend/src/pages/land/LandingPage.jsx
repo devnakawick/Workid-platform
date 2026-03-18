@@ -16,8 +16,6 @@ import { Menu, X } from "lucide-react";
 export default function LandingPage({ onLearnMore }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [isOpen, setIsOpen] = useState(false);
-  const [isSignupTypeOpen, setIsSignupTypeOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLearn = () => {
@@ -52,11 +50,11 @@ export default function LandingPage({ onLearnMore }) {
           <button onClick={handleLearn} className="hover:text-blue-600 transition-colors">
             {t('landing.howItWorksTitle')}
           </button>
-          <button onClick={() => setIsOpen(true)} className="hover:text-blue-600 transition-colors">
+          <button onClick={() => navigate('/login')} className="hover:text-blue-600 transition-colors">
             {t('auth.signIn')}
           </button>
           <button
-            onClick={() => setIsOpen(true)}
+            onClick={() => navigate('/signup')}
             className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
           >
             {t('auth.signUp')}
@@ -78,13 +76,13 @@ export default function LandingPage({ onLearnMore }) {
             <button onClick={handleLearn} className="text-left font-semibold py-2">{t('common.features')}</button>
             <button onClick={handleLearn} className="text-left font-semibold py-2">{t('landing.howItWorksTitle')}</button>
             <button
-              onClick={() => { setIsOpen(true); setIsMobileMenuOpen(false); }}
+              onClick={() => { navigate('/login'); setIsMobileMenuOpen(false); }}
               className="text-left font-semibold py-2"
             >
               {t('auth.signIn')}
             </button>
             <button
-              onClick={() => { setIsOpen(true); setIsMobileMenuOpen(false); }}
+              onClick={() => { navigate('/signup'); setIsMobileMenuOpen(false); }}
               className="bg-blue-600 text-white px-4 py-3 rounded-lg font-bold text-center"
             >
               {t('auth.signUp')}
@@ -104,7 +102,7 @@ export default function LandingPage({ onLearnMore }) {
 
         <div className="mt-10 flex flex-col md:flex-row justify-center gap-4 px-8 md:px-0">
           <button
-            onClick={() => setIsOpen(true)}
+            onClick={() => navigate('/signup')}
             className="bg-white text-blue-700 font-bold px-8 py-3.5 rounded-lg hover:bg-blue-50 shadow-lg shadow-blue-900/20 transition-all active:scale-95"
           >
             {t('landing.getStarted')}
@@ -233,7 +231,7 @@ export default function LandingPage({ onLearnMore }) {
           {t('landing.ctaTitle')}
         </h2>
         <button
-          onClick={() => setIsOpen(true)}
+          onClick={() => navigate('/signup')}
           className="mt-10 bg-white text-blue-700 font-bold px-10 py-4 rounded-xl hover:bg-blue-50 shadow-xl shadow-blue-900/20 active:scale-95 transition-all"
         >
           {t('landing.getStartedNow')}
@@ -257,64 +255,7 @@ export default function LandingPage({ onLearnMore }) {
         </div>
       </footer>
 
-      {/* DIALOGS */}
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('landing.getStartedDialogTitle')}</DialogTitle>
-            <DialogDescription>
-              {t('landing.getStartedDialogDesc')}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              onClick={() => {
-                setIsOpen(false);
-                navigate("/login");
-              }}
-            >
-              {t('auth.signIn')}
-            </Button>
-            <Button
-              onClick={() => {
-                setIsOpen(false);
-                setIsSignupTypeOpen(true);
-              }}
-            >
-              {t('auth.signUp')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={isSignupTypeOpen} onOpenChange={setIsSignupTypeOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('landing.createAccountTitle')}</DialogTitle>
-            <DialogDescription>
-              {t('landing.signupAsDesc')}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              onClick={() => {
-                setIsSignupTypeOpen(false);
-                navigate("/signup-employer");
-              }}
-            >
-              {t('auth.employer')}
-            </Button>
-            <Button
-              onClick={() => {
-                setIsSignupTypeOpen(false);
-                navigate("/signup-worker");
-              }}
-            >
-              {t('auth.worker')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Dialogs removed for direct navigation */}
     </div>
   );
 }

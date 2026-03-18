@@ -70,7 +70,9 @@
         "rate": "Rate",
         "job_type": "Job Type",
         "skills": "Required Skills",
-        "posted": "Posted {{date}}"
+        "posted": "Posted {{date}}",
+        "company": "Company",
+        "appliedStatus": "Applied"
     },
     "applications": {
         "title": "My Applications",
@@ -79,6 +81,7 @@
         "startApplying": "Start applying to jobs to see them here",
         "withdraw": "Withdraw",
         "withdraw_success": "Application withdrawn successfully",
+        "apply_success": "Application submitted successfully",
         "appliedDate": "Applied: {{date}}",
         "coverMessage": "Cover Message:",
         "all": "All",

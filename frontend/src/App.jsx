@@ -12,6 +12,7 @@ import LandingPage from './pages/land/LandingPage';
 import Login from './pages/auth/Login';
 import SignupEmployer from './pages/auth/SignupEmployer';
 import SignupWorker from './pages/auth/SignupWorker';
+import SignupSelection from './pages/auth/SignupSelection';
 import Applications from './pages/Application';
 import Badges from './pages/Badges';
 import Documents from './pages/Documents';
@@ -111,6 +112,7 @@ const AuthenticatedApp = () => {
       } />
       <Route path="/landing" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<SignupSelection />} />
       <Route path="/signup-employer" element={<SignupEmployer />} />
       <Route path="/signup-worker" element={<SignupWorker />} />
       <Route path="/verify-otp" element={<OtpVerification />} />

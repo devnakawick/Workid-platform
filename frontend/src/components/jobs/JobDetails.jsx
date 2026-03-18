@@ -1,10 +1,10 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { DollarSign, Clock } from 'lucide-react';
+import { DollarSign, Clock, ArrowLeft, Building, Briefcase } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-export default function JobDetails({ job, onBack, onApply }) {
+export default function JobDetails({ job, onBack, onApply, isApplied }) {
     const { t, i18n } = useTranslation();
     if (!job) return null;
 
@@ -47,10 +47,11 @@ export default function JobDetails({ job, onBack, onApply }) {
 
                     <Button
                         size="lg"
-                        className="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white shadow-md hover:shadow-lg transition-all"
-                        onClick={() => onApply(job)}
+                        className={`w-full md:w-auto text-white shadow-md hover:shadow-lg transition-all ${isApplied ? 'bg-green-600 hover:bg-green-700 cursor-not-allowed opacity-90' : 'bg-indigo-600 hover:bg-indigo-700'}`}
+                        onClick={() => !isApplied && onApply(job)}
+                        disabled={isApplied}
                     >
-                        {t('jobs.applyNow')}
+                        {isApplied ? t('jobs.appliedStatus') : t('jobs.applyNow')}
                     </Button>
                 </div>
 

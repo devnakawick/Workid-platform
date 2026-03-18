@@ -90,7 +90,7 @@ const WorkerSidebar = () => {
             {/* ── MOBILE BOTTOM NAVBAR ─────────────────────────── */}
             <nav className="mobile-bottom-nav">
                 <div className="mobile-nav-inner">
-                    {workerMenuItems.slice(0, 5).map(({ path, icon: Icon, labelKey, fallback }) => {
+                    {workerMenuItems.map(({ path, icon: Icon, labelKey, fallback }) => {
                         const isJobs = path === '/Jobs';
                         const active = isJobs
                             ? location.pathname === '/Jobs' || location.pathname === '/'

@@ -29,7 +29,7 @@ const urgencyColors = {
     urgent: "border-red-500 shadow-md shadow-red-100"
 };
 
-export default function JobCard({ job, onApply }) {
+export default function JobCard({ job, onApply, isApplied }) {
     const { t } = useTranslation();
     const {
         id, title, description, urgency, category,
@@ -108,10 +108,11 @@ export default function JobCard({ job, onApply }) {
 
                     <div className="flex gap-2 pt-2">
                         <Button
-                            onClick={() => onApply(job)}
-                            className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+                            onClick={() => !isApplied && onApply(job)}
+                            disabled={isApplied}
+                            className={`flex-1 ${isApplied ? 'bg-green-600 hover:bg-green-700 text-white opacity-100 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 text-white'}`}
                         >
-                            {t('jobs.quickApply')}
+                            {isApplied ? t('jobs.appliedStatus') : t('jobs.quickApply')}
                         </Button>
                         <Button asChild variant="outline">
                             <Link to={jobUrl}>{t('jobs.details')}</Link>

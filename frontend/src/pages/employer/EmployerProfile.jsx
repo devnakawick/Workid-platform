@@ -20,7 +20,7 @@ const page = { background: '#f8fafc', minHeight: '100vh', padding: 24 };
 const wrap = { maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 420px', gap: 20 };
 const card = { background: '#fff', borderRadius: 12, padding: 18, boxShadow: '0 6px 18px rgba(2,6,23,0.06)' };
 const avatar = { width: 84, height: 84, borderRadius: '50%', background: '#e6e8ee', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, color: '#0f172a' };
-const progressBar = (pct) => ({ height: 10, background: '#eef2ff', borderRadius: 999, overflow: 'hidden', marginTop: 8, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6)' , position: 'relative'});
+const progressBar = (pct) => ({ height: 10, background: '#eef2ff', borderRadius: 999, overflow: 'hidden', marginTop: 8, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6)', position: 'relative' });
 const progressFill = (pct) => ({ width: `${pct}%`, height: '100%', background: 'linear-gradient(90deg,#22c55e,#06b6d4)' });
 
 export default function EmployerProfile() {

@@ -26,9 +26,15 @@ export default function SignupEmployer() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    let finalValue = value;
+    if (name === 'phone') {
+      finalValue = value.replace(/\D/g, '').slice(0, 10);
+    } else if (name === 'email') {
+      finalValue = value.replace(/\s/g, '');
+    }
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: finalValue
     }));
     if (errors[name]) {
       setErrors(prev => ({
@@ -149,6 +155,7 @@ export default function SignupEmployer() {
               name="phone"
               value={formData.phone}
               onChange={handleChange}
+              maxLength={10}
               error={errors.phone}
               icon={<Phone size={18} />}
             />
@@ -195,7 +202,7 @@ export default function SignupEmployer() {
           </div>
 
           {/* Login Link */}
-          <div className="text-center">
+          <div className="text-center space-y-4">
             <p className="text-gray-600 text-sm">
               {t('auth.alreadyHaveAccount')}{' '}
               <button
@@ -205,6 +212,14 @@ export default function SignupEmployer() {
                 {t('auth.signIn')}
               </button>
             </p>
+            <div className="pt-2 border-t border-gray-50">
+              <button
+                onClick={() => navigate('/signup-worker')}
+                className="text-xs text-gray-400 hover:text-gray-600 font-medium transition-colors"
+              >
+                {t('landing.signupAsDesc').split(' ')[0]} {t('auth.worker')}? <span className="underline decoration-gray-200">Click here</span>
+              </button>
+            </div>
           </div>
         </div>
 
