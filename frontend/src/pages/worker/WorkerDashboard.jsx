@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
 	Briefcase,
 	CheckCircle2,
@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 const mock = {
 	user: 'John',
@@ -26,14 +27,23 @@ const mock = {
 		{ id: 2, title: 'Bathroom Plumbing Install', excerpt: 'Complete bathroom plumbing installation for new construction.', price: 'Rs. 65,000.00', status: 'Starting Soon', location: '2.3 4.1 KM', time: 'Tomorrow, 9:00 AM' }
 	],
 	upcoming: [
-		{ id: 'u1', title: 'Pipe Replacement', excerpt: 'Replace old pipes', day: 'MON', date: 'Nov 26', time: '10:00 AM - 2:00 PM' },
-		{ id: 'u2', title: 'Drain Cleaning', excerpt: 'Clear clogged bathroom drain', day: 'TUE', date: 'Nov 27', time: '1:00 PM - 3:00 PM' },
-		{ id: 'u3', title: 'Toilet Repair', excerpt: 'Fix running toilet issue', day: 'THU', date: 'Nov 29', time: '9:00 AM - 11:00 AM' }
+		{ id: 'u1', title: 'Pipe Replacement', excerpt: 'Replace old pipes', day: 'MON', date: 'Nov 26', time: '10:00 AM - 2:00 PM', category: 'thisWeek' },
+		{ id: 'u2', title: 'Drain Cleaning', excerpt: 'Clear clogged bathroom drain', day: 'TUE', date: 'Nov 27', time: '1:00 PM - 3:00 PM', category: 'thisWeek' },
+		{ id: 'u3', title: 'Toilet Repair', excerpt: 'Fix running toilet issue', day: 'THU', date: 'Nov 29', time: '9:00 AM - 11:00 AM', category: 'nextWeek' },
+		{ id: 'u4', title: 'Garden Maintenance', excerpt: 'Seasonal garden cleanup', day: 'SAT', date: 'Dec 05', time: '8:00 AM - 12:00 PM', category: 'thisMonth' }
 	]
 };
 
 const WorkerDashboard = () => {
 	const { t } = useTranslation();
+	const navigate = useNavigate();
+	const [activeTab, setActiveTab] = useState('thisWeek');
+
+	const filteredUpcoming = mock.upcoming.filter(job => {
+		if (activeTab === 'thisMonth') return true;
+		return job.category === activeTab;
+	});
+
 	return (
 		<div className="max-w-7xl mx-auto space-y-8">
 
@@ -63,7 +73,11 @@ const WorkerDashboard = () => {
 						</div>
 					</div>
 
-					<Button variant="outline" className="bg-white text-blue-600 border-white hover:bg-blue-50 font-bold px-8 py-6 text-lg rounded-xl">
+					<Button
+						variant="outline"
+						className="bg-white text-blue-600 border-white hover:bg-blue-50 font-bold px-8 py-6 text-lg rounded-xl"
+						onClick={() => navigate('/Profile')}
+					>
 						{t('workerDashboard.completeNow')}
 					</Button>
 				</div>
@@ -101,7 +115,12 @@ const WorkerDashboard = () => {
 				<div className="lg:col-span-2 space-y-4">
 					<div className="flex items-center justify-between px-2">
 						<h3 className="text-xl font-bold text-gray-900">{t('workerDashboard.stats.activeJobs')}</h3>
-						<button className="text-blue-600 text-sm font-bold hover:underline flex items-center gap-1">{t('common.viewAll')} <ChevronRight size={14} /></button>
+						<button
+							onClick={() => navigate('/worker/current-jobs')}
+							className="text-blue-600 text-sm font-bold hover:underline flex items-center gap-1"
+						>
+							{t('common.viewAll')} <ChevronRight size={14} />
+						</button>
 					</div>
 
 					<div className="space-y-4">
@@ -171,14 +190,29 @@ const WorkerDashboard = () => {
 				<div className="flex items-center justify-between px-2">
 					<h3 className="text-xl font-bold text-gray-900">{t('workerDashboard.upcomingJobs')}</h3>
 					<div className="flex gap-4 text-sm font-bold text-gray-500">
-						<button className="text-blue-600 border-b-2 border-blue-600 pb-1">{t('workerDashboard.thisWeek')}</button>
-						<button>{t('workerDashboard.nextWeek')}</button>
-						<button>{t('workerDashboard.thisMonthTab')}</button>
+						<button
+							onClick={() => setActiveTab('thisWeek')}
+							className={`${activeTab === 'thisWeek' ? 'text-blue-600 border-b-2 border-blue-600 pb-1' : ''}`}
+						>
+							{t('workerDashboard.thisWeek')}
+						</button>
+						<button
+							onClick={() => setActiveTab('nextWeek')}
+							className={`${activeTab === 'nextWeek' ? 'text-blue-600 border-b-2 border-blue-600 pb-1' : ''}`}
+						>
+							{t('workerDashboard.nextWeek')}
+						</button>
+						<button
+							onClick={() => setActiveTab('thisMonth')}
+							className={`${activeTab === 'thisMonth' ? 'text-blue-600 border-b-2 border-blue-600 pb-1' : ''}`}
+						>
+							{t('workerDashboard.thisMonthTab')}
+						</button>
 					</div>
 				</div>
 
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-					{mock.upcoming.map(item => (
+					{filteredUpcoming.map(item => (
 						<div key={item.id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all">
 							<div className="flex justify-between items-center mb-4">
 								<span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-xs font-black uppercase tracking-wider">{item.day}</span>
@@ -192,6 +226,11 @@ const WorkerDashboard = () => {
 							</div>
 						</div>
 					))}
+					{filteredUpcoming.length === 0 && (
+						<div className="col-span-full py-12 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+							<p className="text-gray-400 font-medium">No jobs scheduled for this period</p>
+						</div>
+					)}
 				</div>
 			</div>
 		</div>
