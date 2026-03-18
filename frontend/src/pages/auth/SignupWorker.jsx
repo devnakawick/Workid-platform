@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
 import logo from '@/images/logo.jpeg';
 import { Mail, Lock, User, Phone } from 'lucide-react';
 
 export default function SignupWorker() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: '',
@@ -104,7 +106,7 @@ export default function SignupWorker() {
             <img src={logo} alt="WorkID" className="w-14 h-14 rounded-xl object-cover shadow-md" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">WorkID</h1>
-          <p className="text-gray-500">Sign up as a Worker</p>
+          <p className="text-gray-500">{t('auth.signUpTitle', { role: t('auth.worker') })}</p>
         </div>
 
         {/* Signup Form Card */}
@@ -119,9 +121,9 @@ export default function SignupWorker() {
           <form onSubmit={handleSignUp} className="space-y-4">
             {/* Full Name Input */}
             <Input
-              label="Full Name"
+              label={t('auth.fullName')}
               type="text"
-              placeholder="John Doe"
+              placeholder={t('auth.namePlaceholder')}
               name="fullName"
               value={formData.fullName}
               onChange={handleChange}
@@ -131,9 +133,9 @@ export default function SignupWorker() {
 
             {/* Email Input */}
             <Input
-              label="Email Address"
+              label={t('auth.emailAddress')}
               type="email"
-              placeholder="you@example.com"
+              placeholder={t('auth.emailPlaceholder')}
               name="email"
               value={formData.email}
               onChange={handleChange}
@@ -143,9 +145,9 @@ export default function SignupWorker() {
 
             {/* Phone Input */}
             <Input
-              label="Phone Number"
+              label={t('auth.phoneNumber')}
               type="tel"
-              placeholder="XX XXX XXXX"
+              placeholder={t('auth.phonePlaceholder')}
               name="phone"
               value={formData.phone}
               onChange={handleChange}
@@ -155,9 +157,9 @@ export default function SignupWorker() {
 
             {/* Password Input */}
             <Input
-              label="Create Password"
+              label={t('auth.createPassword')}
               type="password"
-              placeholder="••••••••"
+              placeholder={t('auth.passwordPlaceholder')}
               name="password"
               value={formData.password}
               onChange={handleChange}
@@ -167,9 +169,9 @@ export default function SignupWorker() {
 
             {/* Confirm Password Input */}
             <Input
-              label="Confirm Password"
+              label={t('auth.confirmPassword')}
               type="password"
-              placeholder="••••••••"
+              placeholder={t('auth.passwordPlaceholder')}
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
@@ -183,26 +185,26 @@ export default function SignupWorker() {
               onClick={handleSignUp}
               disabled={isLoading}
             >
-              {isLoading ? 'Creating Account...' : 'Create Account'}
+              {isLoading ? t('common.signingUp') : t('auth.createAccount')}
             </Button>
           </form>
 
           {/* Divider */}
           <div className="relative flex items-center">
             <div className="flex-grow border-t border-gray-200"></div>
-            <span className="px-3 text-sm text-gray-500">or</span>
+            <span className="px-3 text-sm text-gray-500">{t('common.or')}</span>
             <div className="flex-grow border-t border-gray-200"></div>
           </div>
 
           {/* Login Link */}
           <div className="text-center">
             <p className="text-gray-600 text-sm">
-              Already have an account?{' '}
+              {t('auth.alreadyHaveAccount')}{' '}
               <button
                 onClick={() => navigate('/login')}
                 className="text-indigo-600 hover:text-indigo-700 font-semibold transition-colors"
               >
-                Sign In
+                {t('auth.signIn')}
               </button>
             </p>
           </div>
@@ -210,7 +212,7 @@ export default function SignupWorker() {
 
         {/* Footer Note */}
         <p className="text-center text-xs text-gray-500 mt-6">
-          By signing up, you agree to our Terms of Service and Privacy Policy
+          {t('auth.termsPolicy')}
         </p>
       </div>
     </div>

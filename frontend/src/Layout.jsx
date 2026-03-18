@@ -4,6 +4,7 @@ import WorkerSidebar from './components/layout/WorkerSidebar';
 import EmployerSidebar from './components/layout/EmployerSidebar';
 import Footer from './components/layout/Footer';
 import DashboardHeader from './components/layout/DashboardHeader';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/lib/AuthContext';
 
 import './components/layout/sidebar.css';
@@ -11,6 +12,7 @@ import './components/layout/footer.css';
 
 export default function Layout({ children, currentPageName }) {
     const location = useLocation();
+    const { t } = useTranslation();
     const { user } = useAuth();
 
     // Pages that don't need the full layout (no sidebar, no footer)
@@ -22,11 +24,11 @@ export default function Layout({ children, currentPageName }) {
         return <div>{children}</div>;
     }
 
-    // Determine which sidebar to show based on user role or route
-    const isEmployerRoute = location.pathname.startsWith('/employer') || (user?.role === 'Employer');
-    const isWorkerRoute = location.pathname.startsWith('/worker') || (user?.role !== 'Employer');
+    // Determine which layout mode to use
+    const isEmployerMode = location.pathname.startsWith('/employer') || (user?.role === 'Employer' && !location.pathname.startsWith('/worker') && !['/Profile', '/Jobs', '/Applications', '/Documents', '/Badges', '/Learning'].includes(location.pathname));
+    const isWorkerMode = !isEmployerMode;
 
-    const Sidebar = isEmployerRoute ? EmployerSidebar : WorkerSidebar;
+    const Sidebar = isEmployerMode ? EmployerSidebar : WorkerSidebar;
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -37,15 +39,14 @@ export default function Layout({ children, currentPageName }) {
                 {/* Main Content Area */}
                 <main className="flex-1 main-content-with-sidebar bg-slate-50/50">
                     {/* Header - Unified Global Header */}
-                    {isWorkerRoute && (
+                    {isEmployerMode ? (
                         <DashboardHeader
-                            subtitle="Here's what's happening with your work today!"
-                            showAvailability={true}
+                            subtitle={t('employerDashboard.manageJobsSubtitle')}
+                            showAvailability={false}
                         />
-                    )}
-                    {isEmployerRoute && (
+                    ) : (
                         <DashboardHeader
-                            subtitle="Manage your job postings and applicants."
+                            subtitle={t('workerDashboard.profileCompletionDesc')}
                             showAvailability={true}
                         />
                     )}

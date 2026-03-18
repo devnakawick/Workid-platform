@@ -1,4 +1,32 @@
 {
+    "common": {
+        "welcomeBack": "Welcome back, {{name}}",
+        "available": "Available",
+        "unavailable": "Unavailable",
+        "statusUpdated": "Status updated to {{status}}",
+        "viewAll": "View all",
+        "saveChanges": "Save Changes",
+        "saveChange": "Save Change",
+        "signingIn": "Signing in...",
+        "signingUp": "Creating Account...",
+        "or": "or",
+        "note": "Note",
+        "experience": "Experience",
+        "yrs": "yrs",
+        "since": "Since",
+        "photoUploaded": "Photo uploaded! Click Save to confirm.",
+        "changesSaved": "Changes saved successfully! ✓",
+        "currency": "LKR",
+        "dailyRate": "Daily Rate",
+        "perDay": "per day",
+        "home": "Home",
+        "features": "Features",
+        "units": {
+            "b": "B",
+            "kb": "KB",
+            "mb": "MB"
+        }
+    },
     "nav": {
         "findJobs": "Find Jobs",
         "myApplications": "My Applications",
@@ -65,7 +93,10 @@
         "id": "ID",
         "other": "Other",
         "uploaded": "Uploaded: {{date}}",
-        "download": "Download"
+        "download": "Download",
+        "dropToUpload": "Drop files to upload",
+        "upload_success_one": "Successfully uploaded {{count}} document",
+        "upload_success_other": "Successfully uploaded {{count}} documents"
     },
     "learning": {
         "title": "Learning & Development",
@@ -142,16 +173,37 @@
         "profileVisibility": "Your profile is only visible to verified employers. You control what information is shared.",
         "accountSecurity": "Account Security",
         "2faRecommendation": "We recommend enabling two-factor authentication for additional security.",
-        "languageUpdated": "Language preference updated!"
+        "languageUpdated": "Language preference updated!",
+        "languageRegion": "Language & Region",
+        "manageAccountDesc": "Update your personal information and profile picture...",
+        "changePhoto": "Change Photo",
+        "remove": "Remove",
+        "newJobAlerts": "New Job Alerts",
+        "jobAlertsDetail": "Get notified about jobs that matches your skills.",
+        "appUpdatesDetail": "Receive updates on your job applications.",
+        "weeklySummary": "Weekly Summary",
+        "weeklySummaryDetail": "A weekly digest of your activity and opportunities.",
+        "languageRegionDesc": "Choose your preferred language for the application."
     },
     "footer": {
         "description": "Empowering workers with verified digital identities and job opportunities.",
+        "descriptionLong": "Connecting skilled workers with opportunities across Sri Lanka. Building futures, one job at a time.",
         "quickLinks": "Quick Links",
         "support": "Support",
         "helpCenter": "Help Center",
         "privacyPolicy": "Privacy Policy",
         "termsOfService": "Terms of Service",
-        "allRightsReserved": "All rights reserved."
+        "allRightsReserved": "All rights reserved.",
+        "aboutUs": "About Us",
+        "browseJobs": "Browse Jobs",
+        "findWorkers": "Find Workers",
+        "howItWorks": "How It Works",
+        "pricing": "Pricing",
+        "faq": "FAQ",
+        "contactUs": "Contact Us",
+        "contactInfo": "Contact Info",
+        "privacy": "Privacy",
+        "terms": "Terms"
     },
     "errors": {
         "pageNotFound": "Page Not Found",
@@ -165,133 +217,61 @@
         "sinhala": "Sinhala (සිංහල)",
         "tamil": "Tamil (தமிழ்)"
     },
-    "common": {
-        "remote": "Remote",
-        "fullTime": "Full-time",
-        "fulltime": "Full-time",
-        "partTime": "Part-time",
-        "parttime": "Part-time",
-        "contract": "Contract",
-        "temporary": "Temporary",
-        "onCall": "On-call",
-        "oncall": "On-call",
-        "urgent": "Urgent",
-        "any": "Any",
-        "under": "Under",
-        "under_amount": "Under {{amount}}",
-        "locationPlaceholder": "Enter location...",
-        "currency": "LKR",
-        "more": "+{{count}} more",
-        "units": {
-            "b": "B",
-            "kb": "KB",
-            "mb": "MB"
+    "landing": {
+        "heroTitle": "Verified Digital Identity for Sri Lankan Workers",
+        "heroSubtitle": "The most trusted platform to build your professional reputation, find jobs, and grow your career with verified skill badges.",
+        "getStarted": "Get Started",
+        "learnMore": "Learn More",
+        "howItWorksTitle": "How It Works",
+        "whyChooseTitle": "Why Choose WorkID?",
+        "features": {
+            "verifiedIdentity": "Verified Identity",
+            "verifiedIdentityDesc": "Secure, blockchain-backed digital ID that proves who you are to any employer.",
+            "smartJobMatching": "Smart Matching",
+            "smartJobMatchingDesc": "Get matched with jobs that perfectly fit your skills, location, and desired pay.",
+            "skillBadges": "Skill Badges",
+            "skillBadgesDesc": "Earn digital badges for your technical and soft skills through verified tasks.",
+            "digitalIdentity": "Digital Identity",
+            "digitalIdentityDesc": "Your professional profile is verified and always accessible.",
+            "reputationScore": "Reputation Score",
+            "reputationScoreDesc": "Build trust with a transparent score based on your work history.",
+            "jobMatching": "Job Matching",
+            "jobMatchingDesc": "Find local opportunities that match your specific skillset.",
+            "learningTasks": "Learning Tasks",
+            "learningTasksDesc": "Enhance your skills through our structured learning modules.",
+            "wageTransparency": "Wage Transparency",
+            "wageTransparencyDesc": "Know the pay before you apply. No hidden costs or surprises.",
+            "profileBadges": "Profile Badges",
+            "profileBadgesDesc": "Display your achievements and certifications proudly on your profile."
         },
-        "cancel": "Cancel",
-        "range": "{{min}} - {{max}}",
-        "plus": "{{amount}}+"
-    },
-    "mock": {
-        "jobs": {
-            "Cleaning": "Cleaning",
-            "Construction": "Construction",
-            "Plumbing": "Plumbing",
-            "Electrical": "Electrical",
-            "Gardening": "Gardening",
-            "Cooking": "Cooking",
-            "Delivery": "Delivery",
-            "Carpentry": "Carpentry",
-            "Painting": "Painting",
-            "Driving": "Driving",
-            "HVAC": "HVAC",
-            "Other": "Other"
+        "challengesTitle": "The Challenges",
+        "challenges": {
+            "noIdentity": "Lack of verifiable professional identity",
+            "lowTrust": "Low trust between workers and employers",
+            "difficultyFinding": "Difficulty in finding reliable job opportunities"
         },
-        "courses": {
-            "Carpentry": "Carpentry",
-            "Carpentry_desc": "Learn framing and fine woodworking skills",
-            "Job Site Communication": "Job Site Communication",
-            "Job Site Communication_desc": "Master the art of professional communication on construction sites",
-            "Workplace Safety Fundamentals": "Workplace Safety Fundamentals",
-            "Workplace Safety Fundamentals_desc": "Essential safety practices for construction sites",
-            "Business Spanish": "Business Spanish",
-            "Business Spanish_desc": "Learn Spanish for professional settings",
-            "Blueprint Reading & Estimation": "Blueprint Reading & Estimation",
-            "Blueprint Reading & Estimation_desc": "Learn to read detailed plans and estimate material costs accurate",
-            "Personal Finance Management": "Personal Finance Management",
-            "Personal Finance Management_desc": "Budgeting, investing, and financial planning"
+        "solutionsTitle": "Our Solutions",
+        "solutions": {
+            "secureProfiles": "Secure, verified professional profiles",
+            "reputationScores": "Transparent reputation and rating systems",
+            "directAccess": "Direct access to verified employer opportunities"
         },
-        "durations": {
-            "12 weeks": "12 weeks",
-            "4 weeks": "4 weeks",
-            "2 weeks": "2 weeks",
-            "8 weeks": "8 weeks",
-            "6 weeks": "6 weeks"
+        "steps": {
+            "createProfile": "Create Profile",
+            "getVerified": "Get Verified",
+            "applyJobs": "Apply to Jobs",
+            "trackWork": "Track Work",
+            "buildReputation": "Build Reputation"
         },
-        "badges": {
-            "Safety Champion": "Safety Champion",
-            "Safety Champion_desc": "Completed all safety training courses",
-            "Skilled Worker": "Skilled Worker",
-            "Skilled Worker_desc": "Completed 5 trade skill courses",
-            "Team Player": "Team Player",
-            "Team Player_desc": "Excellent collaboration and communication",
-            "Excellence Award": "Excellence Award",
-            "Excellence Award_desc": "Outstanding performance across all areas",
-            "Quick Learner": "Quick Learner",
-            "Quick Learner_desc": "Completed 3 courses in under 30 days"
-        },
-        "locations": {
-            "Colombo, Western Province": "Colombo, Western Province",
-            "Badulla, Uva Province": "Badulla, Uva Province",
-            "Kandy, Central Province": "Kandy, Central Province",
-            "Galle, Southern Province": "Galle, Southern Province",
-            "Jaffna, Northern Province": "Jaffna, Northern Province"
-        },
-        "companies": {
-            "Elite Woodworks": "Elite Woodworks",
-            "PowerBright Systems": "PowerBright Systems",
-            "BuildIt Construction": "BuildIt Construction",
-            "Climate Control Pros": "Climate Control Pros",
-            "FlowMasters Plumbing": "FlowMasters Plumbing"
-        },
-        "jobRequirements": {
-            "Experience with custom framing and finish work": "Experience with custom framing and finish work",
-            "Electrician License, commercial experience": "Electrician License, commercial experience",
-            "PMP certification, 7+ years of construction management": "PMP certification, 7+ years of construction management",
-            "HVAC Certification, 3+ years field experience, valid driver's license": "HVAC Certification, 3+ years field experience, valid driver's license",
-            "Journeyman License, 4+ years experience, own tools": "Journeyman License, 4+ years experience, own tools"
-        },
-        "documents": {
-            "Resume - Updated 2024": "Resume - Updated 2024",
-            "Certification - Safety Training": "Certification - Safety Training",
-            "Portfolio 2024": "Portfolio 2024",
-            "Driver License": "Driver License"
-        },
-        "coverMessages": {
-            "I am excited to apply for this position...": "I am excited to apply for this position...",
-            "My experience in HVAC systems makes me a great fit...": "My experience in HVAC systems makes me a great fit...",
-            "I have a strong track record of electrical installations...": "I have a strong track record of electrical installations..."
-        },
-        "skills": {
-            "custom framing": "custom framing",
-            "finish work": "finish work",
-            "Electrician License": "Electrician License",
-            "commercial experience": "commercial experience",
-            "PMP certification": "PMP certification",
-            "construction management": "construction management",
-            "HVAC Certification": "HVAC Certification",
-            "valid driver's license": "valid driver's license",
-            "Journeyman License": "Journeyman License",
-            "own tools": "own tools"
-        },
-        "jobDescriptions": {
-            "We are seeking a carpenter to lead custom framing and finish work for high-end residential projects.": "We are seeking a carpenter to lead custom framing and finish work for high-end residential projects.",
-            "Experienced electrician needed for large-scale commercial installations and system upgrades.": "Experienced electrician needed for large-scale commercial installations and system upgrades.",
-            "Lead construction projects from planning to completion.": "Lead construction projects from planning to completion.",
-            "Install, maintain, and repair heating, ventilation, and air conditioning systems.": "Install, maintain, and repair heating, ventilation, and air conditioning systems.",
-            "Residential and commercial plumbing repairs and installations.": "Residential and commercial plumbing repairs and installations."
-        }
+        "ctaTitle": "Ready to Build Your Professional Future?",
+        "getStartedNow": "Get Started Now",
+        "getStartedDialogTitle": "Join WorkID Platform",
+        "getStartedDialogDesc": "Choose how you want to use the platform. You can sign in to your existing account or create a new one.",
+        "createAccountTitle": "Create a New Account",
+        "signupAsDesc": "Choose whether you are looking for work or looking to hire skilled workers."
     },
     "employerDashboard": {
+        "manageJobsSubtitle": "Manage your job bookings and applicants.",
         "stats": {
             "postedJobs": "Posted Jobs",
             "postedJobsChange": "+2 this week",
@@ -315,6 +295,276 @@
             "appliedDate": "Applied Date",
             "status": "Status",
             "actions": "Actions"
+        }
+    },
+    "auth": {
+        "signInTitle": "Sign in to your account",
+        "signUpTitle": "Sign up as a {{role}}",
+        "signIn": "Sign In",
+        "signUp": "Sign Up",
+        "emailAddress": "Email Address",
+        "phoneNumber": "Phone Number",
+        "password": "Password",
+        "confirmPassword": "Confirm Password",
+        "fullName": "Full Name",
+        "createPassword": "Create Password",
+        "worker": "Worker",
+        "employer": "Employer",
+        "noAccount": "Don't have an account?",
+        "alreadyHaveAccount": "Already have an account?",
+        "forgotPassword": "Forgot your password?",
+        "termsPolicy": "By signing in, you agree to our Terms of Service and Privacy Policy",
+        "createAccount": "Create Account",
+        "phonePlaceholder": "07X XXX XXXX",
+        "emailPlaceholder": "you@example.com",
+        "namePlaceholder": "John Doe",
+        "passwordPlaceholder": "••••••••",
+        "forgotPasswordToast": "Password reset feature coming soon!"
+    },
+    "workerDashboard": {
+        "completeProfile": "Complete Your Profile",
+        "profileCompletionDesc": "You're almost there! Complete your profile to get more job opportunities",
+        "completeNow": "Complete Now",
+        "profilePhoto": "Profile Photo",
+        "skillsAdded": "Skills Added",
+        "bioWritten": "Bio Written",
+        "profileVerified": "Profile Verified",
+        "stats": {
+            "activeJobs": "Active Jobs",
+            "completedJobs": "Completed Jobs",
+            "rating": "Rating",
+            "thisMonth": "This Month"
+        },
+        "reputation": "Reputation",
+        "upcomingJobs": "Upcoming Jobs",
+        "thisWeek": "This Week",
+        "nextWeek": "Next Week",
+        "thisMonthTab": "This Month"
+    },
+    "postJob": {
+        "title": "Post a New Job",
+        "subtitle": "Fill in the details to post your job and find the right workers",
+        "back": "Back",
+        "confirmCancel": "Are you sure? All entered data will be lost.",
+        "postButton": "Post Job",
+        "posting": "Posting Job...",
+        "updating": "Updating Job...",
+        "cancel": "Cancel",
+        "tip": {
+            "label": "Tip:",
+            "text": "Be specific and detailed in your job description to attract the right workers. Include work hours, safety requirements, and any special conditions."
+        },
+        "basics": {
+            "title": "Job Basics",
+            "subtitle": "What is the job?",
+            "jobTitle": "Job Title *",
+            "jobTitleLabel": "Job Title *",
+            "jobTitlePlaceholder": "e.g., Experienced Mason Needed for House Construction",
+            "category": "Category *",
+            "categoryLabel": "Category *",
+            "selectCategory": "Select a category",
+            "customCategory": "Custom Category *",
+            "customCategoryPlaceholder": "Enter your custom category",
+            "description": "Job Description *",
+            "descriptionPlaceholder": "Describe the job requirements, responsibilities, and what you're looking for in detail...",
+            "charCount": "{{count}} / 1000 characters",
+            "categories": {
+                "Construction": "Construction",
+                "Electrical": "Electrical",
+                "Plumbing": "Plumbing",
+                "Carpentry": "Carpentry",
+                "Painting": "Painting",
+                "Cleaning": "Cleaning",
+                "Gardening": "Gardening",
+                "Delivery": "Delivery",
+                "Masonry": "Masonry",
+                "Welding": "Welding",
+                "Other": "Other"
+            }
+        },
+        "locationPay": {
+            "title": "Location & Pay",
+            "subtitle": "Where & how much?",
+            "location": "Location *",
+            "locationPlaceholder": "e.g., Colombo, Sri Lanka",
+            "paymentRate": "Payment Rate *",
+            "paymentHint": "Enter the amount and select payment period",
+            "duration": "Duration *",
+            "durationPlaceholder": "e.g., 2 months, 3 weeks, 10 days",
+            "periods": {
+                "hourly": "hour",
+                "daily": "day",
+                "weekly": "week",
+                "monthly": "month",
+                "fixed": "fixed"
+            }
+        },
+        "workforce": {
+            "title": "Workforce",
+            "subtitle": "How many people do you need?",
+            "workersNeeded": "Workers Needed *",
+            "workersPlaceholder": "Number of workers",
+            "workersHint": "How many workers do you need for this job?"
+        },
+        "requirements": {
+            "title": "Additional Requirements",
+            "optional": "Optional",
+            "subtitle": "Any extra conditions?",
+            "noRequirements": "No additional requirements added yet",
+            "placeholder": "e.g., Must have valid driving license, 5+ years experience",
+            "addButton": "Add",
+            "remove": "Remove requirement"
+        },
+        "validation": {
+            "fixErrors": "Please fix the errors below",
+            "titleRequired": "Job title is required",
+            "titleMin": "Job title must be at least 5 characters",
+            "descRequired": "Job description is required",
+            "categoryRequired": "Please select a category",
+            "customCategoryRequired": "Please specify your custom category",
+            "customCategoryMin": "Custom Category must be at least 3 characters",
+            "locationRequired": "Location is required",
+            "salaryRequired": "Salary is required",
+            "salaryMin": "Salary must be greater than 0",
+            "salaryMinAmount": "Salary must be at least LKR 100",
+            "durationRequired": "Job duration is required",
+            "workersRequired": "At least 1 worker is required",
+            "reqMin": "Requirement must be at least 3 characters",
+            "reqEmpty": "Please enter a requirement",
+            "reqExists": "This requirement is already added"
+        },
+        "success": {
+            "posted": "Job posted successfully",
+            "reqAdded": "Requirement added",
+            "reqRemoved": "Requirement removed"
+        }
+    },
+    "reviewApps": {
+        "title": "Review Applications",
+        "subtitle": "Review and manage worker applications for your jobs",
+        "back": "Back to Applicants",
+        "selectToView": "Select an applicant to view their profile",
+        "tabs": {
+            "overview": "Overview",
+            "rating": "Rating",
+            "progress": "Job Progress"
+        },
+        "filters": {
+            "searchPlaceholder": "Search by worker name...",
+            "button": "Filters",
+            "statusLabel": "Status",
+            "allStatus": "All Status",
+            "jobLabel": "Job",
+            "allJobs": "All Jobs",
+            "pending": "Pending",
+            "accepted": "Accepted",
+            "rejected": "Rejected",
+            "active": "Active:",
+            "clear": "Clear all filters",
+            "summary": "Showing <1>{{filtered}}</1> of <2>{{total}}</2> applications"
+        },
+        "list": {
+            "title": "Applicants",
+            "summary": "Showing <1>{{filtered}}</1> of <2>{{total}}</2> applications",
+            "empty": "No applications found"
+        },
+        "detail": {
+            "about": "About",
+            "skills": "Skills",
+            "completionRate": "Job Completion Rate",
+            "appliedFor": "Applied For",
+            "perDay": "per day",
+            "hireButton": "Hire for this Role",
+            "workerProgress": "Worker Progress",
+            "liveLocation": "Live Worker Location",
+            "acceptedLocation": "Worker Location at Acceptance",
+            "updateInterval": "Updates automatically every 10 seconds",
+            "locationSnapshot": "Location snapshot",
+            "noTracking": "Job tracking data not available",
+            "verified": "Verified"
+        },
+        "hire": {
+            "hired": "Worker Hired",
+            "declined": "Application Declined",
+            "reject": "Reject",
+            "hireNow": "Hire Now"
+        }
+    },
+    "searchWorkers": {
+        "title": "Find Workers",
+        "subtitle": "Browse and connect with skilled workers available in your area.",
+        "stats": {
+            "total": "Total Workers",
+            "available": "Available Now",
+            "verified": "Verified Workers",
+            "topRated": "Top Rated (4.5+)"
+        },
+        "errors": {
+            "fetchFailed": "Failed to load workers",
+            "generic": "An error occurred"
+        },
+        "loading": "Loading workers...",
+        "empty": {
+            "title": "No workers found",
+            "subtitle": "Try adjusting your search or filters",
+            "clearButton": "Clear All Filters"
+        },
+        "filters": {
+            "searchPlaceholder": "Search name, skills, location...",
+            "button": "Filters",
+            "categoryLabel": "Work Category",
+            "allCategories": "All Categories",
+            "locationLabel": "Location",
+            "allLocations": "All Locations",
+            "ratingLabel": "Minimum Rating",
+            "allRatings": "Any Rating",
+            "stars": "Stars",
+            "verifiedLabel": "Verification Status",
+            "allVerified": "All Workers",
+            "verifiedOnly": "Verified Only",
+            "notVerified": "Not Verified",
+            "availabilityLabel": "Availability",
+            "allAvailability": "All Status",
+            "available": "Available Now",
+            "busy": "Busy/Working",
+            "active": "Active Filters:",
+            "clear": "Clear All"
+        }
+    },
+    "workerProfile": {
+        "title": "Worker Profile",
+        "close": "Close",
+        "verified": "Verified Professional",
+        "notVerified": "Identity Not Verified",
+        "contact": "Contact Worker",
+        "available": "Available to Hire",
+        "busy": "Currently Busy",
+        "memberSince": "Member Since",
+        "about": "About the Worker",
+        "skills": "Professional Skills",
+        "reviews": "Worker Reviews",
+        "noReviews": "No reviews yet",
+        "hire": "Hire this Worker",
+        "notAvailable": "Worker not available",
+        "location": "Primary Location",
+        "experience": "Experience Level",
+        "completed": "Jobs Completed",
+        "stats": {
+            "jobsDone": "Jobs Done",
+            "completion": "Completion",
+            "response": "Response"
+        },
+        "tabs": {
+            "overview": "Overview",
+            "reviews": "Reviews"
+        },
+        "reviewsSection": {
+            "title": "Recent Reviews",
+            "count": "{{count}} reviews"
+        },
+        "actions": {
+            "close": "Close",
+            "message": "Message"
         }
     }
 }

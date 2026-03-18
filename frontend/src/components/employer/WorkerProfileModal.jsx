@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { X, MapPin, CircleCheck, MessageSquare } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 // Renders star icons at given size
 const Stars = ({ rating, size = 14 }) => (
@@ -17,23 +18,24 @@ const Stars = ({ rating, size = 14 }) => (
   </div>
 );
 
-// Tab options for modal content
-const TABS = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'reviews',  label: 'Reviews'  },
-];
-
 const WorkerProfileModal = ({ worker, onClose }) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('overview');
   const navigate = useNavigate();
+
+  // Tab options for modal content
+  const TABS = [
+    { id: 'overview', label: t('workerProfile.tabs.overview') },
+    { id: 'reviews', label: t('workerProfile.tabs.reviews') },
+  ];
 
   // Static rating breakdown percentages for mock
   const breakdown = [
     { star: 5, pct: 58 },
     { star: 4, pct: 26 },
     { star: 3, pct: 10 },
-    { star: 2, pct: 4  },
-    { star: 1, pct: 2  },
+    { star: 2, pct: 4 },
+    { star: 1, pct: 2 },
   ];
 
   // Close modal then navigate to messages with workerId
@@ -73,7 +75,7 @@ const WorkerProfileModal = ({ worker, onClose }) => {
                   <h2 className="text-lg font-bold text-gray-900">{worker.name}</h2>
                   {worker.verified && (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 border border-blue-200 text-blue-700 rounded-full text-xs font-semibold">
-                      <CircleCheck className="w-3 h-3" /> Verified
+                      <CircleCheck className="w-3 h-3" /> {t('workerProfile.verified')}
                     </span>
                   )}
                 </div>
@@ -87,7 +89,7 @@ const WorkerProfileModal = ({ worker, onClose }) => {
               </div>
               <p className="text-xs text-gray-500 flex items-center gap-1">
                 <MapPin className="w-3 h-3" />
-                {worker.location} · {worker.age} yrs · Since {worker.memberSince}
+                {worker.location} · {worker.age} {t('common.yrs')} · {t('common.since')} {worker.memberSince}
               </p>
               <div className="mt-2">
                 <Stars rating={worker.rating} />
@@ -101,11 +103,10 @@ const WorkerProfileModal = ({ worker, onClose }) => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-4 py-2.5 text-sm font-semibold border-b-2 transition-all -mb-px whitespace-nowrap ${
-                  activeTab === tab.id
+                className={`px-4 py-2.5 text-sm font-semibold border-b-2 transition-all -mb-px whitespace-nowrap ${activeTab === tab.id
                     ? 'border-blue-600 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
-                }`}
+                  }`}
               >
                 {tab.label}
               </button>
@@ -123,26 +124,26 @@ const WorkerProfileModal = ({ worker, onClose }) => {
               {/* Stats grid */}
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { label: 'Jobs Done',  value: worker.jobs                 },
-                  { label: 'Completion', value: `${worker.completionRate}%` },
-                  { label: 'Response',   value: worker.responseTime         },
-                ].map(({ label, value }) => (
-                  <div key={label} className="bg-gray-50 rounded-xl p-3 text-center border border-gray-100">
+                  { key: 'jobsDone', value: worker.jobs },
+                  { key: 'completion', value: `${worker.completionRate}%` },
+                  { key: 'response', value: worker.responseTime },
+                ].map(({ key, value }) => (
+                  <div key={key} className="bg-gray-50 rounded-xl p-3 text-center border border-gray-100">
                     <p className="text-lg font-black text-blue-600">{value}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">{label}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{t(`workerProfile.stats.${key}`)}</p>
                   </div>
                 ))}
               </div>
 
               {/* Bio */}
               <div className="bg-white rounded-xl p-4 border border-gray-200">
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">About</p>
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">{t('workerProfile.about')}</p>
                 <p className="text-sm text-gray-600 leading-relaxed">{worker.bio}</p>
               </div>
 
               {/* Skills list */}
               <div className="bg-white rounded-xl p-4 border border-gray-200">
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Skills</p>
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">{t('workerProfile.skills')}</p>
                 <div className="flex flex-wrap gap-2">
                   {worker.skills.map((s) => (
                     <span key={s} className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 border border-blue-200 text-blue-700 rounded-full text-xs font-semibold">
@@ -155,7 +156,7 @@ const WorkerProfileModal = ({ worker, onClose }) => {
               {/* Job completion rate progress bar */}
               <div className="bg-white rounded-xl p-4 border border-gray-200">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-semibold text-gray-700">Job Completion Rate</span>
+                  <span className="text-sm font-semibold text-gray-700">{t('reviewApps.detail.completionRate')}</span>
                   <span className="text-sm font-black text-blue-600">{worker.completionRate}%</span>
                 </div>
                 <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
@@ -168,10 +169,10 @@ const WorkerProfileModal = ({ worker, onClose }) => {
 
               {/* Daily rate */}
               <div className="bg-white rounded-xl p-4 border border-gray-200 flex items-center justify-between">
-                <span className="text-sm font-semibold text-gray-700">Daily Rate</span>
+                <span className="text-sm font-semibold text-gray-700">{t('common.dailyRate')}</span>
                 <div className="text-right">
-                  <p className="text-xl font-bold text-gray-900">LKR {worker.rate}</p>
-                  <p className="text-xs text-gray-400">per day</p>
+                  <p className="text-xl font-bold text-gray-900">{t('common.currency')} {worker.rate}</p>
+                  <p className="text-xs text-gray-400">{t('common.perDay')}</p>
                 </div>
               </div>
             </div>
@@ -187,7 +188,7 @@ const WorkerProfileModal = ({ worker, onClose }) => {
                   <div className="text-center flex-shrink-0">
                     <p className="text-4xl font-black text-gray-900 leading-none">{worker.rating}</p>
                     <div className="mt-2"><Stars rating={worker.rating} /></div>
-                    <p className="text-xs text-gray-400 mt-1">{worker.jobs} reviews</p>
+                    <p className="text-xs text-gray-400 mt-1">{worker.jobs} {t('workerProfile.reviewsSection.count', { count: worker.jobs })}</p>
                   </div>
                   <div className="flex-1 space-y-2">
                     {breakdown.map(({ star, pct }) => (
@@ -210,7 +211,7 @@ const WorkerProfileModal = ({ worker, onClose }) => {
               <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
                 <div className="px-4 py-3 border-b border-gray-200 flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
-                  <span className="text-xs font-bold text-gray-700 uppercase tracking-wide">Recent Reviews</span>
+                  <span className="text-xs font-bold text-gray-700 uppercase tracking-wide">{t('workerProfile.reviewsSection.title')}</span>
                 </div>
                 <div className="divide-y divide-gray-100">
                   {(worker.reviews || []).map((review) => (
@@ -253,7 +254,7 @@ const WorkerProfileModal = ({ worker, onClose }) => {
             onClick={onClose}
             className="flex-1 py-2.5 rounded-xl text-sm font-semibold border border-gray-300 text-gray-700 hover:bg-gray-50 transition-all"
           >
-            Close
+            {t('workerProfile.actions.close')}
           </button>
           {/* Message button — navigates to messages page with workerId */}
           <button
@@ -261,7 +262,7 @@ const WorkerProfileModal = ({ worker, onClose }) => {
             className="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 shadow-md transition-all flex items-center justify-center gap-2"
           >
             <MessageSquare className="w-4 h-4" />
-            Message
+            {t('workerProfile.actions.message')}
           </button>
         </div>
 

@@ -22,12 +22,12 @@ export default function JobDetails({ job, onBack, onApply }) {
 
                 <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-8">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t(`mock.jobs.${job.title}`, job.title)}</h1>
+                        <h1 className="text-3xl font-bold text-gray-900 mb-2">{job.title}</h1>
                         <div className="flex items-center gap-2 text-lg text-gray-600 mb-4">
                             <Building className="w-5 h-5" />
-                            <span className="font-medium">{t(`mock.companies.${job.company}`, job.company)}</span>
+                            <span className="font-medium">{job.company}</span>
                             <span>•</span>
-                            <span className="text-gray-500">{t(`mock.locations.${job.location}`, job.location)}</span>
+                            <span className="text-gray-500">{job.location}</span>
                         </div>
 
                         <div className="flex flex-wrap gap-2 mb-4">
@@ -59,14 +59,14 @@ export default function JobDetails({ job, onBack, onApply }) {
                         <section>
                             <h2 className="text-xl font-bold text-gray-900 mb-4">{t('jobs.description')}</h2>
                             <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                                {t(`mock.jobDescriptions.${job.description}`, job.description)}
+                                {job.description}
                             </p>
                         </section>
 
                         <section>
                             <h2 className="text-xl font-bold text-gray-900 mb-4">{t('jobs.requirements')}</h2>
                             <div className="bg-gray-50 p-6 rounded-lg border border-gray-100 italic">
-                                {t(`mock.jobRequirements.${job.requirements}`, job.requirements)}
+                                {job.requirements}
                             </div>
                         </section>
 
@@ -75,7 +75,7 @@ export default function JobDetails({ job, onBack, onApply }) {
                             <div className="flex flex-wrap gap-2">
                                 {job.skills_required?.map((skill, index) => (
                                     <Badge key={index} variant="secondary" className="px-3 py-1">
-                                        {t(`mock.skills.${skill}`, skill)}
+                                        {skill}
                                     </Badge>
                                 ))}
                             </div>
@@ -110,8 +110,8 @@ export default function JobDetails({ job, onBack, onApply }) {
                                 <Building className="w-5 h-5" />
                                 {t('jobs.company')}
                             </h3>
-                            <p className="font-semibold text-indigo-700 mb-1">{t(`mock.companies.${job.company}`, job.company)}</p>
-                            <p className="text-sm text-indigo-600">{t(`mock.locations.${job.location}`, job.location)}</p>
+                            <p className="font-semibold text-indigo-700 mb-1">{job.company}</p>
+                            <p className="text-sm text-indigo-600">{job.location}</p>
                         </div>
                     </div>
                 </div>

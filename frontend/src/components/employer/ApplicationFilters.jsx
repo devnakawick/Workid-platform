@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { Search, Filter, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { useTranslation, Trans } from 'react-i18next';
 
 const ApplicationFilters = ({ filters, onFilterChange, onClearAll, jobs }) => {
+  const { t } = useTranslation();
   const [showFilters, setShowFilters] = useState(false);
 
   // Count how many filters are active
   const activeCount = [
     filters.status !== 'all',
-    filters.jobId  !== 'all',
+    filters.jobId !== 'all',
   ].filter(Boolean).length;
 
   const hasActive = activeCount > 0 || filters.searchQuery?.trim() !== '';
@@ -25,7 +27,7 @@ const ApplicationFilters = ({ filters, onFilterChange, onClearAll, jobs }) => {
             type="text"
             value={filters.searchQuery || ''}
             onChange={(e) => onFilterChange('searchQuery', e.target.value)}
-            placeholder="Search by worker name..."
+            placeholder={t('reviewApps.filters.searchPlaceholder')}
             className="w-full py-2.5 px-4 pl-10 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           />
         </div>
@@ -33,14 +35,13 @@ const ApplicationFilters = ({ filters, onFilterChange, onClearAll, jobs }) => {
         {/* Filters toggle button*/}
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${
-            activeCount > 0
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${activeCount > 0
               ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg'
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          }`}
+            }`}
         >
           <Filter className="w-4 h-4" />
-          Filters
+          {t('reviewApps.filters.button')}
           {/* Show active filter count badge */}
           {activeCount > 0 && (
             <span className="min-w-[20px] h-5 px-1.5 bg-white text-blue-600 rounded-full text-xs font-bold flex items-center justify-center">
@@ -59,31 +60,31 @@ const ApplicationFilters = ({ filters, onFilterChange, onClearAll, jobs }) => {
             {/* Filter by application status */}
             <div>
               <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2">
-                Status
+                {t('reviewApps.filters.statusLabel')}
               </label>
               <select
                 value={filters.status}
                 onChange={(e) => onFilterChange('status', e.target.value)}
                 className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               >
-                <option value="all">All Status</option>
-                <option value="pending">Pending</option>
-                <option value="accepted">Accepted</option>
-                <option value="rejected">Rejected</option>
+                <option value="all">{t('reviewApps.filters.allStatus')}</option>
+                <option value="pending">{t('reviewApps.filters.pending')}</option>
+                <option value="accepted">{t('reviewApps.filters.accepted')}</option>
+                <option value="rejected">{t('reviewApps.filters.rejected')}</option>
               </select>
             </div>
 
             {/* Filter by job title */}
             <div>
               <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2">
-                Job
+                {t('reviewApps.filters.jobLabel')}
               </label>
               <select
                 value={filters.jobId}
                 onChange={(e) => onFilterChange('jobId', e.target.value)}
                 className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               >
-                <option value="all">All Jobs</option>
+                <option value="all">{t('reviewApps.filters.allJobs')}</option>
                 {jobs.map(job => (
                   <option key={job.id} value={job.id}>{job.title}</option>
                 ))}
@@ -94,12 +95,14 @@ const ApplicationFilters = ({ filters, onFilterChange, onClearAll, jobs }) => {
           {/* Active filter chips - show each active filter with remove button */}
           {activeCount > 0 && (
             <div className="flex flex-wrap items-center gap-2 p-3 bg-gray-50 border border-gray-200 rounded-lg">
-              <span className="text-xs font-bold text-gray-700 uppercase tracking-wide">Active:</span>
+              <span className="text-xs font-bold text-gray-700 uppercase tracking-wide">
+                {t('reviewApps.filters.active')}
+              </span>
 
               {/* Status filter chip */}
               {filters.status !== 'all' && (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-gray-200 text-gray-700 rounded-full text-xs font-medium shadow-sm">
-                  {filters.status}
+                  {t(`reviewApps.filters.${filters.status}`)}
                   <button onClick={() => onFilterChange('status', 'all')} className="hover:bg-gray-100 rounded-full p-0.5">
                     <X className="w-3 h-3" />
                   </button>
@@ -126,7 +129,7 @@ const ApplicationFilters = ({ filters, onFilterChange, onClearAll, jobs }) => {
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm font-medium hover:bg-red-50 hover:border-red-400 transition-all"
               >
                 <X className="w-4 h-4" />
-                Clear all filters
+                {t('reviewApps.filters.clear')}
               </button>
             </div>
           )}
@@ -135,8 +138,14 @@ const ApplicationFilters = ({ filters, onFilterChange, onClearAll, jobs }) => {
 
       {/* Results count - shows filtered vs total applications */}
       <div className="text-sm pt-2 border-t border-gray-200 text-gray-600">
-        Showing <span className="font-bold text-gray-900">{filters.filteredCount}</span> of{' '}
-        <span className="font-bold text-gray-900">{filters.totalCount}</span> applications
+        <Trans
+          i18nKey="reviewApps.filters.summary"
+          values={{ filtered: filters.filteredCount, total: filters.totalCount }}
+          components={{
+            1: <span className="font-bold text-gray-900" />,
+            2: <span className="font-bold text-gray-900" />
+          }}
+        />
       </div>
 
     </div>

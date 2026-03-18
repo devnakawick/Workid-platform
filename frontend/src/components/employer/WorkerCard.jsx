@@ -1,11 +1,12 @@
 import { MapPin, Star, CircleCheck, Briefcase, Clock, Zap } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
-// Availability badge config — label, dot and badge colors per status
-const AVAILABILITY = {
-  available: { label: 'Available',   dot: 'bg-green-400',  badge: 'bg-green-50 text-green-700 border-green-200'   },
-  busy:      { label: 'Busy',        dot: 'bg-yellow-400', badge: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
-  inactive:  { label: 'Unavailable', dot: 'bg-gray-400',   badge: 'bg-gray-50 text-gray-500 border-gray-200'      },
-};
+// Availability badge mapping
+const getAvailabilityConfig = (t) => ({
+  available: { label: t('searchWorkers.filters.available'), dot: 'bg-green-400', badge: 'bg-green-50 text-green-700 border-green-200' },
+  busy: { label: t('searchWorkers.filters.busy'), dot: 'bg-yellow-400', badge: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
+  inactive: { label: t('common.status.inactive'), dot: 'bg-gray-400', badge: 'bg-gray-50 text-gray-500 border-gray-200' },
+});
 
 // Renders star icons for a given rating
 const Stars = ({ rating }) => (
@@ -23,6 +24,8 @@ const Stars = ({ rating }) => (
 );
 
 const WorkerCard = ({ worker, onViewProfile }) => {
+  const { t } = useTranslation();
+  const AVAILABILITY = getAvailabilityConfig(t);
   const avail = AVAILABILITY[worker.availability] || AVAILABILITY.inactive;
 
   return (
@@ -50,7 +53,7 @@ const WorkerCard = ({ worker, onViewProfile }) => {
               <h3 className="text-base font-bold text-gray-900 truncate">{worker.name}</h3>
               {worker.verified && (
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 border border-blue-200 text-blue-700 rounded-full text-xs font-semibold flex-shrink-0">
-                  <CircleCheck className="w-3 h-3" /> Verified
+                  <CircleCheck className="w-3 h-3" /> {t('workerProfile.verified')}
                 </span>
               )}
             </div>
@@ -63,7 +66,7 @@ const WorkerCard = ({ worker, onViewProfile }) => {
           {/* Location, age and member since */}
           <p className="text-xs text-gray-500 flex items-center gap-1 truncate">
             <MapPin className="w-3 h-3 flex-shrink-0" />
-            {worker.location} · {worker.age} yrs · Since {worker.memberSince}
+            {worker.location} · {worker.age} {t('workerProfile.yrs', { defaultValue: 'yrs' })} · {t('workerProfile.memberSince')} {worker.memberSince}
           </p>
         </div>
       </div>
@@ -71,7 +74,7 @@ const WorkerCard = ({ worker, onViewProfile }) => {
       {/* Rating and jobs done */}
       <div className="flex items-center justify-between mb-3">
         <Stars rating={worker.rating} />
-        <span className="text-xs text-gray-400">{worker.jobs} jobs done</span>
+        <span className="text-xs text-gray-400">{worker.jobs} {t('workerProfile.completed')}</span>
       </div>
 
       {/* Bio — clamped to 2 lines */}
@@ -88,7 +91,7 @@ const WorkerCard = ({ worker, onViewProfile }) => {
         ))}
         {worker.skills.length > 3 && (
           <span className="inline-flex items-center px-2.5 py-0.5 bg-gray-100 text-gray-500 rounded-full text-xs font-semibold">
-            +{worker.skills.length - 3} more
+            +{worker.skills.length - 3} {t('common.more', { defaultValue: 'more' })}
           </span>
         )}
       </div>
@@ -100,7 +103,7 @@ const WorkerCard = ({ worker, onViewProfile }) => {
         <div className="flex items-center gap-1">
           <Briefcase className="w-3.5 h-3.5 text-blue-500" />
           <span className="font-semibold text-gray-700">{worker.completionRate}%</span>
-          <span>completion</span>
+          <span>{t('workerProfile.stats.completion')}</span>
         </div>
         <div className="flex items-center gap-1">
           <Zap className="w-3.5 h-3.5 text-yellow-500" />
@@ -108,8 +111,8 @@ const WorkerCard = ({ worker, onViewProfile }) => {
         </div>
         <div className="flex items-center gap-1">
           <Clock className="w-3.5 h-3.5 text-green-500" />
-          <span className="font-bold text-gray-700">LKR {worker.rate}</span>
-          <span>/day</span>
+          <span className="font-bold text-gray-700">{t('common.currency')} {worker.rate}</span>
+          <span>/{t('common.perDay', { defaultValue: 'day' })}</span>
         </div>
       </div>
 
@@ -118,11 +121,12 @@ const WorkerCard = ({ worker, onViewProfile }) => {
         onClick={() => onViewProfile(worker)}
         className="w-full py-2.5 rounded-xl text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 shadow-md transition-all"
       >
-        View Profile
+        {t('workerProfile.viewProfile', { defaultValue: 'View Profile' })}
       </button>
 
     </div>
   );
 };
+
 
 export default WorkerCard;

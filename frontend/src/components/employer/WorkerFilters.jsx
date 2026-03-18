@@ -1,20 +1,22 @@
 import { useState } from 'react';
 import { Search, Filter, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { useTranslation, Trans } from 'react-i18next';
 import { categories } from '../../mocks/jobData';
 
 // Available location options for filter
 const LOCATIONS = ['Colombo', 'Nugegoda', 'Kelaniya', 'Maharagama', 'Battaramulla', 'Galle', 'Kandy', 'Negombo'];
 
 const WorkerFilters = ({ filters, onFilterChange, onClearAll, workersCount, totalWorkersCount }) => {
+  const { t } = useTranslation();
   const [showFilters, setShowFilters] = useState(false);
 
   // Count active filters excluding search query
   const activeCount = [
     filters.availability !== 'all',
-    filters.category     !== 'all',
-    filters.location     !== 'all',
-    filters.minRating    !== 'all',
-    filters.verified     !== 'all',
+    filters.category !== 'all',
+    filters.location !== 'all',
+    filters.minRating !== 'all',
+    filters.verified !== 'all',
   ].filter(Boolean).length;
 
   // Has any active filter including search
@@ -44,22 +46,21 @@ const WorkerFilters = ({ filters, onFilterChange, onClearAll, workersCount, tota
             type="text"
             value={filters.searchQuery}
             onChange={(e) => onFilterChange('searchQuery', e.target.value)}
-            placeholder="Search by worker name or skill..."
+            placeholder={t('searchWorkers.filters.searchPlaceholder')}
             className="w-full py-2.5 px-4 pl-10 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           />
         </div>
         {/* Filter button — blue when filters active */}
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${
-            activeCount > 0
-              ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          }`}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${activeCount > 0
+            ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg'
+            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
         >
           <Filter className="w-4 h-4" />
-          Filters
-          {/* Active filter count badge */}
+          {t('searchWorkers.filters.button')}
+          {/* Show active filter count badge */}
           {activeCount > 0 && (
             <span className="min-w-[20px] h-5 px-1.5 bg-white text-blue-600 rounded-full text-xs font-bold flex items-center justify-center">
               {activeCount}
@@ -76,27 +77,31 @@ const WorkerFilters = ({ filters, onFilterChange, onClearAll, workersCount, tota
 
             {/* Availability filter */}
             <div>
-              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2">Availability</label>
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2">
+                {t('searchWorkers.filters.availabilityLabel')}
+              </label>
               <select
                 value={filters.availability}
                 onChange={(e) => onFilterChange('availability', e.target.value)}
                 className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               >
-                <option value="all">All Workers</option>
-                <option value="available">Available Now</option>
-                <option value="busy">Busy</option>
+                <option value="all">{t('searchWorkers.filters.allAvailability')}</option>
+                <option value="available">{t('searchWorkers.filters.available')}</option>
+                <option value="busy">{t('searchWorkers.filters.busy')}</option>
               </select>
             </div>
 
             {/* Category filter */}
             <div>
-              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2">Category</label>
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2">
+                {t('searchWorkers.filters.categoryLabel')}
+              </label>
               <select
                 value={filters.category}
                 onChange={(e) => onFilterChange('category', e.target.value)}
                 className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               >
-                <option value="all">All Categories</option>
+                <option value="all">{t('searchWorkers.filters.allCategories')}</option>
                 {categories.map(cat => (
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
@@ -105,13 +110,15 @@ const WorkerFilters = ({ filters, onFilterChange, onClearAll, workersCount, tota
 
             {/* Location filter */}
             <div>
-              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2">Location</label>
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2">
+                {t('searchWorkers.filters.locationLabel')}
+              </label>
               <select
                 value={filters.location}
                 onChange={(e) => onFilterChange('location', e.target.value)}
                 className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               >
-                <option value="all">All Locations</option>
+                <option value="all">{t('searchWorkers.filters.allLocations')}</option>
                 {LOCATIONS.map(loc => (
                   <option key={loc} value={loc}>{loc}</option>
                 ))}
@@ -120,13 +127,15 @@ const WorkerFilters = ({ filters, onFilterChange, onClearAll, workersCount, tota
 
             {/* Minimum rating filter */}
             <div>
-              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2">Minimum Rating</label>
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2">
+                {t('searchWorkers.filters.ratingLabel')}
+              </label>
               <select
                 value={filters.minRating}
                 onChange={(e) => onFilterChange('minRating', e.target.value)}
                 className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               >
-                <option value="all">Any Rating</option>
+                <option value="all">{t('searchWorkers.filters.allRatings')}</option>
                 <option value="4.5">4.5+ ⭐</option>
                 <option value="4.0">4.0+ ⭐</option>
                 <option value="3.5">3.5+ ⭐</option>
@@ -136,15 +145,17 @@ const WorkerFilters = ({ filters, onFilterChange, onClearAll, workersCount, tota
 
             {/* Verified only filter */}
             <div>
-              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2">Verification</label>
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2">
+                {t('searchWorkers.filters.verifiedLabel')}
+              </label>
               <select
                 value={filters.verified}
                 onChange={(e) => onFilterChange('verified', e.target.value)}
                 className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               >
-                <option value="all">All Workers</option>
-                <option value="true">Verified Only</option>
-                <option value="false">Unverified Only</option>
+                <option value="all">{t('searchWorkers.filters.allVerified')}</option>
+                <option value="true">{t('searchWorkers.filters.verifiedOnly')}</option>
+                <option value="false">{t('searchWorkers.filters.notVerified')}</option>
               </select>
             </div>
 
@@ -153,15 +164,17 @@ const WorkerFilters = ({ filters, onFilterChange, onClearAll, workersCount, tota
           {/* Active filter chips */}
           {activeCount > 0 && (
             <div className="flex flex-wrap items-center gap-2 p-3 bg-gray-50 border border-gray-200 rounded-lg">
-              <span className="text-xs font-bold text-gray-700 uppercase tracking-wide">Active:</span>
+              <span className="text-xs font-bold text-gray-700 uppercase tracking-wide">
+                {t('searchWorkers.filters.active')}
+              </span>
               {filters.availability !== 'all' && (
-                <FilterChip label={filters.availability === 'available' ? 'Available Now' : 'Busy'} filterKey="availability" />
+                <FilterChip label={t(`searchWorkers.filters.${filters.availability}`)} filterKey="availability" />
               )}
-              {filters.category !== 'all' && <FilterChip label={filters.category} filterKey="category"  />}
-              {filters.location  !== 'all' && <FilterChip label={filters.location}  filterKey="location"  />}
-              {filters.minRating !== 'all' && <FilterChip label={`${filters.minRating}+ Stars`} filterKey="minRating" />}
-              {filters.verified  !== 'all' && (
-                <FilterChip label={filters.verified === 'true' ? 'Verified Only' : 'Unverified Only'} filterKey="verified" />
+              {filters.category !== 'all' && <FilterChip label={filters.category} filterKey="category" />}
+              {filters.location !== 'all' && <FilterChip label={filters.location} filterKey="location" />}
+              {filters.minRating !== 'all' && <FilterChip label={`${filters.minRating}+ ${t('searchWorkers.filters.stars')}`} filterKey="minRating" />}
+              {filters.verified !== 'all' && (
+                <FilterChip label={filters.verified === 'true' ? t('searchWorkers.filters.verifiedOnly') : t('searchWorkers.filters.notVerified')} filterKey="verified" />
               )}
             </div>
           )}
@@ -174,7 +187,7 @@ const WorkerFilters = ({ filters, onFilterChange, onClearAll, workersCount, tota
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm font-medium hover:bg-red-50 hover:border-red-400 transition-all"
               >
                 <X className="w-4 h-4" />
-                Clear all filters
+                {t('searchWorkers.filters.clear')}
               </button>
             </div>
           )}
@@ -183,8 +196,15 @@ const WorkerFilters = ({ filters, onFilterChange, onClearAll, workersCount, tota
 
       {/* Results count */}
       <div className="text-sm pt-2 border-t border-gray-200 text-gray-600">
-        Showing <span className="font-bold text-gray-900">{workersCount}</span> of{' '}
-        <span className="font-bold text-gray-900">{totalWorkersCount}</span> workers
+        <Trans
+          i18nKey="reviewApps.filters.summary"
+          values={{ filtered: workersCount, total: totalWorkersCount }}
+          alt="Showing count of workers"
+          components={{
+            1: <span className="font-bold text-gray-900" />,
+            2: <span className="font-bold text-gray-900" />
+          }}
+        />
       </div>
     </div>
   );

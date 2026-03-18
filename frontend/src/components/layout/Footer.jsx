@@ -1,7 +1,9 @@
 import { Heart, Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const Footer = () => {
+  const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -17,7 +19,7 @@ const Footer = () => {
               WorkID
             </h3>
             <p className="text-sm text-gray-400 mb-4 leading-relaxed">
-              Connecting skilled workers with opportunities across Sri Lanka. Building futures, one job at a time.
+              {t('footer.descriptionLong')}
             </p>
             <div className="flex gap-3">
               <a
@@ -51,45 +53,54 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Column 2: Quick Links */}
           <div>
-            <h4 className="text-white font-semibold mb-4 text-lg">Quick Links</h4>
+            <h4 className="text-white font-semibold mb-4 text-lg">{t('footer.quickLinks')}</h4>
             <ul className="space-y-2.5">
-              {['About Us', 'Browse Jobs', 'Find Workers', 'How It Works', 'Pricing'].map((item) => (
-                <li key={item}>
+              {[
+                { label: 'aboutUs', path: '/about-us' },
+                { label: 'browseJobs', path: '/browse-jobs' },
+                { label: 'findWorkers', path: '/find-workers' },
+                { label: 'howItWorks', path: '/how-it-works' },
+                { label: 'pricing', path: '/pricing' }
+              ].map((item) => (
+                <li key={item.label}>
                   <Link
-                    to={`/${item.toLowerCase().replace(/\s+/g, '-')}`}
+                    to={item.path}
                     className="text-sm text-gray-400 hover:text-white hover:pl-2 transition-all flex items-center group"
                   >
                     <span className="w-0 group-hover:w-2 h-px bg-blue-500 mr-0 group-hover:mr-2 transition-all"></span>
-                    {item}
+                    {t(`footer.${item.label}`)}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Column 3: Support */}
           <div>
-            <h4 className="text-white font-semibold mb-4 text-lg">Support</h4>
+            <h4 className="text-white font-semibold mb-4 text-lg">{t('footer.support')}</h4>
             <ul className="space-y-2.5">
-              {['Help Center', 'FAQ', 'Terms of Service', 'Privacy Policy', 'Contact Us'].map((item) => (
-                <li key={item}>
+              {[
+                { label: 'helpCenter', path: '/help-center' },
+                { label: 'faq', path: '/faq' },
+                { label: 'termsOfService', path: '/terms-of-service' },
+                { label: 'privacyPolicy', path: '/privacy-policy' },
+                { label: 'contactUs', path: '/contact-us' }
+              ].map((item) => (
+                <li key={item.label}>
                   <Link
-                    to={`/${item.toLowerCase().replace(/\s+/g, '-')}`}
+                    to={item.path}
                     className="text-sm text-gray-400 hover:text-white hover:pl-2 transition-all flex items-center group"
                   >
                     <span className="w-0 group-hover:w-2 h-px bg-blue-500 mr-0 group-hover:mr-2 transition-all"></span>
-                    {item}
+                    {t(`footer.${item.label}`)}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Column 4: Contact */}
           <div>
-            <h4 className="text-white font-semibold mb-4 text-lg">Contact Info</h4>
+            <h4 className="text-white font-semibold mb-4 text-lg">{t('footer.contactInfo')}</h4>
             <ul className="space-y-4">
               <li className="flex items-start gap-3 group">
                 <MapPin className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
@@ -119,7 +130,7 @@ const Footer = () => {
         <div className="max-w-7xl mx-auto pl-8 pr-4 py-4">
           <div className="flex items-center pl-8">
             <p className="text-sm text-gray-400">
-              © {currentYear} WorkID. All rights reserved.
+              © {currentYear} WorkID. {t('footer.allRightsReserved')}
             </p>
           </div>
         </div>

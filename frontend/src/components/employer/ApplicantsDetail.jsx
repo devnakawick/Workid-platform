@@ -7,85 +7,102 @@ import JobLocationMap from '@/components/map/JobLocationMap';
 import LocationShareSettings from '@/components/settings/LocationShareSettings';
 import { toast } from 'sonner';
 
+import { useTranslation } from 'react-i18next';
+
 // Renders star icons based on rating value
-const Stars = ({ rating }) => (
-  <div className="flex items-center gap-1">
-    {[1, 2, 3, 4, 5].map((i) => (
-      <svg key={i} width="14" height="14" viewBox="0 0 10 10">
-        <path
-          d="M5 1l1.1 2.2 2.4.35-1.75 1.7.41 2.45L5 6.5 2.84 7.7l.41-2.45L1.5 3.55l2.4-.35L5 1z"
-          fill={i <= Math.round(rating) ? '#F59E0B' : '#E5E7EB'}
-        />
-      </svg>
-    ))}
-    {/* Show numeric rating next to stars */}
-    <span className="text-sm font-bold text-gray-700 ml-1">{rating}</span>
-  </div>
-);
+const Stars = ({ rating }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="flex items-center gap-1">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <svg key={i} width="14" height="14" viewBox="0 0 10 10">
+          <path
+            d="M5 1l1.1 2.2 2.4.35-1.75 1.7.41 2.45L5 6.5 2.84 7.7l.41-2.45L1.5 3.55l2.4-.35L5 1z"
+            fill={i <= Math.round(rating) ? '#F59E0B' : '#E5E7EB'}
+          />
+        </svg>
+      ))}
+      {/* Show numeric rating next to stars */}
+      <span className="text-sm font-bold text-gray-700 ml-1">{rating}</span>
+    </div>
+  );
+};
 
 // Shows bio, skills, completion rate and applied job info
-const OverviewTab = ({ app, onHire }) => (
-  <div className="space-y-4">
+const OverviewTab = ({ app, onHire }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="space-y-4">
 
-    {/* Bio section */}
-    <div className="bg-white rounded-xl p-4 md:p-5 border border-gray-200">
-      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">About</p>
-      <p className="text-sm text-gray-600 leading-relaxed">{app.bio}</p>
-    </div>
+      {/* Bio section */}
+      <div className="bg-white rounded-xl p-4 md:p-5 border border-gray-200">
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {t('reviewApps.detail.about')}
+        </p>
+        <p className="text-sm text-gray-600 leading-relaxed">{app.bio}</p>
+      </div>
 
-    {/* Skills list */}
-    <div className="bg-white rounded-xl p-4 md:p-5 border border-gray-200">
-      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Skills</p>
-      <div className="flex flex-wrap gap-2">
-        {app.skills.map((s) => (
-          <span key={s} className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 border border-blue-200 text-blue-700 rounded-full text-xs font-semibold">
-            {s}
+      {/* Skills list */}
+      <div className="bg-white rounded-xl p-4 md:p-5 border border-gray-200">
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {t('reviewApps.detail.skills')}
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {app.skills.map((s) => (
+            <span key={s} className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 border border-blue-200 text-blue-700 rounded-full text-xs font-semibold">
+              {s}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Job completion rate progress bar */}
+      <div className="bg-white rounded-xl p-4 md:p-5 border border-gray-200">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm font-semibold text-gray-700">
+            {t('reviewApps.detail.completionRate')}
           </span>
-        ))}
+          <span className="text-sm font-black text-blue-600">{app.completionRate}%</span>
+        </div>
+        <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
+          <div className="h-full bg-blue-600 rounded-full" style={{ width: `${app.completionRate}%` }} />
+        </div>
       </div>
-    </div>
 
-    {/* Job completion rate progress bar */}
-    <div className="bg-white rounded-xl p-4 md:p-5 border border-gray-200">
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-sm font-semibold text-gray-700">Job Completion Rate</span>
-        <span className="text-sm font-black text-blue-600">{app.completionRate}%</span>
-      </div>
-      <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
-        <div className="h-full bg-blue-600 rounded-full" style={{ width: `${app.completionRate}%` }} />
+      {/* Applied job info-show hire button if pending */}
+      <div className="bg-white rounded-xl p-4 md:p-5 border border-gray-200">
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          {t('reviewApps.detail.appliedFor')}
+        </p>
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <p className="text-sm font-bold text-gray-900 mb-1">{app.job}</p>
+            <p className="text-xs text-gray-500 flex items-center gap-1"><Calendar className="w-3 h-3" /> {app.appliedDate}</p>
+          </div>
+          {/* Daily rate */}
+          <div className="text-right">
+            <p className="text-lg font-bold text-gray-900">{t('common.currency')} {app.rate}</p>
+            <p className="text-xs text-gray-400">{t('reviewApps.detail.perDay')}</p>
+          </div>
+        </div>
+        {/* Show hire button only if application is still pending */}
+        {app.status === 'pending' && (
+          <div className="mt-4 pt-4 border-t border-gray-100">
+            <button
+              onClick={() => onHire(app.id)}
+              className="w-full py-2.5 rounded-lg text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 shadow-md transition-all"
+            >
+              ✓ {t('reviewApps.detail.hireButton')}
+            </button>
+          </div>
+        )}
       </div>
     </div>
-
-    {/* Applied job info-show hire button if pending */}
-    <div className="bg-white rounded-xl p-4 md:p-5 border border-gray-200">
-      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Applied For</p>
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <div>
-          <p className="text-sm font-bold text-gray-900 mb-1">{app.job}</p>
-          <p className="text-xs text-gray-500 flex items-center gap-1"><Calendar className="w-3 h-3" /> {app.appliedDate}</p>
-        </div>
-        {/* Daily rate */}
-        <div className="text-right">
-          <p className="text-lg font-bold text-gray-900">LKR {app.rate}</p>
-          <p className="text-xs text-gray-400">per day</p>
-        </div>
-      </div>
-      {/* Show hire button only if application is still pending */}
-      {app.status === 'pending' && (
-        <div className="mt-4 pt-4 border-t border-gray-100">
-          <button
-            onClick={() => onHire(app.id)}
-            className="w-full py-2.5 rounded-lg text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 shadow-md transition-all"
-          >
-            ✓ Hire for this Role
-          </button>
-        </div>
-      )}
-    </div>
-  </div>
-);
+  );
+};
 
 const JobProgressTab = ({ app }) => {
+  const { t } = useTranslation();
   const [job, setJob] = useState(null);
   const [locations, setLocations] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -135,13 +152,15 @@ const JobProgressTab = ({ app }) => {
   }
 
   if (!job) {
-    return <div className="text-center py-10 text-gray-500 font-bold">Job tracking data not available</div>;
+    return <div className="text-center py-10 text-gray-500 font-bold">{t('reviewApps.detail.noTracking')}</div>;
   }
 
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-xl border border-gray-200 p-6 md:p-8">
-        <h3 className="text-lg font-bold text-gray-900 mb-6 uppercase tracking-wider text-xs font-semibold text-gray-500">Worker Progress</h3>
+        <h3 className="text-lg font-bold text-gray-900 mb-6 uppercase tracking-wider text-xs font-semibold text-gray-500">
+          {t('reviewApps.detail.workerProgress')}
+        </h3>
         <JobProgressBar currentStatus={job.status} />
       </div>
 
@@ -150,14 +169,18 @@ const JobProgressTab = ({ app }) => {
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
             <span className={`w-2 h-2 rounded-full ${job.status === 'Traveling' || job.status === 'In Progress' ? 'bg-red-500 animate-pulse' : 'bg-green-500'}`}></span>
-            {job.status === 'Traveling' || job.status === 'In Progress' ? 'Live Worker Location' : 'Worker Location at Acceptance'}
+            {job.status === 'Traveling' || job.status === 'In Progress'
+              ? t('reviewApps.detail.liveLocation')
+              : t('reviewApps.detail.acceptedLocation')}
           </h3>
           <JobLocationMap
             employerLocation={locations.employerLocation}
             workerLocation={locations.workerLocation}
           />
           <p className="text-[10px] text-gray-400 mt-3 text-center">
-            {job.status === 'Traveling' || job.status === 'In Progress' ? 'Updates automatically every 10 seconds' : 'Location snapshot'}
+            {job.status === 'Traveling' || job.status === 'In Progress'
+              ? t('reviewApps.detail.updateInterval')
+              : t('reviewApps.detail.locationSnapshot')}
           </p>
         </div>
       )}
@@ -169,13 +192,6 @@ const JobProgressTab = ({ app }) => {
   );
 };
 
-// Tab options for switching between Overview and Rating
-const TABS = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'rating', label: 'Rating' },
-  { id: 'progress', label: 'Job Progress' },
-];
-
 // Status badge styles mapped by application status
 const STATUS_BADGE = {
   pending: 'bg-yellow-100 text-yellow-700 border-yellow-200',
@@ -185,7 +201,14 @@ const STATUS_BADGE = {
 
 // Main component-displays full applicant detail with tabs
 const ApplicantsDetail = ({ application, onHire, onReject }) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('overview');
+
+  const TABS = [
+    { id: 'overview', label: t('reviewApps.tabs.overview') },
+    { id: 'rating', label: t('reviewApps.tabs.rating') },
+    { id: 'progress', label: t('reviewApps.tabs.progress') },
+  ];
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden bg-gray-50 min-w-0">
@@ -217,19 +240,19 @@ const ApplicantsDetail = ({ application, onHire, onReject }) => {
                 {application.verified && (
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 border border-blue-200 text-blue-700 rounded-full text-xs font-semibold flex-shrink-0">
                     <CircleCheck className="w-3 h-3" />
-                    Verified
+                    {t('reviewApps.detail.verified')}
                   </span>
                 )}
               </div>
               {/* Application status badge */}
               <span className={`inline-flex items-center px-2.5 py-0.5 border rounded-full text-xs font-semibold flex-shrink-0 ${STATUS_BADGE[application.status]}`}>
-                {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
+                {t(`reviewApps.filters.${application.status}`)}
               </span>
             </div>
 
             {/* Location,age and member since */}
             <p className="text-xs text-gray-500 truncate flex items-center gap-1">
-              <MapPin className="w-3 h-3 flex-shrink-0" /> {application.location} · {application.age} yrs · Since {application.memberSince}
+              <MapPin className="w-3 h-3 flex-shrink-0" /> {application.location} · {application.age} {t('common.yrs')} · {t('common.since')} {application.memberSince}
             </p>
           </div>
         </div>

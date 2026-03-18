@@ -71,7 +71,7 @@ export default function JobFilters({ filters, onFilterChange, onReset }) {
                                 <SelectItem value="all">{t('applications.all')}</SelectItem>
                                 {CATEGORIES.map((cat) => (
                                     <SelectItem key={cat} value={cat}>
-                                        {t(`mock.jobs.${cat}`, cat)}
+                                        {cat}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -116,7 +116,7 @@ export default function JobFilters({ filters, onFilterChange, onReset }) {
                         )}
                         {filters.category && filters.category !== 'all' && (
                             <Badge variant="secondary" className="gap-1">
-                                {t(`mock.jobs.${filters.category}`, filters.category)}
+                                {filters.category}
                                 <X
                                     className="w-3 h-3 cursor-pointer"
                                     onClick={() => onFilterChange({ ...filters, category: 'all' })}

@@ -113,7 +113,7 @@ export default function Documents() {
                     >
                         <div className="bg-white/80 backdrop-blur-sm border-2 border-blue-500 border-dashed rounded-3xl p-12 text-center shadow-2xl">
                             <Upload className="w-16 h-16 text-blue-500 mx-auto mb-4 animate-bounce" />
-                            <h2 className="text-2xl font-bold text-gray-900">Drop files to upload</h2>
+                            <h2 className="text-2xl font-bold text-gray-900">{t('documents.dropToUpload')}</h2>
                         </div>
                     </motion.div>
                 )}
@@ -169,7 +169,7 @@ export default function Documents() {
                                             <div className="flex items-start justify-between">
                                                 <div className="flex-1 min-w-0 pr-2">
                                                     <h3 className="font-bold text-gray-900 truncate" title={doc.name}>
-                                                        {t(`mock.documents.${doc.name}`, doc.name)}
+                                                        {doc.name}
                                                     </h3>
                                                     <p className="text-xs text-gray-500 mt-1 uppercase">
                                                         {doc.file_type} • {formatFileSize(doc.size)}

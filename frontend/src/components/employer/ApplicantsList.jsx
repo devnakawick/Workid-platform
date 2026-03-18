@@ -1,25 +1,30 @@
 import { FileX, CircleCheck } from "lucide-react";
-
-const STATUS = {
-  pending:  { label: 'Pending',  dot: 'bg-yellow-400', text: 'text-yellow-600', badge: 'bg-yellow-100 text-yellow-700' },
-  accepted: { label: 'Accepted', dot: 'bg-green-400',  text: 'text-green-600',  badge: 'bg-green-100 text-green-700'  },
-  rejected: { label: 'Rejected', dot: 'bg-red-400',    text: 'text-red-600',    badge: 'bg-red-100 text-red-700'      },
-};
+import { useTranslation, Trans } from 'react-i18next';
 
 const ApplicantsList = ({ applications, selected, stats, onSelect }) => {
+  const { t } = useTranslation();
+
+  const STATUS_CONFIG = {
+    pending: { label: t('reviewApps.filters.pending'), dot: 'bg-yellow-400', text: 'text-yellow-600', badge: 'bg-yellow-100 text-yellow-700' },
+    accepted: { label: t('reviewApps.filters.accepted'), dot: 'bg-green-400', text: 'text-green-600', badge: 'bg-green-100 text-green-700' },
+    rejected: { label: t('reviewApps.filters.rejected'), dot: 'bg-red-400', text: 'text-red-600', badge: 'bg-red-100 text-red-700' },
+  };
+
   return (
     <div className="w-72 bg-white border-r border-gray-200 flex flex-col flex-shrink-0 h-full">
 
       <div className="p-4 border-b border-gray-200 space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wide">Applicants</h2>
+          <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wide">
+            {t('reviewApps.list.title')}
+          </h2>
 
           {/* pending, accepted, rejected */}
           <div className="flex items-center gap-1.5">
             {[
-              { value: stats.pending,  cls: 'bg-yellow-100 text-yellow-700' },
-              { value: stats.accepted, cls: 'bg-green-100 text-green-700'  },
-              { value: stats.rejected, cls: 'bg-red-100 text-red-700'      },
+              { value: stats.pending, cls: 'bg-yellow-100 text-yellow-700' },
+              { value: stats.accepted, cls: 'bg-green-100 text-green-700' },
+              { value: stats.rejected, cls: 'bg-red-100 text-red-700' },
             ].map(({ value, cls }, i) => (
               <span key={i} className={`min-w-[22px] h-5 px-1.5 rounded-full text-xs font-bold flex items-center justify-center ${cls}`}>
                 {value}
@@ -29,8 +34,14 @@ const ApplicantsList = ({ applications, selected, stats, onSelect }) => {
         </div>
 
         <p className="text-sm text-gray-600 pt-1 border-t border-gray-200">
-          Showing <span className="font-bold text-gray-900">{applications.length}</span> of{' '}
-          <span className="font-bold text-gray-900">{stats.total}</span> applications
+          <Trans
+            i18nKey="reviewApps.list.summary"
+            values={{ filtered: applications.length, total: stats.total }}
+            components={{
+              1: <span className="font-bold text-gray-900" />,
+              2: <span className="font-bold text-gray-900" />
+            }}
+          />
         </p>
       </div>
 
@@ -38,22 +49,21 @@ const ApplicantsList = ({ applications, selected, stats, onSelect }) => {
         {applications.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-gray-400">
             <span className="text-3xl mb-2"><FileX /></span>
-            <p className="text-sm font-medium">No applications found</p>
+            <p className="text-sm font-medium">{t('reviewApps.list.empty')}</p>
           </div>
         ) : (
           applications.map((app) => {
-            const s = STATUS[app.status];
+            const s = STATUS_CONFIG[app.status];
             const isSel = selected?.id === app.id;
 
             return (
               <button
                 key={app.id}
                 onClick={() => onSelect(app)}
-                className={`w-full text-left px-4 py-3.5 border-b border-gray-100 transition-colors relative ${
-                  isSel ? 'bg-blue-50' : 'bg-white hover:bg-gray-50'
-                }`}
+                className={`w-full text-left px-4 py-3.5 border-b border-gray-100 transition-colors relative ${isSel ? 'bg-blue-50' : 'bg-white hover:bg-gray-50'
+                  }`}
               >
-                
+
                 {isSel && <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-blue-600" />}
 
                 <div className="flex items-center gap-3">
@@ -84,7 +94,7 @@ const ApplicantsList = ({ applications, selected, stats, onSelect }) => {
                         <div className={`w-1.5 h-1.5 rounded-full ${s.dot}`} />
                         <span className={`text-xs font-semibold ${s.text}`}>{s.label}</span>
                       </div>
-                      <span className="text-xs font-bold text-gray-700">LKR {app.rate}</span>
+                      <span className="text-xs font-bold text-gray-700">{t('common.currency')} {app.rate}</span>
                     </div>
                   </div>
                 </div>

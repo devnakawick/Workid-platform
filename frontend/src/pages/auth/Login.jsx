@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
 import logo from '@/images/logo.jpeg';
@@ -7,6 +8,7 @@ import { Mail, Lock, Phone } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function Login() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -77,7 +79,7 @@ export default function Login() {
             <img src={logo} alt="WorkID" className="w-14 h-14 rounded-xl object-cover shadow-md" />
           </div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">WorkID</h1>
-          <p className="text-gray-500 text-sm md:text-base font-medium">Sign in to your account</p>
+          <p className="text-gray-500 text-sm md:text-base font-medium">{t('auth.signInTitle')}</p>
         </div>
 
         {/* Login Form Card */}
@@ -91,7 +93,7 @@ export default function Login() {
                 : 'text-gray-500 hover:text-gray-700'
                 }`}
             >
-              Worker
+              {t('auth.worker')}
             </button>
             <button
               onClick={() => setRole('employer')}
@@ -100,7 +102,7 @@ export default function Login() {
                 : 'text-gray-500 hover:text-gray-700'
                 }`}
             >
-              Employer
+              {t('auth.employer')}
             </button>
           </div>
 
@@ -114,9 +116,9 @@ export default function Login() {
           <form onSubmit={handleSignIn} className="space-y-4">
             {/* Email/Phone Input */}
             <Input
-              label={role === 'worker' ? "Phone Number" : "Email Address"}
+              label={role === 'worker' ? t('auth.phoneNumber') : t('auth.emailAddress')}
               type={role === 'worker' ? "tel" : "email"}
-              placeholder={role === 'worker' ? "07X XXX XXXX" : "you@example.com"}
+              placeholder={role === 'worker' ? t('auth.phonePlaceholder') : t('auth.emailPlaceholder')}
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
@@ -130,9 +132,9 @@ export default function Login() {
 
             {/* Password Input */}
             <Input
-              label="Password"
+              label={t('auth.password')}
               type="password"
-              placeholder="••••••••"
+              placeholder={t('auth.passwordPlaceholder')}
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
@@ -150,26 +152,26 @@ export default function Login() {
               onClick={handleSignIn}
               disabled={isLoading}
             >
-              {isLoading ? 'Signing in...' : 'Sign In'}
+              {isLoading ? t('common.signingIn') : t('auth.signIn')}
             </Button>
           </form>
 
           {/* Divider */}
           <div className="relative flex items-center">
             <div className="flex-grow border-t border-gray-200"></div>
-            <span className="px-3 text-sm text-gray-500">or</span>
+            <span className="px-3 text-sm text-gray-500">{t('common.or')}</span>
             <div className="flex-grow border-t border-gray-200"></div>
           </div>
 
           {/* Sign Up Link */}
           <div className="text-center">
             <p className="text-gray-600 text-sm">
-              Don't have an account?{' '}
+              {t('auth.noAccount')}{' '}
               <button
                 onClick={() => navigate('/landing')}
                 className="text-indigo-600 hover:text-indigo-700 font-semibold transition-colors"
               >
-                Sign Up
+                {t('auth.signUp')}
               </button>
             </p>
           </div>
@@ -177,17 +179,17 @@ export default function Login() {
           {/* Forgot Password Link */}
           <div className="text-center">
             <button
-              onClick={() => toast.info('Password reset feature coming soon!')}
+              onClick={() => toast.info(t('auth.forgotPasswordToast'))}
               className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
             >
-              Forgot your password?
+              {t('auth.forgotPassword')}
             </button>
           </div>
         </div>
 
         {/* Footer Note */}
         <p className="text-center text-xs text-gray-500 mt-6">
-          By signing in, you agree to our Terms of Service and Privacy Policy
+          {t('auth.termsPolicy')}
         </p>
       </div>
     </div>

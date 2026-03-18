@@ -61,10 +61,10 @@ export default function BadgeCard({ badge, earned_date }) {
 
             <CardContent className="flex-1 p-5 text-center space-y-2">
                 <h3 className="font-bold text-lg leading-tight text-slate-900">
-                    {t(`mock.badges.${name}`, name || "Unknown Badge")}
+                    {name || "Unknown Badge"}
                 </h3>
                 <p className="text-sm text-slate-500 line-clamp-2">
-                    {t(`mock.badges.${name}_desc`, description || "No description available.")}
+                    {description || "No description available."}
                 </p>
             </CardContent>
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Bell, Mail } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -11,6 +12,7 @@ const DashboardHeader = ({
     showAvailability = false
 }) => {
     const { user, updateUser } = useAuth();
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const name = user?.name || 'User';
     const role = user?.role || 'Member';
@@ -20,14 +22,16 @@ const DashboardHeader = ({
     const toggleAvailability = () => {
         const nextState = !isAvailable;
         updateUser({ isAvailable: nextState });
-        toast.info(`Status updated to ${nextState ? 'Available' : 'Unavailable'}`);
+        toast.info(t('common.statusUpdated', { status: nextState ? t('common.available') : t('common.unavailable') }));
     };
 
     return (
         <header className="flex flex-col md:flex-row items-start md:items-center justify-between px-4 md:px-8 py-4 md:py-6 bg-white border-b border-gray-100 sticky top-0 z-50 gap-4">
             {!hideHeaderInfo ? (
                 <div className="w-full md:w-auto">
-                    <h1 className="text-xl md:text-2xl font-bold text-gray-900 truncate">Welcome back, {name}</h1>
+                    <h1 className="text-xl md:text-2xl font-bold text-gray-900 truncate">
+                        {t('common.welcomeBack', { name })}
+                    </h1>
                     <p className="text-gray-500 text-xs md:text-sm mt-0.5 truncate">{subtitle}</p>
                 </div>
             ) : <div />}
@@ -70,9 +74,9 @@ const DashboardHeader = ({
                             <div className={`w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${isAvailable ? 'bg-emerald-500 animate-pulse' : 'bg-gray-400'}`}></div>
                             <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider">
                                 {isAvailable ? (
-                                    <span className="inline md:inline">Available</span>
+                                    <span className="inline md:inline">{t('common.available')}</span>
                                 ) : (
-                                    <span className="inline md:inline">Unavailable</span>
+                                    <span className="inline md:inline">{t('common.unavailable')}</span>
                                 )}
                             </span>
                         </button>

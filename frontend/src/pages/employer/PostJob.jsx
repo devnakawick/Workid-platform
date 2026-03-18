@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Briefcase, ArrowLeft } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { createJobAPI } from '../../mocks/jobData';
 import JobForm from '../../components/employer/JobForm';
 
 const PostJob = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   // Controls the loading spinner on the submit button while the API call is in flight
@@ -19,7 +21,7 @@ const PostJob = () => {
       const result = await createJobAPI(jobData);
 
       if (result.success) {
-        toast.success(result.message);
+        toast.success(t('postJob.success.posted'));
         console.log('Job Created Successfully:', result.data);
 
         // Short delay so user sees the success toast before navigating away
@@ -27,11 +29,11 @@ const PostJob = () => {
           navigate('/employer/jobs');
         }, 1500);
       } else {
-        toast.error(result.error || 'Failed to post job');
+        toast.error(result.error || t('postJob.validation.fixErrors'));
       }
     } catch (error) {
       console.error('Error posting job:', error);
-      toast.error('An error occurred while posting the job');
+      toast.error(t('postJob.validation.fixErrors'));
     } finally {
       // Always re-enable the button regardless of success or failure
       setLoading(false);
@@ -40,7 +42,7 @@ const PostJob = () => {
 
   // Ask for confirmation before leaving-prevents accidental data loss
   const handleCancel = () => {
-    if (window.confirm('Are you sure? All entered data will be lost.')) {
+    if (window.confirm(t('postJob.confirmCancel'))) {
       navigate('/employer/jobs');
     }
   };
@@ -79,24 +81,24 @@ const PostJob = () => {
                 className="flex items-center text-gray-600 hover:text-gray-900 transition-colors mb-4 group"
               >
                 <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
-                Back
+                {t('postJob.back')}
               </button>
 
               {/* Page title  */}
               <h1 className="flex items-center text-3xl md:text-4xl font-bold text-gray-900 mb-2">
                 <Briefcase className="w-8 h-8 md:w-10 md:h-10 mr-3 md:mr-4 text-blue-600" />
-                Post a New Job
+                {t('postJob.title')}
               </h1>
 
               <p className="text-gray-600 text-sm md:text-base">
-                Fill in the details to post your job and find the right workers
+                {t('postJob.subtitle')}
               </p>
             </div>
 
             {/* Job form-handles all field inputs and validation internally */}
             <JobForm
               onSubmit={handleSubmit}
-              submitButtonText="Post Job"
+              submitButtonText={t('postJob.postButton')}
               loading={loading}
               onCancel={handleCancel}
             />

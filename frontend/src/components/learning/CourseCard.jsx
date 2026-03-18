@@ -19,7 +19,7 @@ export default function CourseCard({ course, enrollment, onEnroll }) {
                 {image_url ? (
                     <img
                         src={image_url}
-                        alt={t(`mock.courses.${title}`, title)}
+                        alt={title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                 ) : (
@@ -36,18 +36,18 @@ export default function CourseCard({ course, enrollment, onEnroll }) {
 
             <CardContent className="flex-1 p-4 pt-5 space-y-3">
                 <h3 className="font-bold text-lg leading-tight text-slate-900 line-clamp-2">
-                    {t(`mock.courses.${title}`, title || "Untitled Course")}
+                    {title || "Untitled Course"}
                 </h3>
 
                 <p className="text-sm text-slate-500 line-clamp-2">
-                    {t(`mock.courses.${title}_desc`, description || "No description available for this course.")}
+                    {description || "No description available for this course."}
                 </p>
 
                 <div className="flex items-center gap-4 text-xs text-slate-500 pt-1">
                     {duration && (
                         <div className="flex items-center gap-1">
                             <Clock className="w-3.5 h-3.5" />
-                            <span>{t(`mock.durations.${duration}`, duration)}</span>
+                            <span>{duration}</span>
                         </div>
                     )}
                     {lesson_count && (
