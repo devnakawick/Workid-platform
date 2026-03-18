@@ -199,33 +199,29 @@ export default function SignupWorker() {
             />
 
             {/* Terms and Privacy Checkbox */}
-            <div className="flex items-start gap-3 mt-4">
-              <div className="flex items-center h-5 mt-1">
-                <input
-                  id="agreeTerms"
-                  name="agreeTerms"
-                  type="checkbox"
-                  checked={formData.agreeTerms}
-                  onChange={handleChange}
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer"
-                />
-              </div>
-              <div className="text-sm">
-                <label htmlFor="agreeTerms" className="font-medium text-gray-700 cursor-pointer block mb-1">
-                  I Agree to the{' '}
-                  <a href="/terms?from=worker" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                    Terms
-                  </a>
-                  {' '}and{' '}
-                  <a href="/privacy?from=worker" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                    Privacy Policy
-                  </a>.
-                </label>
-                {errors.agreeTerms && (
-                  <p className="mt-1 text-xs text-red-600 font-medium">{errors.agreeTerms}</p>
-                )}
-              </div>
+            <div className="flex items-center gap-3 mt-4">
+              <input
+                id="agreeTerms"
+                name="agreeTerms"
+                type="checkbox"
+                checked={formData.agreeTerms}
+                onChange={handleChange}
+                className="w-4 h-4 flex-shrink-0 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer"
+              />
+              <label htmlFor="agreeTerms" className="text-sm font-medium text-gray-700 cursor-pointer leading-snug">
+                I Agree to the{' '}
+                <a href="/terms?from=worker" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                  Terms
+                </a>
+                {' '}and{' '}
+                <a href="/privacy?from=worker" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                  Privacy Policy
+                </a>.
+              </label>
             </div>
+            {errors.agreeTerms && (
+              <p className="mt-1 text-xs text-red-600 font-medium">{errors.agreeTerms}</p>
+            )}
 
             {/* Sign Up Button */}
             <Button
