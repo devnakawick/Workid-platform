@@ -7,10 +7,10 @@ from app.utils.dependencies import get_current_worker
 from app.models.user import User
 from app.services.wallet_service import debit_wallet
 
-routes = APIRouter(prefix="/wallet", tags=["Worker Wallet"])
+router = APIRouter(prefix="/wallet", tags=["Worker Wallet"])
 
 
-@routes.post("/withdraw")
+@router.post("/withdraw")
 def withdraw_money(
     amount: Decimal,
     current_user: User = Depends(get_current_worker),

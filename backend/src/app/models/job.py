@@ -1,8 +1,6 @@
 from sqlalchemy import Column, String, Text, Float, Integer, DateTime, ForeignKey, Enum as SQLEnum
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from datetime import datetime
-import uuid
 import enum
 from app.database import Base
 
@@ -25,10 +23,10 @@ class Job(Base):
     __tablename__ = "jobs"
     
     # Primary Key
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    id = Column(Integer, primary_key=True, index=True)
     
     # Foreign Key
-    employer_id = Column(UUID(as_uuid=True), ForeignKey("employers.id"), nullable=False)
+    employer_id = Column(Integer, ForeignKey("employers.id"), nullable=False)
     
     # Job Details
     title = Column(String(200), nullable=False)
@@ -82,6 +80,9 @@ class Job(Base):
     # Relationships
     employer = relationship("Employer", back_populates="jobs")
     applications = relationship("Application", back_populates="job")
+    progress = relationship("JobProgress", back_populates="job", uselist=False)
+    ratings = relationship("Rating", back_populates="job")
+    escrow = relationship("Escrow", back_populates="job", uselist=False)
     
     def __repr__(self):
         return f"<Job {self.title}>"

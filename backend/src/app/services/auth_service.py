@@ -75,11 +75,11 @@ class AuthService:
             }
             
         except Exception as e:
-            logger.error(f"Error sending OTP: {str(e)}")
+            logger.error(f"Error sending OTP: {str(e)}", exc_info=True)
             self.db.rollback()
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to send OTP. Please try again."
+                detail=f"Failed to send OTP: {str(e)}"
             )
     
     def verify_otp(self, request: VerifyOTPRequest) -> dict:

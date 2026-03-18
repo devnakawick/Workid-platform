@@ -1,7 +1,5 @@
-from sqlalchemy import Column, DateTime, ForeignKey, String
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, DateTime, ForeignKey, String, Integer
 from datetime import datetime
-import uuid
 
 from app.database import Base
 
@@ -10,14 +8,14 @@ class Message(Base):
     __tablename__ = "messages"
 
     # Primary key
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    id = Column(Integer, primary_key=True, index=True)
 
     # Conversation identifier
-    conversation_id = Column(UUID(as_uuid=True), nullable=False, index=True)
+    conversation_id = Column(Integer, nullable=False, index=True)
 
     # Sender and receiver
-    sender_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
-    receiver_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    sender_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    receiver_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
     # Message content
     content = Column(String, nullable=False)

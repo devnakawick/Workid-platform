@@ -1,29 +1,17 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from fastapi import Request
 from fastapi.staticfiles import StaticFiles
 import logging
 import os
-
-from app.routes import auth, dashboard, ai
-from app.config import settings
-#from src.app.database import create_tables
-from app.routes import auth, dashboard
-from app.routes import worker, jobs, employer
-from app.database import engine, Base
-from app.routes import employer_wallet
-from app.routes import escrow
-from app.routes import worker_wallet
-from app.routes import payment
-from app.routes import mock_gateway
-from app.routes import support
-from app.routes import admin
-from app.routes import messaging
-from app.routes import ai
-from fastapi.responses import JSONResponse
-from fastapi.requests import Request
 from dotenv import load_dotenv
+
+from app.routes import auth, dashboard, ai, worker, jobs, employer
+from app.routes import employer_wallet, escrow, worker_wallet, payment
+from app.routes import mock_gateway, support, admin, messaging
+from app.config import settings
+from app.database import engine, Base
+
 load_dotenv()
 
 # Configure logging
@@ -42,15 +30,6 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-app.include_router(employer_wallet.router)
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
-
 # CORS Configuration
 app.add_middleware(
     CORSMiddleware,
@@ -60,35 +39,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/health")
-def health_check():
-    return {
-        "status": "healthy",
-        "service": "WorkID Backend",
-        "version": "1.0"
-    }
-
-# Serve uploaded files as static files
-os.makedirs("uploads", exist_ok=True)
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
-
 # Include routers
-app.include_router(auth.routes, prefix="/api/auth", tags=["Authentication"])
-app.include_router(dashboard.routes, prefix="/api/dashboard", tags=["Dashboard"])
-app.include_router(escrow.routes)
-app.include_router(worker_wallet.routes)
+app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
+app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
+app.include_router(employer_wallet.router)
+app.include_router(escrow.router)
+app.include_router(worker_wallet.router)
 app.include_router(payment.router)
 app.include_router(mock_gateway.router)
 app.include_router(ai.router) 
-
-# Include additional routers
 app.include_router(worker.router)
 app.include_router(jobs.router)
 app.include_router(employer.router)
 app.include_router(support.router)
 app.include_router(admin.router)
 app.include_router(messaging.router)
-app.include_router(ai.router)
 
 @app.on_event("startup")
 async def startup_event():
@@ -98,7 +63,8 @@ async def startup_event():
     
     # Create database tables
     try:
-       # create_tables()
+        from app.database import create_tables
+        create_tables()
         logger.info("Database tables created successfully")
     except Exception as e:
         logger.error(f"Failed to create database tables: {str(e)}")
@@ -107,6 +73,10 @@ async def startup_event():
 async def shutdown_event():
     """Run on application shutdown"""
     logger.info(f"Shutting down {settings.APP_NAME}")
+
+# Serve uploaded files as static files
+os.makedirs("uploads", exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 @app.get("/")
 async def root():
@@ -123,6 +93,7 @@ async def health_check():
     """Health check endpoint"""
     return {
         "status": "healthy",
+        "service": "WorkID Backend",
         "version": settings.APP_VERSION,
         "environment": settings.ENVIRONMENT
     }
@@ -135,17 +106,7 @@ async def global_exception_handler(request: Request, exc: Exception):
         status_code=500,
         content={
             "detail": "An internal server error occurred",
-            "type": "internal_server_error"
-        }
-    )
-
-@app.exception_handler(Exception)
-async def global_exception_handler(request: Request, exc: Exception):
-
-    return JSONResponse(
-        status_code=500,
-        content={
-            "message": "Internal server error",
-            "detail": str(exc)
+            "type": "internal_server_error",
+            "message": str(exc)
         }
     )

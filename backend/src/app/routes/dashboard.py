@@ -14,10 +14,10 @@ from app.models.application import Application, ApplicationStatus
 #from app.models.wallet import Wallet
 #from app.models.transaction import Transaction
 
-routes = APIRouter()
+router = APIRouter()
 logger = logging.getLogger(__name__)
 
-@routes.get("/worker/stats")
+@router.get("/worker/stats")
 async def get_worker_dashboard_stats(
     current_user: User = Depends(get_current_worker),
     db: Session = Depends(get_db)
@@ -120,7 +120,7 @@ async def get_worker_dashboard_stats(
         logger.error(f"Error getting worker dashboard stats: {str(e)}")
         return {"error": "Failed to fetch dashboard statistics"}
     
-@routes.get("/employer/stats")
+@router.get("/employer/stats")
 async def get_employer_dashboard_stats(
     current_user: User = Depends(get_current_employer),
     db: Session = Depends(get_db)

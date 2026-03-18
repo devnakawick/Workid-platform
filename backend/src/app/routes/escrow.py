@@ -11,12 +11,10 @@ from app.models.transaction import Transaction
 from app.schemas.escrow import FundEscrowRequest
 from app.services.wallet_service import debit_wallet
 from app.services.wallet_service import credit_wallet
-routes = APIRouter(prefix="/escrow", tags=["Escrow"])
+router = APIRouter(prefix="/escrow", tags=["Escrow"])
 
 
-
-
-@routes.post("/fund")
+@router.post("/fund")
 def fund_job_escrow(
     request: FundEscrowRequest,
     current_user: User = Depends(get_current_employer),
@@ -56,7 +54,7 @@ def fund_job_escrow(
     }
 
 
-@routes.post("/release/{escrow_id}")
+@router.post("/release/{escrow_id}")
 def release_escrow(
     escrow_id: str,
     current_user: User = Depends(get_current_employer),

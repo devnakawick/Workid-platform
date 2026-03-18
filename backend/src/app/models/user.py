@@ -1,8 +1,6 @@
 from sqlalchemy import Column, String, Boolean, DateTime, Enum as SQLEnum, Integer
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from datetime import datetime
-import uuid
 import enum
 from app.database import Base
 
@@ -17,7 +15,7 @@ class User(Base):
     __tablename__ = "users"
     
     # Primary Key
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    id = Column(Integer, primary_key=True, index=True)
     
     # Authentication
     phone_number = Column(String(15), unique=True, nullable=False, index=True)
@@ -39,11 +37,13 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     last_login = Column(DateTime, nullable=True)
-    
-# Relationships
+
+    # Relationships
     worker_profile = relationship("Worker", back_populates="user", uselist=False)
     employer_profile = relationship("Employer", back_populates="user", uselist=False)
     wallet = relationship("Wallet", back_populates="user", uselist=False)
+    ratings_given = relationship("Rating", foreign_keys="[Rating.rater_id]", back_populates="rater")
+    ratings_received = relationship("Rating", foreign_keys="[Rating.rated_user_id]", back_populates="rated_user")
     
     def __repr__(self):
         return f"<User {self.phone_number} ({self.user_type})>"

@@ -36,8 +36,6 @@ from app.utils.dependencies import get_current_user
 from app.services.ai_service import AIService
 from app.services.job_service import JobService
 
-router = APIRouter(prefix="/api/ai", tags=["AI & ML"])
-
 router = APIRouter(
     prefix="/api/ai",
     tags=["AI & ML - NLP & Search"]
