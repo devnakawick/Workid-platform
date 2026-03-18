@@ -34,6 +34,7 @@ import HelpSupport from './pages/employer/HelpSupport';
 
 // New worker pages from feature branch
 import WorkerWallet from './pages/worker/WorkerWallet';
+import WorkerHelpSupport from './pages/worker/WorkerHelpSupport';
 import LanguageSwitcher from './components/common/LanguageSwitcher';
 import WorkerCurrentJobsPage from './pages/worker/WorkerCurrentJobsPage';
 import WorkerJobDetailsPage from './pages/worker/WorkerJobDetailsPage';
@@ -171,6 +172,12 @@ const AuthenticatedApp = () => {
         </Layout>
       } />
 
+      <Route path="/worker/support" element={
+        <Layout currentPageName="Help & Support">
+          <WorkerHelpSupport />
+        </Layout>
+      } />
+
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
@@ -189,4 +196,3 @@ function App() {
 }
 
 export default App
-
