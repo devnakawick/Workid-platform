@@ -175,32 +175,51 @@
 .mobile-nav-inner {
 	display: flex;
 	align-items: center;
-	justify-content: flex-start;
-	/* Alignment for scrollable list */
-	min-width: 100%;
-	width: max-content;
-	/* Allow content to expand beyond viewport */
-	padding: 0 4px;
+	justify-content: space-around;
+	width: 100%;
+	padding: 0 2px;
+}
+
+/* On very small phones where 8 items can't fit, allow horizontal scroll */
+@media (max-width: 479px) {
+	.mobile-nav-inner {
+		justify-content: flex-start;
+		min-width: 100%;
+		width: max-content;
+	}
 }
 
 .mobile-link {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	padding: 6px 4px;
-	min-width: 64px;
-	/* Ensure enough space for each item */
+	padding: 4px 2px;
+	min-width: 52px;
+	flex: 1;
 	text-decoration: none;
 	color: #9ca3af;
-	flex: 0 0 auto;
-	/* Prevent shrinking */
+}
+
+@media (max-width: 479px) {
+	.mobile-link {
+		flex: 0 0 auto;
+		min-width: 60px;
+		padding: 4px 6px;
+	}
 }
 
 .mobile-link .mobile-label {
 	font-size: 8px;
 	font-weight: 700;
 	text-transform: uppercase;
-	margin-top: 4px;
+	margin-top: 3px;
+	white-space: nowrap;
+}
+
+@media (min-width: 480px) {
+	.mobile-link .mobile-label {
+		font-size: 9px;
+	}
 }
 
 @media (min-width: 640px) {
