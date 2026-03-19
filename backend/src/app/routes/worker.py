@@ -30,7 +30,7 @@ from pydantic import BaseModel, Field
 
 class ActiveJobResponse(BaseModel):
     """Active job response"""
-    job_id: str
+    job_id: int
     title: str
     status: str
     scheduled_time: str | None
@@ -43,7 +43,7 @@ class ActiveJobResponse(BaseModel):
 
 class JobDetailResponse(BaseModel):
     """Detailed job response"""
-    job_id: str
+    job_id: int
     title: str
     description: str
     budget: float
@@ -108,7 +108,7 @@ async def get_active_jobs(
         employer = job.employer
         
         result.append({
-            "job_id": str(job.id),
+            "job_id": job.id,
             "title": job.title,
             "status": progress.status.value,
             "scheduled_time": job.scheduled_time.isoformat() if job.scheduled_time else None,
@@ -129,7 +129,7 @@ async def get_active_jobs(
 
 @router.post("/jobs/{job_id}/start-travel")
 async def start_travel(
-    job_id: uuid.UUID,
+    job_id: int,
     current_user: User = Depends(get_current_worker),
     db: Session = Depends(get_db)
 ):
@@ -142,7 +142,7 @@ async def start_travel(
     worker = current_user.worker
     
     # Update progress
-    progress = JobProgressService.start_travel(
+    progress = ProgressService.start_travel(
         db=db,
         job_id=job_id,
         worker_id=worker.id
@@ -150,7 +150,7 @@ async def start_travel(
     
     return {
         "message": "Travel started successfully",
-        "job_id": str(job_id),
+        "job_id": job_id,
         "status": progress.status.value,
         "location_sharing_enabled": progress.location_sharing_enabled
     }
@@ -158,7 +158,7 @@ async def start_travel(
 
 @router.post("/jobs/{job_id}/start-job")
 async def start_job(
-    job_id: uuid.UUID,
+    job_id: int,
     current_user: User = Depends(get_current_worker),
     db: Session = Depends(get_db)
 ):
@@ -170,7 +170,7 @@ async def start_job(
     worker = current_user.worker
     
     # Update progress
-    progress = JobProgressService.start_job(
+    progress = ProgressService.start_job(
         db=db,
         job_id=job_id,
         worker_id=worker.id
@@ -178,7 +178,7 @@ async def start_job(
     
     return {
         "message": "Job started successfully",
-        "job_id": str(job_id),
+        "job_id": job_id,
         "status": progress.status.value,
         "started_at": progress.started_at.isoformat() if progress.started_at else None
     }
@@ -186,7 +186,7 @@ async def start_job(
 
 @router.post("/jobs/{job_id}/complete-job")
 async def complete_job(
-    job_id: uuid.UUID,
+    job_id: int,
     current_user: User = Depends(get_current_worker),
     db: Session = Depends(get_db)
 ):
@@ -199,7 +199,7 @@ async def complete_job(
     worker = current_user.worker
     
     # Update progress
-    progress = JobProgressService.complete_job(
+    progress = ProgressService.complete_job(
         db=db,
         job_id=job_id,
         worker_id=worker.id
@@ -207,7 +207,7 @@ async def complete_job(
     
     return {
         "message": "Job marked as complete. Waiting for payment confirmation.",
-        "job_id": str(job_id),
+        "job_id": job_id,
         "status": progress.status.value,
         "completed_at": progress.completed_at.isoformat() if progress.completed_at else None
     }
@@ -219,7 +219,7 @@ async def complete_job(
 
 @router.post("/jobs/{job_id}/rate-employer")
 async def rate_employer(
-    job_id: uuid.UUID,
+    job_id: int,
     request: RateEmployerRequest,
     current_user: User = Depends(get_current_worker),
     db: Session = Depends(get_db)
@@ -250,7 +250,7 @@ async def rate_employer(
     employer = job.employer
     
     # Create rating
-    rating = JobProgressService.create_rating(
+    rating = ProgressService.create_rating(
         db=db,
         job_id=job_id,
         rater_id=current_user.id,
@@ -261,7 +261,7 @@ async def rate_employer(
     
     return {
         "message": "Rating submitted successfully",
-        "rating_id": str(rating.id),
+        "rating_id": rating.id,
         "rating": rating.rating,
         "review": rating.review
     }
@@ -273,7 +273,7 @@ async def rate_employer(
 
 @router.get("/jobs/{job_id}", response_model=JobDetailResponse)
 async def get_job_details(
-    job_id: uuid.UUID,
+    job_id: int,
     current_user: User = Depends(get_current_worker),
     db: Session = Depends(get_db)
 ):
@@ -292,20 +292,20 @@ async def get_job_details(
         )
     
     # Get progress if exists
-    progress = JobProgressService.get_job_progress(db, job_id)
+    progress = ProgressService.get_job_progress(db, job_id)
     
     # Get employer info
     employer = job.employer
     
     return {
-        "job_id": str(job.id),
+        "job_id": job.id,
         "title": job.title,
         "description": job.description,
         "budget": job.payment,
         "status": job.status,
         "employer": {
             "name": employer.company_name if hasattr(employer, 'company_name') else "Employer",
-            "rating": JobProgressService.calculate_average_rating(db, employer.user_id)["average_rating"]
+            "rating": ProgressService.calculate_average_rating(db, employer.user_id)["average_rating"]
         },
         "location": {
             "lat": job.latitude,
@@ -480,7 +480,7 @@ async def get_worker_documents(
 
 @router.delete("/documents/{document_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_document(
-    document_id: UUID, 
+    document_id: int, 
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):

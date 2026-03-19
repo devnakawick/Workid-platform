@@ -345,3 +345,21 @@ class ProgressService:
         ).all()
         
         return job_progresses
+    
+    @staticmethod
+    def calculate_average_rating(db: Session, user_id: int) -> dict:
+        """
+        Calculate average rating for a user
+        Returns dict with average_rating and total_reviews
+        """
+        from app.models.rating import Rating
+        
+        ratings = db.query(Rating).filter(Rating.rated_user_id == user_id).all()
+        
+        if not ratings:
+            return {"average_rating": 0.0, "total_reviews": 0}
+        
+        total = sum(r.rating for r in ratings)
+        average = total / len(ratings)
+        
+        return {"average_rating": round(average, 1), "total_reviews": len(ratings)}

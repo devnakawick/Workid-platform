@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
 	Users,
@@ -69,6 +70,7 @@ const mock = {
 
 const EmployerDashboard = () => {
 	const { t } = useTranslation();
+	const navigate = useNavigate();
 
 	return (
 		<div className="max-w-7xl mx-auto space-y-6 pb-12">
@@ -102,7 +104,7 @@ const EmployerDashboard = () => {
 				<div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
 					<div className="flex items-center justify-between mb-6">
 						<h3 className="text-xl font-bold text-gray-900">{t('employerDashboard.recentlyPosted')}</h3>
-						<button className="text-blue-600 text-sm font-bold hover:underline">{t('employerDashboard.viewAll')}</button>
+						<button onClick={() => navigate('/employer/jobs')} className="text-blue-600 text-sm font-bold hover:underline">{t('employerDashboard.viewAll')}</button>
 					</div>
 
 					<div className="space-y-4">
@@ -137,7 +139,7 @@ const EmployerDashboard = () => {
 				<div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
 					<div className="flex items-center justify-between mb-6">
 						<h3 className="text-xl font-bold text-gray-900">{t('employerDashboard.recentNotifications')}</h3>
-						<button className="text-blue-600 text-sm font-bold hover:underline">{t('employerDashboard.viewAll')}</button>
+						<button onClick={() => navigate('/Notifications')} className="text-blue-600 text-sm font-bold hover:underline">{t('employerDashboard.viewAll')}</button>
 					</div>
 
 					<div className="space-y-4">
@@ -168,10 +170,10 @@ const EmployerDashboard = () => {
 				<div className="flex items-center justify-between mb-8">
 					<h3 className="text-xl font-bold text-gray-900">{t('employerDashboard.recentApplications')}</h3>
 					<div className="flex items-center gap-4">
-						<Button variant="outline" className="flex items-center gap-2 font-bold text-gray-500">
+						<Button variant="outline" className="flex items-center gap-2 font-bold text-gray-500" onClick={() => navigate('/employer/applications')}>
 							<Filter size={16} /> {t('employerDashboard.filter')}
 						</Button>
-						<button className="text-blue-600 text-sm font-bold hover:underline">{t('employerDashboard.viewAllApplications')}</button>
+						<button onClick={() => navigate('/employer/applications')} className="text-blue-600 text-sm font-bold hover:underline">{t('employerDashboard.viewAllApplications')}</button>
 					</div>
 				</div>
 

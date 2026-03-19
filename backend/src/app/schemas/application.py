@@ -40,7 +40,7 @@ class ApplicationCreate(BaseModel):
 
 class WorkerBasicInfo(BaseModel):
     """Basic worker info to embed in application response"""
-    id: UUID
+    id: int
     full_name: Optional[str]
     city: Optional[str]
     primary_skill: str
@@ -55,7 +55,7 @@ class WorkerBasicInfo(BaseModel):
 
 class JobBasicInfo(BaseModel):
     """Basic job info to embed in application response"""
-    id: UUID
+    id: int
     title: str
     category: str
     city: Optional[str]
@@ -69,9 +69,9 @@ class ApplicationResponse(BaseModel):
     """
     Full application details
     """
-    id: UUID
-    job_id: UUID
-    worker_id: UUID
+    id: int
+    job_id: int
+    worker_id: int
 
     message: Optional[str]
     proposed_rate: Optional[Decimal]
@@ -92,9 +92,9 @@ class ApplicationResponse(BaseModel):
 
 class ApplicationListResponse(BaseModel):
     """Simplified application for list views"""
-    id: UUID
-    job_id: UUID
-    worker_id: UUID
+    id: int
+    job_id: int
+    worker_id: int
     status: ApplicationStatus
     proposed_rate: Optional[Decimal]
     applied_at: datetime

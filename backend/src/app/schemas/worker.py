@@ -107,8 +107,8 @@ class WorkerProfileResponse(BaseModel):
     """
     Schema for worker profile response
     """
-    id: UUID
-    user_id: UUID
+    id: int
+    user_id: int
 
     full_name: str
     email: str
@@ -162,8 +162,8 @@ class DocumentUploadResponse(BaseModel):
     """
     Schemas for document upload response
     """
-    id: UUID
-    worker_id: UUID
+    id: int
+    worker_id: int
     document_type: DocumentType
     file_name: str
     file_url: str
@@ -206,7 +206,7 @@ class WorkerSearchResponse(BaseModel):
     """
     Schemas for worker search results (for employer)
     """
-    id: UUID
+    id: int
     full_name: str
     district: str
     primary_skill: SkillCategory

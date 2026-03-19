@@ -1,4 +1,4 @@
-import { ArrowUpCircle, ArrowDownCircle, RefreshCcw, CreditCard, Building2, Clock, Wallet } from 'lucide-react';
+import { ArrowUpCircle, ArrowDownCircle, RefreshCcw, CreditCard, Building2, Clock, Wallet, Lock } from 'lucide-react';
 
 const TransactionList = ({ transactions, filters, onFilterChange }) => {
 
@@ -15,33 +15,44 @@ const TransactionList = ({ transactions, filters, onFilterChange }) => {
   // Icon, color and sign config per transaction type
   const typeConfig = {
     payment: {
-      icon:        <ArrowUpCircle   className="w-4 h-4 text-red-500"   />,
-      iconBg:      'bg-red-50',
+      icon: <ArrowUpCircle className="w-4 h-4 text-red-500" />,
+      iconBg: 'bg-red-50',
       amountColor: 'text-red-600',
-      sign:        '−',
-      label:       'Payment',
+      sign: '−',
+      label: 'Payment',
     },
     deposit: {
-      icon:        <ArrowDownCircle className="w-4 h-4 text-green-500" />,
-      iconBg:      'bg-green-50',
+      icon: <ArrowDownCircle className="w-4 h-4 text-green-500" />,
+      iconBg: 'bg-green-50',
       amountColor: 'text-green-600',
-      sign:        '+',
-      label:       'Deposit',
+      sign: '+',
+      label: 'Deposit',
     },
     refund: {
-      icon:        <RefreshCcw      className="w-4 h-4 text-blue-500"  />,
-      iconBg:      'bg-blue-50',
+      icon: <RefreshCcw className="w-4 h-4 text-blue-500" />,
+      iconBg: 'bg-blue-50',
       amountColor: 'text-blue-600',
-      sign:        '+',
-      label:       'Refund',
+      sign: '+',
+      label: 'Refund',
+    },
+    // ESCROW TYPE
+    escrow: {
+      icon: <Lock className="w-4 h-4 text-orange-500" />,
+      iconBg: 'bg-orange-50',
+      amountColor: 'text-orange-600',
+      sign: '−',
+      label: 'Escrow Hold',
     },
   };
 
   // Status badge styles per status
   const statusStyle = {
     completed: 'bg-green-50  text-green-700  border border-green-100',
-    pending:   'bg-yellow-50 text-yellow-700 border border-yellow-100',
-    failed:    'bg-red-50    text-red-600    border border-red-100',
+    released: 'bg-green-50  text-green-700  border border-green-100', 
+    pending: 'bg-yellow-50 text-yellow-700 border border-yellow-100',
+    failed: 'bg-red-50    text-red-600    border border-red-100',
+    held: 'bg-orange-50 text-orange-700 border border-orange-100',
+    disputed: 'bg-red-50    text-red-600    border border-red-100',
   };
 
   // Sort transactions newest first
@@ -55,6 +66,16 @@ const TransactionList = ({ transactions, filters, onFilterChange }) => {
     // Pending—method not confirmed yet
     if (txn.status === 'pending') {
       return <span className="text-xs text-gray-400 font-medium">Not confirmed yet</span>;
+    }
+
+    
+    if (txn.type === 'escrow' || txn.status === 'held') {
+      return (
+        <div className="flex items-center gap-1.5">
+          <Lock className="w-3.5 h-3.5 text-gray-500 flex-shrink-0" />
+          <span className="text-xs text-gray-600 font-medium">Escrow Secure</span>
+        </div>
+      );
     }
 
     // Worker payment via platform wallet
@@ -111,6 +132,7 @@ const TransactionList = ({ transactions, filters, onFilterChange }) => {
           <option value="all">All Transactions</option>
           <option value="payment">Payments</option>
           <option value="deposit">Deposits</option>
+          <option value="escrow">Escrow (Hiring)</option>
           <option value="refund">Refunds</option>
         </select>
       </div>
@@ -118,7 +140,6 @@ const TransactionList = ({ transactions, filters, onFilterChange }) => {
       {/* Empty state—no transactions yet */}
       {sorted.length === 0 ? (
         <div className="text-center py-16 flex flex-col items-center">
-          {/* CreditCard icon instead of emoji */}
           <CreditCard className="w-12 h-12 text-gray-200 mb-3" />
           <h3 className="text-lg font-bold text-gray-900 mb-1">No transactions yet</h3>
           <p className="text-gray-500 text-sm">Your transaction history will appear here</p>
@@ -143,7 +164,7 @@ const TransactionList = ({ transactions, filters, onFilterChange }) => {
 
               <tbody className="divide-y divide-gray-100">
                 {sorted.map((txn) => {
-                  const cfg       = typeConfig[txn.type];
+                  const cfg = typeConfig[txn.type] || typeConfig.payment; // Fallback
                   const isPending = txn.status === 'pending';
 
                   return (
@@ -187,12 +208,12 @@ const TransactionList = ({ transactions, filters, onFilterChange }) => {
 
                       {/* Status badge */}
                       <td className="px-5 py-4">
-                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${statusStyle[txn.status]}`}>
+                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${statusStyle[txn.status] || statusStyle.completed}`}>
                           {txn.status.charAt(0).toUpperCase() + txn.status.slice(1)}
                         </span>
                       </td>
 
-                      
+
                       <td className="px-5 py-4 text-right whitespace-nowrap">
                         {isPending ? (
                           <span className="text-sm font-bold text-gray-400">LKR {fmt(txn.amount)}</span>
@@ -213,7 +234,7 @@ const TransactionList = ({ transactions, filters, onFilterChange }) => {
           {/* Mobile card list */}
           <div className="lg:hidden divide-y divide-gray-100">
             {sorted.map((txn) => {
-              const cfg       = typeConfig[txn.type];
+              const cfg = typeConfig[txn.type] || typeConfig.payment;
               const isPending = txn.status === 'pending';
 
               return (
@@ -275,7 +296,7 @@ const TransactionList = ({ transactions, filters, onFilterChange }) => {
                     {/* Status badge */}
                     <div>
                       <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-0.5">Status</p>
-                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${statusStyle[txn.status]}`}>
+                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${statusStyle[txn.status] || statusStyle.completed}`}>
                         {txn.status.charAt(0).toUpperCase() + txn.status.slice(1)}
                       </span>
                     </div>

@@ -202,7 +202,7 @@ class JobStatusUpdate(BaseModel):
 
 class EmployerBasicInfo(BaseModel):
     """Basic employer info to embed in job response"""
-    id: UUID
+    id: int
     full_name: Optional[str]
     city: Optional[str]
     rating: float
@@ -218,8 +218,8 @@ class JobResponse(BaseModel):
     Used when viewing a single job
     """
 
-    id: UUID
-    employer_id: UUID
+    id: int
+    employer_id: int
 
     title: str
     description: str
@@ -256,7 +256,7 @@ class JobListResponse(BaseModel):
     """
     Simplified job info for list views
     """
-    id: UUID
+    id: int
     title: str
     category: str
     city: str

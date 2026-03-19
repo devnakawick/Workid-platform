@@ -1,4 +1,4 @@
-import { MapPin, Star, CircleCheck, Briefcase, Clock, Zap } from 'lucide-react';
+import { MapPin, CircleCheck, Briefcase, Zap } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 // Availability badge mapping
@@ -23,18 +23,16 @@ const Stars = ({ rating }) => (
   </div>
 );
 
-const WorkerCard = ({ worker, onViewProfile }) => {
+const WorkerCard = ({ worker, onViewProfile, onInvite }) => {
   const { t } = useTranslation();
   const AVAILABILITY = getAvailabilityConfig(t);
   const avail = AVAILABILITY[worker.availability] || AVAILABILITY.inactive;
 
   return (
-    <div className="bg-white rounded-2xl p-5 shadow-md hover:shadow-xl border border-gray-100 transition-all duration-300 hover:-translate-y-1 flex flex-col">
+    <div className="bg-white rounded-2xl p-5 shadow-md hover:shadow-xl border border-gray-100 transition-all duration-300 hover:-translate-y-1 flex flex-col h-full">
 
-      {/* Header — avatar, name, location and availability badge */}
+      {/* Header */}
       <div className="flex items-start gap-4 mb-4">
-
-        {/* Avatar with verified badge overlay */}
         <div className="relative flex-shrink-0">
           <div className="w-14 h-14 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-lg">
             {worker.initials}
@@ -46,7 +44,6 @@ const WorkerCard = ({ worker, onViewProfile }) => {
           )}
         </div>
 
-        {/* Name, verified badge and availability */}
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-1">
             <div className="flex flex-wrap items-center gap-1.5 min-w-0">
@@ -57,13 +54,11 @@ const WorkerCard = ({ worker, onViewProfile }) => {
                 </span>
               )}
             </div>
-            {/* Availability badge with color dot */}
             <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 border rounded-full text-xs font-semibold flex-shrink-0 ${avail.badge}`}>
               <span className={`w-1.5 h-1.5 rounded-full ${avail.dot}`} />
               {avail.label}
             </span>
           </div>
-          {/* Location, age and member since */}
           <p className="text-xs text-gray-500 flex items-center gap-1 truncate">
             <MapPin className="w-3 h-3 flex-shrink-0" />
             {worker.location} · {worker.age} {t('workerProfile.yrs', { defaultValue: 'yrs' })} · {t('workerProfile.memberSince')} {worker.memberSince}
@@ -71,18 +66,18 @@ const WorkerCard = ({ worker, onViewProfile }) => {
         </div>
       </div>
 
-      {/* Rating and jobs done */}
+      {/* Rating */}
       <div className="flex items-center justify-between mb-3">
         <Stars rating={worker.rating} />
         <span className="text-xs text-gray-400">{worker.jobs} {t('workerProfile.completed')}</span>
       </div>
 
-      {/* Bio — clamped to 2 lines */}
-      <p className="text-sm text-gray-500 leading-relaxed mb-4 line-clamp-2 flex-1">
+      {/* Bio - Removed 'flex-1' to fix overlap issue, added 'min-h' for alignment */}
+      <p className="text-sm text-gray-500 leading-relaxed mb-4 line-clamp-2 min-h-[2.5rem]">
         {worker.bio}
       </p>
 
-      {/* Skills — show first 3 with overflow count */}
+      {/* Skills */}
       <div className="flex flex-wrap gap-1.5 mb-4">
         {worker.skills.slice(0, 3).map((s) => (
           <span key={s} className="inline-flex items-center px-2.5 py-0.5 bg-blue-50 border border-blue-200 text-blue-700 rounded-full text-xs font-semibold">
@@ -96,27 +91,24 @@ const WorkerCard = ({ worker, onViewProfile }) => {
         )}
       </div>
 
-      <div className="h-px bg-gray-100 mb-4" />
+      {/* Divider - Added mt-auto to push footer to bottom */}
+      <div className="h-px bg-gray-100 mb-4 mt-auto" />
 
-      {/* Stats row — completion rate, response time and daily rate */}
-      <div className="flex items-center justify-between mb-4 text-xs text-gray-500">
+      {/* Stats */}
+      <div className="flex items-center gap-6 mb-4 text-xs text-gray-500">
         <div className="flex items-center gap-1">
           <Briefcase className="w-3.5 h-3.5 text-blue-500" />
           <span className="font-semibold text-gray-700">{worker.completionRate}%</span>
-          <span>{t('workerProfile.stats.completion')}</span>
+          <span className="text-gray-400">Completion</span>
         </div>
         <div className="flex items-center gap-1">
           <Zap className="w-3.5 h-3.5 text-yellow-500" />
-          <span>{worker.responseTime}</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <Clock className="w-3.5 h-3.5 text-green-500" />
-          <span className="font-bold text-gray-700">{t('common.currency')} {worker.rate}</span>
-          <span>/{t('common.perDay', { defaultValue: 'day' })}</span>
+          <span className="font-semibold text-gray-700">{worker.responseTime}</span>
+          <span className="text-gray-400">Response</span>
         </div>
       </div>
 
-      {/* View Profile button */}
+      {/* View Profile Button */}
       <button
         onClick={() => onViewProfile(worker)}
         className="w-full py-2.5 rounded-xl text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 shadow-md transition-all"
@@ -127,6 +119,5 @@ const WorkerCard = ({ worker, onViewProfile }) => {
     </div>
   );
 };
-
 
 export default WorkerCard;
