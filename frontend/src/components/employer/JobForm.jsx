@@ -41,17 +41,17 @@ const JobForm = ({
     const requirement = requirementInput.trim();
 
     if (!requirement) {
-      toast.error(t('postJob.validation.reqEmpty'));
+      toast.error(t('postJob.validation.reqEmpty', 'Requirement cannot be empty'));
       return;
     }
 
     if (requirement.length < 3) {
-      toast.error(t('postJob.validation.reqMin'));
+      toast.error(t('postJob.validation.reqMin', 'Requirement too short'));
       return;
     }
 
     if (formData.requirements.includes(requirement)) {
-      toast.error(t('postJob.validation.reqExists'));
+      toast.error(t('postJob.validation.reqExists', 'Requirement already added'));
       return;
     }
 
@@ -61,7 +61,7 @@ const JobForm = ({
     }));
 
     setRequirementInput('');
-    toast.success(t('postJob.success.reqAdded'));
+    toast.success(t('postJob.success.reqAdded', 'Requirement added'));
   };
 
   const removeRequirement = (requirement) => {
@@ -69,7 +69,7 @@ const JobForm = ({
       ...prev,
       requirements: prev.requirements.filter(r => r !== requirement)
     }));
-    toast.success(t('postJob.success.reqRemoved'));
+    toast.success(t('postJob.success.reqRemoved', 'Requirement removed'));
   };
 
   const validateForm = () => {
@@ -78,63 +78,63 @@ const JobForm = ({
 
     // Title validation
     if (!formData.title.trim()) {
-      errors.title = t('postJob.validation.titleRequired');
+      errors.title = t('postJob.validation.titleRequired', 'Job title is required');
       isValid = false;
     } else if (formData.title.length < 5) {
-      errors.title = t('postJob.validation.titleMin');
+      errors.title = t('postJob.validation.titleMin', 'Title must be at least 5 characters');
       isValid = false;
     }
 
     // Description validation
     if (!formData.description.trim()) {
-      errors.description = t('postJob.validation.descRequired');
+      errors.description = t('postJob.validation.descRequired', 'Job description is required');
       isValid = false;
     }
 
     // Category validation
     if (!formData.category) {
-      errors.category = t('postJob.validation.categoryRequired');
+      errors.category = t('postJob.validation.categoryRequired', 'Please select a category');
       isValid = false;
     }
 
     // Custom category validation
     if (formData.category === 'Other') {
       if (!formData.customCategory.trim()) {
-        errors.customCategory = t('postJob.validation.customCategoryRequired');
+        errors.customCategory = t('postJob.validation.customCategoryRequired', 'Please specify the category');
         isValid = false;
       } else if (formData.customCategory.trim().length < 3) {
-        errors.customCategory = t('postJob.validation.customCategoryMin');
+        errors.customCategory = t('postJob.validation.customCategoryMin', 'Category name too short');
         isValid = false;
       }
     }
 
     // Location validation
     if (!formData.location.trim()) {
-      errors.location = t('postJob.validation.locationRequired');
+      errors.location = t('postJob.validation.locationRequired', 'Location is required');
       isValid = false;
     }
 
     // Salary validation
     if (!formData.salary) {
-      errors.salary = t('postJob.validation.salaryRequired');
+      errors.salary = t('postJob.validation.salaryRequired', 'Salary amount is required');
       isValid = false;
     } else if (formData.salary <= 0) {
-      errors.salary = t('postJob.validation.salaryMin');
+      errors.salary = t('postJob.validation.salaryMin', 'Salary must be greater than 0');
       isValid = false;
     } else if (formData.salary < 100) {
-      errors.salary = t('postJob.validation.salaryMinAmount');
+      errors.salary = t('postJob.validation.salaryMinAmount', 'Minimum salary is 100 LKR');
       isValid = false;
     }
 
     // Duration validation
     if (!formData.duration.trim()) {
-      errors.duration = t('postJob.validation.durationRequired');
+      errors.duration = t('postJob.validation.durationRequired', 'Duration is required');
       isValid = false;
     }
 
     // Workers needed validation
     if (!formData.workersNeeded || formData.workersNeeded < 1) {
-      errors.workersNeeded = t('postJob.validation.workersRequired');
+      errors.workersNeeded = t('postJob.validation.workersRequired', 'At least 1 worker needed');
       isValid = false;
     }
 
@@ -146,7 +146,7 @@ const JobForm = ({
     e.preventDefault();
 
     if (!validateForm()) {
-      toast.error(t('postJob.validation.fixErrors'));
+      toast.error(t('postJob.validation.fixErrors', 'Please fix the errors in the form'));
       return;
     }
 
@@ -175,8 +175,8 @@ const JobForm = ({
             <FileText className="w-6 h-6 text-blue-600" />
           </div>
           <div className="flex-1">
-            <h2 className="text-xl font-bold text-gray-900">{t('postJob.basics.title')}</h2>
-            <p className="text-sm text-gray-600">{t('postJob.basics.subtitle')}</p>
+            <h2 className="text-xl font-bold text-gray-900">{t('postJob.basics.title', 'Job Basics')}</h2>
+            <p className="text-sm text-gray-600">{t('postJob.basics.subtitle', 'Provide the main details about the job')}</p>
           </div>
           <div className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg">
             1
@@ -185,7 +185,7 @@ const JobForm = ({
 
         <div className="space-y-5">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">{t('postJob.basics.jobTitleLabel')}</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">{t('postJob.basics.jobTitleLabel', 'Job Title')}</label>
             <input
               type="text"
               name="title"
@@ -207,7 +207,7 @@ const JobForm = ({
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">{t('postJob.basics.categoryLabel')}</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">{t('postJob.basics.categoryLabel', 'Category')}</label>
             <select
               name="category"
               value={formData.category}
@@ -217,9 +217,9 @@ const JobForm = ({
                 : 'border-gray-300 focus:border-blue-500 focus:ring-blue-100'
                 } focus:outline-none focus:ring-3`}
             >
-              <option value="">{t('postJob.basics.selectCategory')}</option>
+              <option value="">{t('postJob.basics.selectCategory', 'Select a Category')}</option>
               {categories.map(cat => (
-                <option key={cat} value={cat}>{t(`postJob.basics.categories.${cat}`)}</option>
+                <option key={cat} value={cat}>{t(`postJob.basics.categories.${cat}`, cat)}</option>
               ))}
             </select>
             {fieldErrors.category && (
@@ -231,7 +231,7 @@ const JobForm = ({
 
             {formData.category === 'Other' && (
               <div className="mt-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">{t('postJob.basics.customCategory')}</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">{t('postJob.basics.customCategory', 'Specify Category')}</label>
                 <input
                   type="text"
                   name="customCategory"
@@ -241,7 +241,7 @@ const JobForm = ({
                     ? 'border-red-500 focus:border-red-600 focus:ring-red-100'
                     : 'border-gray-300 focus:border-blue-500 focus:ring-blue-100'
                     } focus:outline-none focus:ring-3`}
-                  placeholder={t('postJob.basics.customCategoryPlaceholder')}
+                  placeholder={t('postJob.basics.customCategoryPlaceholder', 'e.g., Tiling')}
                   maxLength={50}
                 />
                 {fieldErrors.customCategory && (
@@ -255,7 +255,7 @@ const JobForm = ({
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">{t('postJob.basics.description')}</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">{t('postJob.basics.description', 'Job Description')}</label>
             <textarea
               name="description"
               value={formData.description}
@@ -265,7 +265,7 @@ const JobForm = ({
                 ? 'border-red-500 focus:border-red-600 focus:ring-red-100'
                 : 'border-gray-300 focus:border-blue-500 focus:ring-blue-100'
                 } focus:outline-none focus:ring-3`}
-              placeholder={t('postJob.basics.descriptionPlaceholder')}
+              placeholder={t('postJob.basics.descriptionPlaceholder', 'Describe the work to be done...')}
               maxLength={1000}
             />
             <div className="flex justify-end">
@@ -288,8 +288,8 @@ const JobForm = ({
             <Wallet className="w-6 h-6 text-blue-600" />
           </div>
           <div className="flex-1">
-            <h2 className="text-xl font-bold text-gray-900">{t('postJob.locationPay.title')}</h2>
-            <p className="text-sm text-gray-600">{t('postJob.locationPay.subtitle')}</p>
+            <h2 className="text-xl font-bold text-gray-900">{t('postJob.locationPay.title', 'Location & Pay')}</h2>
+            <p className="text-sm text-gray-600">{t('postJob.locationPay.subtitle', 'Set the location and payment details')}</p>
           </div>
           <div className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg">
             2
@@ -299,7 +299,7 @@ const JobForm = ({
         <div className="space-y-5">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              <MapPin className="w-4 h-4 inline mr-1" /> {t('postJob.locationPay.location')}
+              <MapPin className="w-4 h-4 inline mr-1" /> {t('postJob.locationPay.location', 'Job Location')}
             </label>
             <input
               type="text"
@@ -310,7 +310,7 @@ const JobForm = ({
                 ? 'border-red-500 focus:border-red-600 focus:ring-red-100'
                 : 'border-gray-300 focus:border-blue-500 focus:ring-blue-100'
                 } focus:outline-none focus:ring-3`}
-              placeholder={t('postJob.locationPay.locationPlaceholder')}
+              placeholder={t('postJob.locationPay.locationPlaceholder', 'City, Town or Address')}
               maxLength={100}
             />
             {fieldErrors.location && (
@@ -323,13 +323,13 @@ const JobForm = ({
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              <Banknote className="w-4 h-4 inline mr-1" /> {t('postJob.locationPay.paymentRate')}
+              <Banknote className="w-4 h-4 inline mr-1" /> {t('postJob.locationPay.paymentRate', 'Payment Rate')}
             </label>
             <div className={`flex items-center border-2 rounded-lg overflow-hidden transition-all ${fieldErrors.salary
               ? 'border-red-500 focus-within:border-red-600 focus-within:ring-3 focus-within:ring-red-100'
               : 'border-gray-300 focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-100'
               }`}>
-              <span className="px-4 py-3 bg-gray-50 border-r-2 border-gray-300 font-semibold text-gray-700">{t('common.currency')}</span>
+              <span className="px-4 py-3 bg-gray-50 border-r-2 border-gray-300 font-semibold text-gray-700">{t('common.currency', 'LKR')}</span>
               <input
                 type="number"
                 name="salary"
@@ -341,17 +341,19 @@ const JobForm = ({
                 placeholder="2500"
               />
               <span className="px-2 text-gray-400 text-xl font-light">/</span>
+
+              {/* UPDATED DROPDOWN WITH 'PER' PREFIX */}
               <select
                 name="salaryPeriod"
                 value={formData.salaryPeriod}
                 onChange={handleChange}
-                className="px-2 py-3 pr-8 border-none outline-none text-base cursor-pointer appearance-none bg-white bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSIjNmI3MjgwIj48cGF0aCBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iMiIgZD0iTTE5IDlsLTcgNy03LTciPjwvcGF0aD48L3N2Zz4=')] bg-[length:1.5rem] bg-[position:right_0.5rem_center] bg-no-repeat min-w-[120px]"
+                className="px-2 py-3 pr-8 border-none outline-none text-base cursor-pointer appearance-none bg-white bg-[length:1.5rem] bg-[position:right_0.5rem_center] bg-no-repeat min-w-[120px]"
               >
-                <option value="hourly">{t('postJob.locationPay.periods.hour')}</option>
-                <option value="daily">{t('postJob.locationPay.periods.day')}</option>
-                <option value="weekly">{t('postJob.locationPay.periods.week')}</option>
-                <option value="monthly">{t('postJob.locationPay.periods.month')}</option>
-                <option value="fixed">{t('postJob.locationPay.periods.fixed')}</option>
+                <option value="hourly">{t('postJob.locationPay.periods.hour', 'per Hour')}</option>
+                <option value="daily">{t('postJob.locationPay.periods.day', 'per Day')}</option>
+                <option value="weekly">{t('postJob.locationPay.periods.week', 'per Week')}</option>
+                <option value="monthly">{t('postJob.locationPay.periods.month', 'per Month')}</option>
+                <option value="fixed">{t('postJob.locationPay.periods.fixed', 'Fixed Amount')}</option>
               </select>
             </div>
             {fieldErrors.salary && (
@@ -360,12 +362,12 @@ const JobForm = ({
                 {fieldErrors.salary}
               </span>
             )}
-            <span className="text-xs text-gray-600 mt-1 block">{t('postJob.locationPay.paymentHint')}</span>
+            <span className="text-xs text-gray-600 mt-1 block">{t('postJob.locationPay.paymentHint', 'Enter the amount you are willing to pay per period')}</span>
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              <Clock className="w-4 h-4 inline mr-1" /> {t('postJob.locationPay.duration')}
+              <Clock className="w-4 h-4 inline mr-1" /> {t('postJob.locationPay.duration', 'Job Duration')}
             </label>
             <input
               type="text"
@@ -396,8 +398,8 @@ const JobForm = ({
             <Users className="w-6 h-6 text-blue-600" />
           </div>
           <div className="flex-1">
-            <h2 className="text-xl font-bold text-gray-900">{t('postJob.workforce.title')}</h2>
-            <p className="text-sm text-gray-600">{t('postJob.workforce.subtitle')}</p>
+            <h2 className="text-xl font-bold text-gray-900">{t('postJob.workforce.title', 'Workforce')}</h2>
+            <p className="text-sm text-gray-600">{t('postJob.workforce.subtitle', 'How many workers do you need?')}</p>
           </div>
           <div className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg">
             3
@@ -406,7 +408,7 @@ const JobForm = ({
 
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">
-            <Users className="w-4 h-4 inline mr-1" /> {t('postJob.workforce.workersNeeded')}
+            <Users className="w-4 h-4 inline mr-1" /> {t('postJob.workforce.workersNeeded', 'Workers Needed')}
           </label>
           <input
             type="number"
@@ -419,7 +421,7 @@ const JobForm = ({
               ? 'border-red-500 focus:border-red-600 focus:ring-red-100'
               : 'border-gray-300 focus:border-blue-500 focus:ring-blue-100'
               } focus:outline-none focus:ring-3`}
-            placeholder={t('postJob.workforce.workersPlaceholder')}
+            placeholder={t('postJob.workforce.workersPlaceholder', '1')}
           />
           {fieldErrors.workersNeeded && (
             <span className="flex items-start text-red-600 text-sm font-medium mt-2">
@@ -428,7 +430,7 @@ const JobForm = ({
             </span>
           )}
           <span className="text-xs text-gray-600 mt-1 block">
-            {t('postJob.workforce.workersHint')}
+            {t('postJob.workforce.workersHint', 'Enter the number of workers required')}
           </span>
         </div>
       </div>
@@ -441,12 +443,12 @@ const JobForm = ({
           </div>
           <div className="flex-1">
             <h2 className="text-xl font-bold text-gray-900">
-              {t('postJob.requirements.title')}
+              {t('postJob.requirements.title', 'Requirements')}
               <span className="ml-2 inline-block px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded-full">
-                {t('postJob.requirements.optional')}
+                {t('postJob.requirements.optional', 'Optional')}
               </span>
             </h2>
-            <p className="text-sm text-gray-600">{t('postJob.requirements.subtitle')}</p>
+            <p className="text-sm text-gray-600">{t('postJob.requirements.subtitle', 'List specific skills or tools required')}</p>
           </div>
           <div className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg">
             4
@@ -463,7 +465,7 @@ const JobForm = ({
                     type="button"
                     onClick={() => removeRequirement(req)}
                     className="p-1.5 bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition-colors"
-                    title={t('postJob.requirements.remove')}
+                    title={t('postJob.requirements.remove', 'Remove')}
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
@@ -472,7 +474,7 @@ const JobForm = ({
             </div>
           ) : (
             <div className="text-center py-8 text-gray-400 text-sm italic">
-              {t('postJob.requirements.noRequirements')}
+              {t('postJob.requirements.noRequirements', 'No requirements added yet.')}
             </div>
           )}
 
@@ -488,7 +490,7 @@ const JobForm = ({
                 }
               }}
               className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-100 transition-all"
-              placeholder={t('postJob.requirements.placeholder')}
+              placeholder={t('postJob.requirements.placeholder', 'e.g., Must have own tools')}
               maxLength={100}
             />
             <button
@@ -497,7 +499,7 @@ const JobForm = ({
               className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
             >
               <Plus className="w-4.5 h-4.5" />
-              {t('postJob.requirements.addButton')}
+              {t('postJob.requirements.addButton', 'Add')}
             </button>
           </div>
         </div>
@@ -514,7 +516,7 @@ const JobForm = ({
             {loading ? (
               <span className="flex items-center justify-center">
                 <span className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin mr-3"></span>
-                {submitButtonText === t('postJob.postButton') ? t('postJob.posting') : t('postJob.updating')}
+                {submitButtonText === t('postJob.postButton', 'Post Job') ? t('postJob.posting', 'Posting...') : t('postJob.updating', 'Updating...')}
               </span>
             ) : (
               submitButtonText
@@ -527,13 +529,13 @@ const JobForm = ({
             disabled={loading}
             className="px-6 md:px-8 py-3 md:py-4 border-2 border-blue-600 bg-white text-blue-600 rounded-lg text-base md:text-lg font-bold hover:bg-blue-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {t('postJob.cancel')}
+            {t('postJob.cancel', 'Cancel')}
           </button>
         </div>
 
         <div className="mt-4 md:mt-6 p-3 md:p-4 bg-blue-50 rounded-lg border border-blue-200">
           <p className="text-xs md:text-sm text-blue-900 leading-relaxed">
-            <strong className="font-bold">{t('postJob.tip.label')}</strong> {t('postJob.tip.text')}
+            <strong className="font-bold">{t('postJob.tip.label', 'Pro Tip:')}</strong> {t('postJob.tip.text', 'Detailed job descriptions attract better candidates.')}
           </p>
         </div>
       </div>
