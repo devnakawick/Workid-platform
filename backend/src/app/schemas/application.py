@@ -2,7 +2,6 @@ from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
 from decimal import Decimal
-from uuid import UUID
 from app.models.application import ApplicationStatus
 
 # ======= Application Create =======

@@ -1,7 +1,6 @@
 from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional
 from datetime import date, datetime
-from uuid import UUID
 from app.models.worker import Worker, DocumentType, DocumentStatus
 from enum import Enum
 

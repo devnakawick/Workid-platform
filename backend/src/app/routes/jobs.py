@@ -3,10 +3,7 @@ import json
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect, status, Query
 from sqlalchemy.orm import Session
 from typing import Dict, List, Optional
-from uuid import UUID
 from datetime import datetime
-import uuid
-
 
 from app.database import get_db
 from app.models.user import User
