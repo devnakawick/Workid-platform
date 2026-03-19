@@ -70,7 +70,7 @@ async def update_location(
     - in_progress
     """
     # Get job progress
-    progress = JobProgressService.get_job_progress(db, job_id)
+    progress = ProgressService.get_job_progress(db, job_id)
     
     if not progress:
         raise HTTPException(
@@ -152,7 +152,7 @@ async def get_job_locations(
     Both worker and employer can access this
     """
     # Get job progress
-    progress = JobProgressService.get_job_progress(db, job_id)
+    progress = ProgressService.get_job_progress(db, job_id)
     
     if not progress:
         raise HTTPException(
