@@ -6,7 +6,6 @@ from app.models.application import Application, ApplicationStatus
 from app.models.worker import Worker
 from typing import List, Optional, Dict
 from datetime import datetime, timedelta
-from uuid import UUID
 
 class JobService:
     """
@@ -15,7 +14,7 @@ class JobService:
     # ======= Job CRUD =======
 
     @staticmethod
-    def create_job(db: Session, employer_id: UUID, job_data: dict) -> Job:
+    def create_job(db: Session, employer_id: int, job_data: dict) -> Job:
         """
         Create a new job posting
         """
@@ -30,13 +29,13 @@ class JobService:
         return job
     
     @staticmethod
-    def get_job_by_id(db: Session, job_id: UUID) -> Optional[Job]:
+    def get_job_by_id(db: Session, job_id: int) -> Optional[Job]:
         return db.query(Job).filter(Job.id == job_id).first()
     
     @staticmethod
     def get_employer_jobs(
         db: Session,
-        employer_id: UUID,
+        employer_id: int,
         status: Optional[JobStatus] = None,
     ) -> List[Job]:
         """
@@ -52,8 +51,8 @@ class JobService:
     @staticmethod
     def update_job(
         db: Session,
-        job_id: UUID,
-        employer_id: UUID,
+        job_id: int,
+        employer_id: int,
         update_data: dict
     ) -> Job:
         """
@@ -83,8 +82,8 @@ class JobService:
     @staticmethod
     def update_job_status(
         db: Session,
-        job_id: UUID,
-        employer_id: UUID,
+        job_id: int,
+        employer_id: int,
         new_status: JobStatus
     ) -> Job:
         """
@@ -108,7 +107,7 @@ class JobService:
         return job
     
     @staticmethod
-    def delete_job(db: Session, job_id: UUID, employer_id: UUID) -> bool:
+    def delete_job(db: Session, job_id: int, employer_id: int) -> bool:
         """
         Delete a job 
         """
@@ -167,7 +166,7 @@ class JobService:
         return query.offset(skip).limit(limit).all()
     
     @staticmethod
-    def increment_view_count(db: Session, job_id: UUID):
+    def increment_view_count(db: Session, job_id: int):
         """
         Increment view count when job is viewed
         """ 
@@ -179,7 +178,7 @@ class JobService:
     @staticmethod
     def get_recommended_jobs(
         db: Session,
-        worker_id: UUID,
+        worker_id: int,
         limit: int = 10
     ) -> List[Job]:
         """
@@ -198,7 +197,7 @@ class JobService:
         # Find jobs matching worker's skill and city
         jobs = db.query(Job).filter(
             Job.status == JobStatus.OPEN,
-            Job.category == worker.primary_skill.value,
+            Job.category == str(worker.primary_skill.value if hasattr(worker.primary_skill, 'value') else worker.primary_skill),
             Job.city == worker.city
         ).order_by(Job.created_at.desc()).limit(limit).all()
 
@@ -209,8 +208,8 @@ class JobService:
     @staticmethod
     def apply_to_job(
         db: Session,
-        job_id: UUID, 
-        worker_id: UUID,
+        job_id: int, 
+        worker_id: int,
         application_data: dict 
     ) -> Application:
         
@@ -247,6 +246,8 @@ class JobService:
         db.add(application)
 
         # Increment job's application count
+        if job.applications_count is None:
+            job.applications_count = 0
         job.applications_count += 1
 
         db.commit()
@@ -256,7 +257,7 @@ class JobService:
     @staticmethod
     def get_worker_application(
         db: Session,
-        worker_id: UUID,
+        worker_id: int,
         status: Optional[ApplicationStatus] = None
     ) -> List[Application]:
         """
@@ -272,8 +273,8 @@ class JobService:
     @staticmethod
     def withdraw_application(
         db: Session,
-        application_id: UUID,
-        worker_id: UUID
+        application_id: int,
+        worker_id: int
     ) -> Application:
         application = db.query(Application).filter(
             Application.id == application_id,
@@ -297,7 +298,7 @@ class JobService:
     # ======= Statistics =======
 
     @staticmethod
-    def get_job_stats(db: Session, job_id: UUID) -> Dict:
+    def get_job_stats(db: Session, job_id: int) -> Dict:
         """
         Get statistics for a job
         """

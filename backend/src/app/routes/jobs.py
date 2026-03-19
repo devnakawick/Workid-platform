@@ -46,11 +46,7 @@ class LocationResponse(BaseModel):
     employer_location: dict | None
     last_updated: str | None
 
-router = APIRouter(
-    prefix="/api/jobs",
-    tags=["Jobs - Worker Side"]
-)
-router = APIRouter(prefix="/api/jobs", tags=["jobs"])
+router = APIRouter(prefix="/api/jobs", tags=["Jobs"])
 
 # =========== LOCATION TRACKING ==========
 
@@ -70,7 +66,7 @@ async def update_location(
     - in_progress
     """
     # Get job progress
-    progress = JobProgressService.get_job_progress(db, job_id)
+    progress = ProgressService.get_job_progress(db, job_id)
     
     if not progress:
         raise HTTPException(
@@ -152,7 +148,7 @@ async def get_job_locations(
     Both worker and employer can access this
     """
     # Get job progress
-    progress = JobProgressService.get_job_progress(db, job_id)
+    progress = ProgressService.get_job_progress(db, job_id)
     
     if not progress:
         raise HTTPException(
@@ -353,7 +349,7 @@ async def get_recommended_jobs(
     Get job recommendations for the current worker
     """
     # Get worker profile
-    worker = WorkerService.get_worker_by_user_id(db, current_user.id)
+    worker = WorkerService.get_worker_by_user(db, current_user.id)
     if not worker:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
