@@ -11,8 +11,6 @@ api.interceptors.request.use((config) => {
     const token = localStorage.getItem('access_token');
 
     const publicPaths = [
-        '/auth/login',
-        '/auth/register',
         '/auth/verify-otp',
         '/auth/resend-otp',
         '/auth/refresh'          
