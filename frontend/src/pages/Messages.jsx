@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/AuthContext';
-import { Search, Send, Clock, Star, MailOpen } from 'lucide-react';
+import { Search, Send, Clock, Star, MailOpen, Briefcase, MapPin, Banknote, CheckCircle2, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 const initialConversations = [
@@ -39,8 +39,20 @@ const initialConversations = [
 
 export default function Messages() {
     const { updateUser } = useAuth();
-    const [conversations, setConversations] = useState(initialConversations);
-    const [activeChatId, setActiveChatId] = useState(1);
+    
+    // Load from local storage
+    const getInitialConversations = () => {
+        const stored = localStorage.getItem('mock_messages');
+        if (stored) {
+            try {
+                return [...JSON.parse(stored), ...initialConversations];
+            } catch (e) { }
+        }
+        return initialConversations;
+    };
+
+    const [conversations, setConversations] = useState(getInitialConversations());
+    const [activeChatId, setActiveChatId] = useState(conversations[0]?.id || 1);
     const [newMessage, setNewMessage] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -52,20 +64,21 @@ export default function Messages() {
 
     const activeChat = conversations.find(c => c.id === activeChatId);
 
-    const handleSendMessage = (e) => {
-        e.preventDefault();
-        if (!newMessage.trim()) return;
+    const sendMessage = (text) => {
+        if (!text.trim()) return;
 
         const updatedConversations = conversations.map(c => {
             if (c.id === activeChatId) {
+                // Update the original message if it was an invite to show it was responded to? (optional, skip for now)
+                
                 return {
                     ...c,
-                    preview: newMessage,
+                    preview: text,
                     messages: [
                         ...c.messages,
                         {
                             id: Date.now(),
-                            text: newMessage,
+                            text: text,
                             sender: "Me",
                             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                             sent: true
@@ -77,31 +90,67 @@ export default function Messages() {
         });
 
         setConversations(updatedConversations);
+        
+        // Update local storage
+        localStorage.setItem('mock_messages', JSON.stringify(updatedConversations));
+        
         setNewMessage('');
         toast.success("Message sent!");
 
         // Simulate a reply after 2 seconds
         setTimeout(() => {
-            setConversations(prev => prev.map(c => {
+            setConversations(prev => {
+                const nextConvos = prev.map(c => {
+                    if (c.id === activeChatId) {
+                        return {
+                            ...c,
+                            typing: false,
+                            messages: [
+                                ...c.messages,
+                                {
+                                    id: Date.now(),
+                                    text: "Thanks for the response! I'll get back to you soon.",
+                                    sender: c.sender,
+                                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                                    sent: false
+                                }
+                            ]
+                        };
+                    }
+                    return c;
+                });
+                localStorage.setItem('mock_messages', JSON.stringify(nextConvos));
+                return nextConvos;
+            });
+        }, 2000);
+    };
+
+    const handleSendMessage = (e) => {
+        e.preventDefault();
+        sendMessage(newMessage);
+    };
+
+    const handleInviteResponse = (msgId, action) => {
+        // Mark the invite message as responded to
+        setConversations(prev => {
+            const nextConvos = prev.map(c => {
                 if (c.id === activeChatId) {
                     return {
                         ...c,
-                        typing: false,
-                        messages: [
-                            ...c.messages,
-                            {
-                                id: Date.now(),
-                                text: "Thanks for the response! I'll get back to you soon.",
-                                sender: c.sender,
-                                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                                sent: false
-                            }
-                        ]
+                        messages: c.messages.map(m => m.id === msgId ? { ...m, inviteResponded: true } : m)
                     };
                 }
                 return c;
-            }));
-        }, 2000);
+            });
+            localStorage.setItem('mock_messages', JSON.stringify(nextConvos));
+            return nextConvos;
+        });
+
+        const reply = action === 'accept'
+            ? "I accept your invitation! Let's discuss the details."
+            : "Thank you for the invitation, but I am currently unavailable.";
+            
+        setTimeout(() => sendMessage(reply), 100);
     };
 
     const handleChatSelect = (id) => {
@@ -197,7 +246,48 @@ export default function Messages() {
                                 </div>
                             )}
                             <div className={`p-5 rounded-2xl shadow-sm relative transition-all ${msg.sent ? 'bg-blue-600 text-white rounded-br-none' : 'bg-white border border-gray-100 rounded-bl-none'}`}>
-                                <p className={`text-sm leading-relaxed ${msg.sent ? 'font-bold' : 'text-gray-700 font-medium'}`}>{msg.text}</p>
+                                <p className={`text-sm leading-relaxed ${msg.sent ? 'font-bold' : 'text-gray-700 font-medium whitespace-pre-line'}`}>{msg.text}</p>
+                                
+                                {msg.isJobInvite && (
+                                    <div className="mt-4 p-4 bg-gray-50 border border-gray-100 rounded-xl space-y-3">
+                                        <div className="flex items-center gap-2 text-blue-600 font-bold">
+                                            <Briefcase size={16} />
+                                            <span>{msg.jobDetails?.title}</span>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-2 text-xs">
+                                            <div className="flex items-center gap-1.5 text-gray-600 flex-wrap">
+                                                <MapPin size={14} className="flex-shrink-0" />
+                                                <span className="truncate max-w-[80px]" title={msg.jobDetails?.location}>{msg.jobDetails?.location}</span>
+                                            </div>
+                                            <div className="flex items-center gap-1.5 text-gray-600 flex-wrap">
+                                                <Banknote size={14} className="flex-shrink-0 text-emerald-600" />
+                                                <span className="font-bold text-gray-900 truncate">Rs. {msg.jobDetails?.budget}</span>
+                                            </div>
+                                        </div>
+                                        
+                                        {!msg.inviteResponded ? (
+                                            <div className="flex gap-2 pt-3 border-t border-gray-200 mt-3">
+                                                <button 
+                                                    onClick={(e) => { e.stopPropagation(); handleInviteResponse(msg.id, 'accept'); }}
+                                                    className="flex-1 py-1.5 bg-blue-600 text-white font-bold text-xs rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-1"
+                                                >
+                                                    <CheckCircle2 size={14} /> Accept
+                                                </button>
+                                                <button 
+                                                    onClick={(e) => { e.stopPropagation(); handleInviteResponse(msg.id, 'reject'); }}
+                                                    className="flex-1 py-1.5 bg-gray-200 text-gray-700 font-bold text-xs rounded-lg hover:bg-gray-300 transition-colors flex items-center justify-center gap-1"
+                                                >
+                                                    <XCircle size={14} /> Decline
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="pt-3 border-t border-gray-200 mt-3 text-[10px] font-bold uppercase text-gray-400 text-center tracking-widest">
+                                                Invitation Responded
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
                                 <span className={`absolute -bottom-6 text-[10px] font-bold text-gray-400 uppercase tracking-widest opacity-0 group-hover/msg:opacity-100 transition-opacity ${msg.sent ? 'right-0 text-right' : 'left-0'}`}>
                                     {msg.time} {msg.sent ? '• Delivered' : ''}
                                 </span>
