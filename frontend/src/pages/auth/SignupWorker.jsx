@@ -106,7 +106,7 @@ export default function SignupWorker() {
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Navigate to OTP verification instead of dashboard
-      navigate('/verify-otp', { state: { email: formData.email, role: 'worker' } });
+      navigate('/verify-otp', { state: { email: formData.phone, role: 'worker' } });
     } catch (error) {
       setErrors({ general: 'An error occurred. Please try again.' });
     } finally {

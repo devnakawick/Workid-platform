@@ -10,34 +10,23 @@ import { toast } from 'sonner';
 export default function Login() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('worker');
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
-  // Simple email validation
-  const validateEmail = (emailValue) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(emailValue);
-  };
+
 
   const handleSignIn = async (e) => {
     e.preventDefault();
     const newErrors = {};
 
     // Validation
-    // Validation
-    if (role === 'employer') {
-      if (!email.trim()) {
-        newErrors.email = 'Email is required';
-      } else if (!validateEmail(email)) {
-        newErrors.email = 'Please enter a valid email address';
-      }
-    } else if (role === 'worker') {
-      if (!email.trim()) {
-        newErrors.email = 'Phone number is required';
-      }
+    if (!phone.trim()) {
+      newErrors.phone = 'Phone number is required';
+    } else if (phone.length < 10) {
+      newErrors.phone = 'Please enter a valid phone number';
     }
 
     if (!password.trim()) {
@@ -56,13 +45,13 @@ export default function Login() {
     setIsLoading(true);
     try {
       // Standalone mode: Mocking authentication
-      console.log('Login attempt with:', { email, password, role });
+      console.log('Login attempt with:', { phone, password, role });
 
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Navigate to OTP verification instead of dashboard
-      navigate('/verify-otp', { state: { email, role } });
+      navigate('/verify-otp', { state: { phone, role } });
     } catch (error) {
       setErrors({ general: 'An error occurred. Please try again.' });
     } finally {
@@ -115,29 +104,23 @@ export default function Login() {
           )}
 
           <form onSubmit={handleSignIn} className="space-y-4">
-            {/* Email/Phone Input */}
+            {/* Phone Input */}
             <Input
-              label={role === 'worker' ? t('auth.phoneNumber') : t('auth.emailAddress')}
-              type={role === 'worker' ? "tel" : "email"}
-              placeholder={role === 'worker' ? t('auth.phonePlaceholder') : t('auth.emailPlaceholder')}
-              value={email}
+              label={t('auth.phoneNumber')}
+              type="tel"
+              placeholder={t('auth.phonePlaceholder')}
+              value={phone}
               onChange={(e) => {
                 let val = e.target.value;
-                if (role === 'worker') {
-                  // Only allow digits and limit to 10
-                  val = val.replace(/\D/g, '').slice(0, 10);
-                } else {
-                  // Strip whitespace for email
-                  val = val.replace(/\s/g, '');
-                }
-                setEmail(val);
-                if (errors.email) {
-                  setErrors({ ...errors, email: '' });
+                val = val.replace(/\D/g, '').slice(0, 10);
+                setPhone(val);
+                if (errors.phone) {
+                  setErrors({ ...errors, phone: '' });
                 }
               }}
-              maxLength={role === 'worker' ? 10 : undefined}
-              error={errors.email}
-              icon={role === 'worker' ? <Phone size={18} /> : <Mail size={18} />}
+              maxLength={10}
+              error={errors.phone}
+              icon={<Phone size={18} />}
             />
 
             {/* Password Input */}

@@ -18,7 +18,7 @@ export default function OtpVerification() {
 
     // Extract the role from location state to know where to redirect after verification
     const role = location.state?.role || 'worker';
-    const email = location.state?.email || 'johndoe@gmail.com';
+    const emailStr = location.state?.email || location.state?.phone || '+1 234 567 8900';
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -123,7 +123,7 @@ export default function OtpVerification() {
                     </div>
                     <h1 className="text-3xl font-black text-gray-900 mb-2 tracking-tight">Verify Code</h1>
                     <p className="text-gray-500 leading-relaxed font-medium">
-                        We've sent a 6-digit verification code to <span className="text-gray-900 font-bold">{email}</span>
+                        We've sent a 6-digit verification code to <span className="text-gray-900 font-bold">{emailStr}</span>
                     </p>
                 </div>
 

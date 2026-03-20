@@ -101,6 +101,66 @@ const OverviewTab = ({ app, onHire }) => {
   );
 };
 
+
+const RatingTab = ({ app }) => {
+  const { t } = useTranslation();
+  const reviews = app.reviews || [];
+
+  return (
+    <div className="space-y-4">
+      {/* Summary Card */}
+      <div className="bg-white rounded-xl p-4 md:p-5 border border-gray-200">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+              {t('workerProfile.reviewsSection.title') || 'Rating & Reviews'}
+            </p>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-black text-gray-900">{app.rating}</span>
+              <span className="text-sm text-gray-500">out of 5</span>
+            </div>
+          </div>
+          <div className="text-right">
+            <div className="flex justify-end mb-1">
+              <Stars rating={app.rating} />
+            </div>
+            <p className="text-xs text-gray-500">{reviews.length} reviews</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Reviews List */}
+      <div className="space-y-3">
+        {reviews.length > 0 ? (
+          reviews.map((review) => (
+            <div key={review.id} className="bg-white rounded-xl p-4 border border-gray-200">
+              <div className="flex justify-between items-start mb-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600">
+                    {review.initials}
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-gray-900">{review.employer}</p>
+                    <p className="text-xs text-gray-500">{review.date}</p>
+                  </div>
+                </div>
+                <div className="flex-shrink-0">
+                  <Stars rating={review.rating} />
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 leading-relaxed mt-2">{review.comment}</p>
+            </div>
+          ))
+        ) : (
+          <div className="text-center py-12 bg-white rounded-xl border border-gray-200 text-gray-400">
+            <p className="text-sm">No reviews available.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const JobProgressTab = ({ app }) => {
   const { t } = useTranslation();
   const [job, setJob] = useState(null);

@@ -15,7 +15,7 @@ class User(Base):
     __tablename__ = "users"
     
     # Primary Key
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     
     # Authentication
     phone_number = Column(String(15), unique=True, nullable=False, index=True)

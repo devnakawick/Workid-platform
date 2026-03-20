@@ -1,4 +1,4 @@
-import { FileX, CircleCheck } from "lucide-react";
+import { FileX, CircleCheck, Mail } from "lucide-react"; 
 import { useTranslation, Trans } from 'react-i18next';
 
 const ApplicantsList = ({ applications, selected, stats, onSelect }) => {
@@ -19,7 +19,6 @@ const ApplicantsList = ({ applications, selected, stats, onSelect }) => {
             {t('reviewApps.list.title')}
           </h2>
 
-          {/* pending, accepted, rejected */}
           <div className="flex items-center gap-1.5">
             {[
               { value: stats.pending, cls: 'bg-yellow-100 text-yellow-700' },
@@ -53,24 +52,35 @@ const ApplicantsList = ({ applications, selected, stats, onSelect }) => {
           </div>
         ) : (
           applications.map((app) => {
-            const s = STATUS_CONFIG[app.status];
+            // Safety check for status
+            const s = STATUS_CONFIG[app.status] || STATUS_CONFIG.pending;
             const isSel = selected?.id === app.id;
 
             return (
               <button
                 key={app.id}
                 onClick={() => onSelect(app)}
-                className={`w-full text-left px-4 py-3.5 border-b border-gray-100 transition-colors relative ${isSel ? 'bg-blue-50' : 'bg-white hover:bg-gray-50'
+                className={`w-full text-left px-4 py-3.5 border-b border-gray-100 transition-colors relative group ${isSel ? 'bg-blue-50' : 'bg-white hover:bg-gray-50'
                   }`}
               >
+
+                {/* Invited Icon - CHANGED FROM PURPLE TO BLUE */}
+                {app.isInvited && (
+                  <div className="absolute top-2 right-2 z-10 bg-blue-100 text-blue-700 text-[9px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-1 border border-blue-200 shadow-sm">
+                    <Mail className="w-2.5 h-2.5" /> Invited
+                  </div>
+                )}
+
 
                 {isSel && <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-blue-600" />}
 
                 <div className="flex items-center gap-3">
                   <div className="relative flex-shrink-0">
-                    <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
-                      {app.initials}
+                    {/* Initials Avatar */}
+                    <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                      {app.initials || app.name.substring(0, 2).toUpperCase()}
                     </div>
+
                     {app.verified && (
                       <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-blue-600 border-2 border-white flex items-center justify-center">
                         <CircleCheck className="w-2.5 h-2.5 text-white" />
@@ -79,12 +89,12 @@ const ApplicantsList = ({ applications, selected, stats, onSelect }) => {
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    {/* pending rows stay bold to draw attention */}
                     <div className="flex items-center justify-between mb-0.5">
                       <span className={`text-sm truncate ${isSel || app.status === 'pending' ? 'font-bold text-gray-900' : 'font-medium text-gray-700'}`}>
                         {app.name}
                       </span>
-                      <span className="text-xs text-gray-400 flex-shrink-0 ml-2">{app.appliedAgo}</span>
+
+                      {!app.isInvited && <span className="text-xs text-gray-400 flex-shrink-0 ml-2">{app.appliedAgo}</span>}
                     </div>
 
                     <p className="text-xs text-gray-500 truncate mb-1.5">{app.job}</p>
