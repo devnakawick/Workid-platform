@@ -2,7 +2,8 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 import WorkerSidebar from './components/layout/WorkerSidebar';
 import EmployerSidebar from './components/layout/EmployerSidebar';
-import Footer from './components/layout/Footer';
+import WorkerFooter from './components/layout/WorkerFooter';
+import EmployerFooter from './components/layout/EmployerFooter';
 import DashboardHeader from './components/layout/DashboardHeader';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/lib/AuthContext';
@@ -29,6 +30,7 @@ export default function Layout({ children, currentPageName }) {
     const isWorkerMode = !isEmployerMode;
 
     const Sidebar = isEmployerMode ? EmployerSidebar : WorkerSidebar;
+    const FooterComponent = isEmployerMode ? EmployerFooter : WorkerFooter;
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -60,7 +62,7 @@ export default function Layout({ children, currentPageName }) {
 
             {/* Footer */}
             <div className="main-content-with-sidebar">
-                <Footer />
+                <FooterComponent />
             </div>
         </div>
     );
