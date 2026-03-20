@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
                     const res = await getMe();
                     const userData = res.data;
                     setUser(userData);
-                    setRole(userData.user_type?.toLowerCase() || null);
+                    setRole(userData.user_type?.toLowerCase() || null); 
                     setIsAuthenticated(true);
                 } catch (err) {
                     console.error('Auth check failed:', err);
@@ -39,7 +39,6 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('access_token', access_token);
             localStorage.setItem('refresh_token', refresh_token);
 
-            // Minimal user from login response
             const minimalUser = { id: user_id, phone_number: phone, user_type };
             setUser(minimalUser);
             setRole(user_type?.toLowerCase() || null);
@@ -59,29 +58,29 @@ export const AuthProvider = ({ children }) => {
         setRole(null);
         setIsAuthenticated(false);
         window.location.href = '/login';
-
-        const updateUser = (updates) => {
-            setUser((prev) => ({ ...prev, ...updates }));
-        };
-
-        const value = {
-            user,
-            role,
-            isAuthenticated,
-            isLoading,
-            login,
-            logout,
-            updateUser,
-        };
-
-        return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
     };
 
-    export const useAuth = () => {
-        const context = useContext(AuthContext);
-        if (!context) {
-            throw new Error('useAuth must be used within AuthProvider');
-        }
-        return context;
+    const updateUser = (updates) => {
+        setUser((prev) => ({ ...prev, ...updates }));
     };
-}
+
+    const value = {
+        user,
+        role,
+        isAuthenticated,
+        isLoading,
+        login,
+        logout,
+        updateUser,
+    };
+
+    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
+
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error('useAuth must be used within AuthProvider');
+    }
+    return context;
+};
