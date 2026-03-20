@@ -8,6 +8,7 @@ from app.schemas.auth import (SendOTPRequest, VerifyOTPRequest, WorkerSignupRequ
 from app.services.auth_service import AuthService
 from app.utils.dependencies import get_current_user
 from app.models.user import User
+from app.utils.security import verify_token, create_access_token
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -63,11 +64,57 @@ async def refresh_token(
     
     -refresh_token: Valid refresh token
     """
-    
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Refresh token endpoint not yet implemented"
-    )
+    try:
+        # Verify refresh token
+        payload = verify_token(refresh_token)
+        if not payload:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid refresh token"
+            )
+        
+        # Check if it's a refresh token
+        if payload.get("type") != "refresh":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Not a refresh token"
+            )
+        
+        # Get user from payload
+        user_id = payload.get("sub")
+        if not user_id:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token payload"
+            )
+        
+        # Verify user still exists and is active
+        user = db.query(User).filter(User.id == int(user_id)).first()
+        if not user or not user.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User not found or inactive"
+            )
+        
+        # Generate new access token
+        new_access_token = create_access_token(data={"sub": str(user.id)})
+        
+        return {
+            "access_token": new_access_token,
+            "refresh_token": refresh_token,  # Return same refresh token
+            "token_type": "bearer",
+            "user_id": str(user.id),
+            "user_type": user.user_type.value,
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Refresh token error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Failed to refresh token"
+        )
 
 @router.get("/me", response_model=UserResponse)
 async def get_current_user_info(
