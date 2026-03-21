@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FileText, Trash2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
-import { mockApplications } from '@/lib/mockData';
+import { jobService } from '@/services/jobService';
 
 const STATUS_COLORS = {
     pending: 'bg-yellow-100 text-yellow-700 border-yellow-200',
@@ -18,12 +18,46 @@ const STATUS_COLORS = {
 
 export default function Applications() {
     const { t, i18n } = useTranslation();
-    const [applications, setApplications] = useState(mockApplications);
+    const [applications, setApplications] = useState([]);
     const [activeTab, setActiveTab] = useState('all');
+    const [loading, setLoading] = useState(true);
 
-    const handleWithdraw = (id) => {
-        setApplications(applications.filter(app => app.id !== id));
-        toast.success(t('applications.withdraw_success'));
+    useEffect(() => {
+        fetchApplications();
+    }, []);
+
+    const fetchApplications = async () => {
+        setLoading(true);
+        try {
+            const res = await jobService.getMyApplications();
+            const apps = (res.data || []).map(app => ({
+                id: app.id,
+                job_id: app.job_id,
+                job_title: app.job?.title || `Job #${app.job_id}`,
+                company: app.job?.city || '',
+                applied_date: app.applied_at,
+                status: app.status,
+                cover_message: app.message,
+                proposed_rate: app.proposed_rate,
+            }));
+            setApplications(apps);
+        } catch (err) {
+            console.error('Failed to fetch applications:', err);
+            toast.error('Failed to load applications');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleWithdraw = async (id) => {
+        try {
+            await jobService.withdrawApplication(id);
+            setApplications(applications.filter(app => app.id !== id));
+            toast.success(t('applications.withdraw_success', 'Application withdrawn'));
+        } catch (err) {
+            console.error('Withdraw error:', err);
+            toast.error(err.response?.data?.detail || 'Failed to withdraw application');
+        }
     };
 
     const filteredApplications = applications.filter(app => {

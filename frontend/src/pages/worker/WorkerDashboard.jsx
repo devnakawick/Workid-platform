@@ -13,28 +13,8 @@ import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import workerService from '@/services/workerService';
+import { jobService } from '@/services/jobService';
 import { useAuth } from '@/lib/AuthContext';
-
-const mock = {
-	user: 'John',
-	completion: 75,
-	stats: {
-		activeJobs: 5,
-		completedJobs: 12,
-		rating: 4.8,
-		earnings: 'Rs. 7,500'
-	},
-	activeJobsList: [
-		{ id: 1, title: 'Kitchen Sink Repair', excerpt: 'Fix leaking kitchen sink and replace faucet. Materials provided.', price: 'Rs. 4000.00', status: 'In Progress', location: '2.3 KM', time: 'Today, 2:00 PM' },
-		{ id: 2, title: 'Bathroom Plumbing Install', excerpt: 'Complete bathroom plumbing installation for new construction.', price: 'Rs. 65,000.00', status: 'Starting Soon', location: '2.3 4.1 KM', time: 'Tomorrow, 9:00 AM' }
-	],
-	upcoming: [
-		{ id: 'u1', title: 'Pipe Replacement', excerpt: 'Replace old pipes', day: 'MON', date: 'Nov 26', time: '10:00 AM - 2:00 PM', category: 'thisWeek' },
-		{ id: 'u2', title: 'Drain Cleaning', excerpt: 'Clear clogged bathroom drain', day: 'TUE', date: 'Nov 27', time: '1:00 PM - 3:00 PM', category: 'thisWeek' },
-		{ id: 'u3', title: 'Toilet Repair', excerpt: 'Fix running toilet issue', day: 'THU', date: 'Nov 29', time: '9:00 AM - 11:00 AM', category: 'nextWeek' },
-		{ id: 'u4', title: 'Garden Maintenance', excerpt: 'Seasonal garden cleanup', day: 'SAT', date: 'Dec 05', time: '8:00 AM - 12:00 PM', category: 'thisMonth' }
-	]
-};
 
 const WorkerDashboard = () => {
 	const { t } = useTranslation();
@@ -43,30 +23,49 @@ const WorkerDashboard = () => {
 
 	const [activeTab, setActiveTab] = useState('thisWeek');
 	const [stats, setStats] = useState(null);
+	const [activeJobsList, setActiveJobsList] = useState([]);
+	const [upcomingJobs] = useState([]);
 
 	useEffect(() => {
-		const fetchStats = async () => {
+		const fetchData = async () => {
 			try {
 				const res = await workerService.getWorkerStats();
 				setStats(res.data);
 			} catch (err) {
 				console.error('Failed to load worker stats:', err);
 			}
+
+			try {
+				const jobsRes = await jobService.getActiveJobs();
+				const STATUS_MAP = { 'accepted': 'Starting Soon', 'worker_traveling': 'Traveling', 'in_progress': 'In Progress', 'completed': 'Finished' };
+				const mapped = (jobsRes.data || []).slice(0, 3).map(j => ({
+					id: j.job_id,
+					title: j.title,
+					excerpt: '',
+					price: '',
+					status: STATUS_MAP[j.status] || j.status,
+					location: j.location?.address || '',
+					time: j.scheduled_time ? new Date(j.scheduled_time).toLocaleString() : '',
+				}));
+				setActiveJobsList(mapped);
+			} catch (err) {
+				console.error('Failed to load active jobs:', err);
+			}
 		};
 
-		fetchStats();
+		fetchData();
 	}, []);
 
-	const filteredUpcoming = mock.upcoming.filter(job => {
+	const filteredUpcoming = upcomingJobs.filter(job => {
 		if (activeTab === 'thisMonth') return true;
 		return job.category === activeTab;
 	});
 
 	const dashboardStats = {
-		activeJobs: stats?.accepted_applications ?? mock.stats.activeJobs,
-		completedJobs: stats?.total_jobs_completed ?? mock.stats.completedJobs,
-		rating: stats?.rating ?? mock.stats.rating,
-		earnings: mock.stats.earnings 
+		activeJobs: stats?.accepted_applications ?? 0,
+		completedJobs: stats?.total_jobs_completed ?? 0,
+		rating: stats?.rating ?? 0,
+		earnings: 'Rs. 0'
 	};
 
 	return (
@@ -147,26 +146,40 @@ const WorkerDashboard = () => {
 					</div>
 
 					<div className="space-y-4">
-						{mock.activeJobsList.map(job => (
-							<div key={job.id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm transition-all hover:border-blue-100 hover:shadow-md">
-								<div className="flex justify-between items-start mb-4">
-									<div className="space-y-1">
-										<h4 className="text-lg font-bold text-gray-900">{job.title}</h4>
-										<p className="text-gray-500 text-sm leading-relaxed">{job.excerpt}</p>
-									</div>
-									<span className={`px-4 py-1.5 rounded-full text-xs font-bold ${job.status === 'In Progress' ? 'bg-blue-50 text-blue-600' : 'bg-green-50 text-green-600'}`}>
-										{job.status}
-									</span>
-								</div>
-								<div className="flex flex-wrap items-center justify-between pt-4 border-t border-gray-50 gap-4 mt-2">
-									<div className="flex items-center gap-4 text-xs font-bold text-gray-400">
-										<span className="flex items-center gap-1.5"><MapPin size={14} /> {job.location}</span>
-										<span className="flex items-center gap-1.5"><Calendar size={14} /> {job.time}</span>
-									</div>
-									<span className="text-blue-600 font-extrabold text-lg">{job.price}</span>
-								</div>
+						{activeJobsList.length === 0 ? (
+							<div className="bg-white p-10 rounded-2xl border border-dashed border-gray-200 text-center">
+								<Briefcase className="w-12 h-12 text-gray-200 mx-auto mb-3" />
+								<p className="text-gray-500 font-medium mb-1">No active jobs right now</p>
+								<p className="text-gray-400 text-sm mb-4">Browse available jobs and start working</p>
+								<button
+									onClick={() => navigate('/worker/find-jobs')}
+									className="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-colors"
+								>
+									Find Jobs
+								</button>
 							</div>
-						))}
+						) : (
+							activeJobsList.map(job => (
+								<div key={job.id} onClick={() => navigate(`/worker/jobs/${job.id}`)} className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm transition-all hover:border-blue-100 hover:shadow-lg cursor-pointer">
+									<div className="flex justify-between items-start mb-5">
+										<div className="space-y-2 flex-1 min-w-0 mr-4">
+											<h4 className="text-xl font-bold text-gray-900">{job.title}</h4>
+											<p className="text-gray-500 text-sm leading-relaxed line-clamp-2">{job.excerpt || 'Tap to view details'}</p>
+										</div>
+										<span className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap ${job.status === 'In Progress' ? 'bg-blue-50 text-blue-600' : job.status === 'Traveling' ? 'bg-amber-50 text-amber-600' : 'bg-green-50 text-green-600'}`}>
+											{job.status}
+										</span>
+									</div>
+									<div className="flex flex-wrap items-center justify-between pt-5 border-t border-gray-100 gap-4">
+										<div className="flex items-center gap-5 text-sm font-medium text-gray-400">
+											<span className="flex items-center gap-1.5"><MapPin size={16} /> {job.location || 'Location pending'}</span>
+											<span className="flex items-center gap-1.5"><Calendar size={16} /> {job.time || 'Schedule pending'}</span>
+										</div>
+										<span className="text-blue-600 font-extrabold text-xl">{job.price}</span>
+									</div>
+								</div>
+							))
+						)}
 					</div>
 				</div>
 

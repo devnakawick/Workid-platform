@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Briefcase } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
@@ -10,7 +10,7 @@ import ApplicationForm from '../components/jobs/ApplicationForm';
 import JobDetails from '../components/jobs/JobDetails';
 import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
-import { mockJobs, mockApplications } from '@/lib/mockData';
+import { jobService } from '../services/jobService';
 
 export default function Jobs() {
     const { t } = useTranslation();
@@ -25,39 +25,98 @@ export default function Jobs() {
     });
     const [selectedJob, setSelectedJob] = useState(null);
     const [showApplicationForm, setShowApplicationForm] = useState(false);
-    const [applications, setApplications] = useState(mockApplications);
+    const [appliedJobIds, setAppliedJobIds] = useState([]);
+    const [jobs, setJobs] = useState([]);
+    const [detailedJob, setDetailedJob] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [applyLoading, setApplyLoading] = useState(false);
 
-    const detailedJob = jobId ? mockJobs.find(j => j.id === jobId) : null;
-    const appliedJobIds = applications.map(app => app.job_id);
+    // Map backend job to frontend shape
+    const mapJob = (job) => ({
+        id: String(job.id),
+        title: job.title,
+        description: job.description || '',
+        company: job.employer?.full_name || 'Employer',
+        location: `${job.city || ''}, ${job.district || ''}`,
+        job_type: job.payment_type || 'fixed',
+        salary: Number(job.budget) || 0,
+        duration: job.estimated_duration_hours ? `${job.estimated_duration_hours}h` : '-',
+        category: job.category,
+        urgency: job.urgency,
+        status: job.status,
+        posted_date: job.created_at,
+        applications_count: job.applications_count || 0,
+    });
+
+    // Fetch jobs from API
+    const fetchJobs = useCallback(async () => {
+        setLoading(true);
+        try {
+            const res = await jobService.getJobs();
+            const data = res.data?.jobs || res.data || [];
+            setJobs(Array.isArray(data) ? data.map(mapJob) : []);
+        } catch (err) {
+            console.error('Failed to fetch jobs:', err);
+            toast.error('Failed to load jobs');
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    // Fetch applications to know which jobs were applied to
+    const fetchMyApplications = useCallback(async () => {
+        try {
+            const res = await jobService.getMyApplications();
+            const apps = res.data || [];
+            setAppliedJobIds(apps.map(a => String(a.job_id)));
+        } catch {
+            // Worker may not be logged in or no profile yet
+        }
+    }, []);
 
     useEffect(() => {
-        if (jobId && !detailedJob) {
-            // If ID present but job not found, clear param to show list
-            setSearchParams({});
+        fetchJobs();
+        fetchMyApplications();
+    }, [fetchJobs, fetchMyApplications]);
+
+    // Fetch job detail when jobId changes
+    useEffect(() => {
+        if (jobId) {
+            jobService.getJobById(jobId)
+                .then(res => setDetailedJob(mapJob(res.data)))
+                .catch(() => {
+                    setSearchParams({});
+                    setDetailedJob(null);
+                });
+        } else {
+            setDetailedJob(null);
         }
-    }, [jobId, detailedJob, setSearchParams]);
+    }, [jobId, setSearchParams]);
 
     const handleApply = (job) => {
         setSelectedJob(job);
         setShowApplicationForm(true);
     };
 
-    const handleSubmitApplication = (data) => {
-        const newApplication = {
-            id: String(applications.length + 1),
-            job_id: selectedJob.id,
-            job_title: selectedJob.title,
-            company: selectedJob.company,
-            applied_date: new Date().toISOString(),
-            status: 'pending',
-            cover_message: data.cover_message,
-            proposed_rate: data.proposed_rate
-        };
-
-        setApplications([...applications, newApplication]);
-        setShowApplicationForm(false);
-        setSelectedJob(null);
-        toast.success(t('applications.apply_success'));
+    const handleSubmitApplication = async (data) => {
+        if (!selectedJob) return;
+        setApplyLoading(true);
+        try {
+            await jobService.applyToJob(selectedJob.id, {
+                message: data.cover_message || null,
+                proposed_rate: data.proposed_rate ? Number(data.proposed_rate) : null,
+            });
+            setAppliedJobIds(prev => [...prev, selectedJob.id]);
+            setShowApplicationForm(false);
+            setSelectedJob(null);
+            toast.success(t('applications.apply_success', 'Application submitted!'));
+        } catch (err) {
+            console.error('Apply error:', err);
+            const msg = err.response?.data?.detail || 'Failed to apply';
+            toast.error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+        } finally {
+            setApplyLoading(false);
+        }
     };
 
     const handleResetFilters = () => {
@@ -69,7 +128,7 @@ export default function Jobs() {
         setSearchParams({});
     };
 
-    const filteredJobs = mockJobs.filter(job => {
+    const filteredJobs = jobs.filter(job => {
         const matchesSearch = !searchQuery ||
             job.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
             job.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -111,7 +170,7 @@ export default function Jobs() {
                             if (!selectedJob) setSelectedJob(null);
                         }}
                         onSubmit={handleSubmitApplication}
-                        isLoading={false}
+                        isLoading={applyLoading}
                     />
                 </div>
             </div>
@@ -182,7 +241,7 @@ export default function Jobs() {
                         setSelectedJob(null);
                     }}
                     onSubmit={handleSubmitApplication}
-                    isLoading={false}
+                    isLoading={applyLoading}
                 />
             </div>
         </div>
