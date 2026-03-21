@@ -4,21 +4,26 @@ import { toast } from 'sonner';
 import { Smartphone, ArrowLeft, RefreshCw, Clock } from 'lucide-react';
 import Button from '@/components/common/Button';
 import logo from '@/images/logo.jpeg';
+import { verifyOTP, sendOTP, workerSignup, employerSignup } from '@/services/authService';
 import { useAuth } from '@/lib/AuthContext';
 
 export default function OtpVerification() {
     const navigate = useNavigate();
     const location = useLocation();
-    const { updateUser } = useAuth();
+    const { login, updateUser } = useAuth();
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [timer, setTimer] = useState(119); // 2 minutes
     const [isResending, setIsResending] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const inputs = useRef([]);
 
-    // Extract the role from location state to know where to redirect after verification
+    // Extract the state from location
     const role = location.state?.role || 'worker';
-    const emailStr = location.state?.email || location.state?.phone || '+1 234 567 8900';
+    const phone = location.state?.phone;
+    const isSignup = location.state?.isSignup || false;
+    const formData = location.state?.formData || {};
+    
+    const emailStr = location.state?.email || phone || '+1 234 567 8900';
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -66,24 +71,47 @@ export default function OtpVerification() {
 
         setIsLoading(true);
         try {
-            // Simulate API verification
-            console.log('Verifying OTP:', code);
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            // Verify OTP using AuthContext to set tokens
+            const user = await login(phone, code);
+            
+            // If this is a signup flow, complete the profile creation
+            if (isSignup) {
+                // Map formData to the expected backend payload
+                const payload = {
+                    full_name: formData.fullName,
+                    email: formData.email,
+                    phone_number: formData.phone,
+                    password: formData.password,
+                    // Additional fields can be added here if collected in the forms
+                };
+                
+                if (role === 'employer') {
+                    await employerSignup(payload);
+                } else {
+                    await workerSignup(payload);
+                }
+                toast.success('Account created successfully!');
+                // Mark as new signup so dashboard shows "Welcome" not "Welcome back"
+                localStorage.setItem('isNewSignup', 'true');
+            } else {
+                toast.success('Account verified successfully!');
+            }
 
-            // Update user role in global state before navigation
-            const capitalizedRole = role.charAt(0).toUpperCase() + role.slice(1);
-            updateUser({ role: capitalizedRole });
+            // Update global user state (AuthContext already sets role, but we can augment it)
+            const finalRole = isSignup ? role.toLowerCase() : (user?.user_type?.toLowerCase() || 'worker');
+            const capitalizedRole = finalRole.charAt(0).toUpperCase() + finalRole.slice(1);
+            updateUser({ user_type: finalRole, role: capitalizedRole });
 
-            toast.success('Account verified successfully!');
-
-            // Navigate to the correct dashboard based on role
-            if (role === 'employer') {
+            // Navigate to correct dashboard
+            if (finalRole === 'employer') {
                 navigate('/employer/dashboard');
             } else {
                 navigate('/worker/dashboard');
             }
         } catch (error) {
-            toast.error('Invalid code. Please try again.');
+            console.error('OTP Verification Error:', error);
+            const msg = error.response?.data?.detail || 'Invalid code or signup failed. Please try again.';
+            toast.error(msg);
         } finally {
             setIsLoading(false);
         }
@@ -94,11 +122,12 @@ export default function OtpVerification() {
 
         setIsResending(true);
         try {
-            // Simulate resend API
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await sendOTP(phone);
             setOtp(['', '', '', '', '', '']);
             setTimer(119);
             toast.success('A new code has been sent to your device');
+        } catch (error) {
+            toast.error(error.response?.data?.detail || 'Failed to resend OTP');
         } finally {
             setIsResending(false);
         }

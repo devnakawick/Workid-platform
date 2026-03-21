@@ -22,13 +22,13 @@ import { useTranslation } from 'react-i18next';
 
 const employerMenuItems = [
     { path: '/employer/dashboard', icon: Grid, labelKey: 'nav.dashboard', fallback: 'Dashboard' },
-    { path: '/employer/jobs/new', icon: Briefcase, labelKey: 'nav.postJob', fallback: 'Post Job' },
+    { path: '/employer/post-job', icon: Briefcase, labelKey: 'nav.postJob', fallback: 'Post Job' },
     { path: '/employer/jobs', icon: Briefcase, labelKey: 'nav.manageJobs', fallback: 'Manage Jobs' },
     { path: '/employer/applications', icon: FileText, labelKey: 'nav.applications', fallback: 'Applications' },
-    { path: '/employer/workers', icon: Users, labelKey: 'nav.findWorkers', fallback: 'Find Workers' },
+    { path: '/employer/find-workers', icon: Users, labelKey: 'nav.findWorkers', fallback: 'Find Workers' },
     { path: '/employer/wallet', icon: DollarSign, labelKey: 'nav.wallet', fallback: 'Wallet' },
     { path: '/employer/help', icon: HelpCircle, labelKey: 'nav.support', fallback: 'Support' },
-    { path: '/Settings', icon: Settings, labelKey: 'nav.settings', fallback: 'Settings' },
+    { path: '/employer/settings', icon: Settings, labelKey: 'nav.settings', fallback: 'Settings' },
 ];
 
 const NavLink = ({ path, icon: Icon, label, active }) => {

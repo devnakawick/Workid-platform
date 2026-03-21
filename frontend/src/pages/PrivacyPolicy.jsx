@@ -2,7 +2,7 @@ import React from 'react';
 import { Lock, ArrowLeft } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
-export default function PrivacyPolicy() {
+export default function PrivacyPolicy({ isModal = false }) {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const from = searchParams.get('from');
@@ -20,15 +20,17 @@ export default function PrivacyPolicy() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-4xl mx-auto bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100">
-                <button
-                    onClick={handleBack}
-                    className="flex items-center text-gray-500 hover:text-green-600 mb-8 transition-colors"
-                >
-                    <ArrowLeft size={20} className="mr-2" />
-                    Back
-                </button>
+        <div className={!isModal ? "min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8" : ""}>
+            <div className={!isModal ? "max-w-4xl mx-auto bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100" : ""}>
+                {!isModal && (
+                    <button
+                        onClick={handleBack}
+                        className="flex items-center text-gray-500 hover:text-green-600 mb-8 transition-colors"
+                    >
+                        <ArrowLeft size={20} className="mr-2" />
+                        Back
+                    </button>
+                )}
 
                 <div className="flex items-center gap-4 mb-8">
                     <div className="w-12 h-12 bg-green-100 text-green-600 rounded-xl flex items-center justify-center flex-shrink-0">

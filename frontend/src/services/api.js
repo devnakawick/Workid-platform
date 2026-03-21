@@ -28,7 +28,9 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
     (res) => res,
     (error) => {
+        console.log('API error:', error.response?.status, error.config?.url);
         if (error.response?.status === 401) {
+            console.log('401 error - clearing tokens and redirecting');
             localStorage.removeItem('access_token');
 
             if (!window.location.pathname.includes('/login') &&

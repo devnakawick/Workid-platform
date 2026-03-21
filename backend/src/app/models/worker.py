@@ -46,21 +46,21 @@ class Worker(Base):
     # Personal Information
     full_name = Column(String(100), nullable=True)
     email = Column(String(100), nullable=True)
-    nic_number = Column(String, unique=True, nullable=False)
+    nic_number = Column(String, unique=True, nullable=True)
     date_of_birth = Column(DateTime)
     phone_number = Column(String, nullable=False)  
     
     # Contact & Location
     address = Column(Text)
     city = Column(String(50), nullable=True)
-    district = Column(String, nullable=False, index=True)
+    district = Column(String, nullable=True, index=True)
     postal_code = Column(String)
     
     bio = Column(Text, nullable=True)
     skills = Column(Text, nullable=True)  # JSON string of skills
     
     # Professional Information
-    primary_skill = Column(SQLEnum(SkillCategory, name="skill_category"), nullable=False)
+    primary_skill = Column(SQLEnum(SkillCategory, name="skill_category"), nullable=True)
     other_skills = Column(JSON, default=list)  
     experience_years = Column(Integer, default=0)
 

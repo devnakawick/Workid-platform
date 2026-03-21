@@ -48,10 +48,13 @@ async def get_current_user_ws(websocket: WebSocket, db: Session = Depends(get_db
         raise HTTPException(401, "Invalid token")
     
     user_id = payload.get("sub")
-    user = db.query(User).filter(User.id == user_id).first()
+    user = db.query(User).filter(User.id == int(user_id)).first()
     if not user or not user.is_active:
         await websocket.close(code=1008)
         raise HTTPException(401, "Invalid user")
+    
+    # Connect to websocket manager
+    await manager.connect(str(user.id), websocket)
     
     return user
 
@@ -61,8 +64,6 @@ async def websocket_chat(
     current_user: User = Depends(get_current_user_ws),
     db: Session = Depends(get_db)
 ):
-    await websocket.accept()
-
     await websocket.send_json({"type": "connected", "user_id": current_user.id})
 
     try:

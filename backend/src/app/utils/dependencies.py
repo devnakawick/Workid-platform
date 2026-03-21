@@ -39,7 +39,11 @@ async def get_current_user(
             raise credentials_exception
         
         # Get user from database
-        user = db.query(User).filter(User.id == user_id).first()
+        try:
+            user = db.query(User).filter(User.id == int(user_id)).first()
+        except ValueError:
+            raise credentials_exception
+
         
         if user is None:
             raise credentials_exception
@@ -110,8 +114,11 @@ def get_optional_user(
         if user_id is None:
             return None
         
-        user = db.query(User).filter(User.id == user_id).first()
-        return user if user and user.is_active else None
+        try:
+            user = db.query(User).filter(User.id == int(user_id)).first()
+            return user if user and user.is_active else None
+        except ValueError:
+            return None
         
     except Exception as e:
         logger.error(f"Error getting optional user: {str(e)}")

@@ -1,5 +1,3 @@
-// src/services/socketService.js
-
 let socket = null;
 let reconnectAttempts = 0;
 const MAX_RECONNECT_ATTEMPTS = 5;

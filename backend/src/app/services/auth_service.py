@@ -13,7 +13,12 @@ from app.schemas.auth import (
     SendOTPRequest, VerifyOTPRequest, 
     WorkerSignupRequest, EmployerSignupRequest
 )
-from app.utils.security import create_access_token, create_refresh_token
+from app.utils.security import (
+    create_access_token, 
+    create_refresh_token,
+    get_password_hash,
+    verify_password
+)
 from app.services.sms_service import send_otp
 
 logger = logging.getLogger(__name__)
@@ -158,7 +163,7 @@ class AuthService:
         """Complete worker signup"""
         try:
             # Get user
-            user = self.db.query(User).filter(User.id == user_id).first()
+            user = self.db.query(User).filter(User.id == int(user_id)).first()
             if not user:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
@@ -178,6 +183,10 @@ class AuthService:
             
             # Update user type
             user.user_type = UserType.WORKER
+            # Hash and save password
+            logger.info("PASSWORD STRING PASSED TO HASH: %s", repr(request.password))
+            logger.info("PASSWORD LENGTH: %d", len(request.password))
+            user.hashed_password = get_password_hash(request.password)
             
             # Create worker profile
             worker = Worker(
@@ -197,9 +206,11 @@ class AuthService:
             )
             self.db.add(worker)
             
-            # Create wallet
-            wallet = Wallet(user_id=user.id)
-            self.db.add(wallet)
+            # Create wallet if not exists
+            existing_wallet = self.db.query(Wallet).filter(Wallet.user_id == user.id).first()
+            if not existing_wallet:
+                wallet = Wallet(user_id=user.id)
+                self.db.add(wallet)
             
             self.db.commit()
             
@@ -214,18 +225,18 @@ class AuthService:
         except HTTPException:
             raise
         except Exception as e:
-            logger.error(f"Error creating worker profile: {str(e)}")
+            logger.error(f"Error creating worker profile: {str(e)}", exc_info=True)
             self.db.rollback()
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to create worker profile"
+                detail=f"Failed to create worker profile: {str(e)} | Password Length: {len(request.password)} | Repr: {repr(request.password[:20])}"
             )
     
     def employer_signup(self, request: EmployerSignupRequest, user_id: str) -> dict:
         """Complete employer signup"""
         try:
             # Get user
-            user = self.db.query(User).filter(User.id == user_id).first()
+            user = self.db.query(User).filter(User.id == int(user_id)).first()
             if not user:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
@@ -245,6 +256,8 @@ class AuthService:
             
             # Update user type
             user.user_type = UserType.EMPLOYER
+            # Hash and save password
+            user.hashed_password = get_password_hash(request.password)
             
             # Create employer profile
             employer = Employer(
@@ -258,9 +271,11 @@ class AuthService:
             )
             self.db.add(employer)
             
-            # Create wallet
-            wallet = Wallet(user_id=user.id)
-            self.db.add(wallet)
+            # Create wallet if it does not exists
+            existing_wallet = self.db.query(Wallet).filter(Wallet.user_id == user.id).first()
+            if not existing_wallet:
+                wallet = Wallet(user_id=user.id)
+                self.db.add(wallet)
             
             self.db.commit()
             
@@ -275,9 +290,55 @@ class AuthService:
         except HTTPException:
             raise
         except Exception as e:
-            logger.error(f"Error creating employer profile: {str(e)}")
+            logger.error(f"Error creating employer profile: {str(e)}", exc_info=True)
             self.db.rollback()
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to create employer profile"
+                detail=f"Failed to create employer profile: {str(e)}"
+            )
+
+    def login_with_password(self, phone_number: str, password: str) -> dict:
+        """Login user with phone number and password"""
+        try:
+            # Find user
+            user = self.db.query(User).filter(User.phone_number == phone_number).first()
+            if not user or not user.hashed_password:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid phone number or password"
+                )
+            
+            # Verify password
+            if not verify_password(password, user.hashed_password):
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid phone number or password"
+                )
+            
+            # Login successful
+            user.last_login = datetime.utcnow()
+            self.db.commit()
+            
+            # Generate tokens
+            access_token = create_access_token(data={"sub": str(user.id)})
+            refresh_token = create_refresh_token(data={"sub": str(user.id)})
+            
+            logger.info(f"User {user.phone_number} logged in with password successfully")
+            
+            return {
+                "access_token": access_token,
+                "refresh_token": refresh_token,
+                "token_type": "bearer",
+                "user_id": str(user.id),
+                "user_type": user.user_type.value,
+                "expires_in": 30 * 60  # 30 minutes
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            logger.error(f"Error logging in with password: {str(e)}")
+            self.db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to login. Please try again."
             )

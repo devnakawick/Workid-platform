@@ -20,7 +20,7 @@ def get_employer_wallet(user_id: str, db: Session = Depends(get_db)):
     """
 
     # Find user
-    user = db.query(User).filter(User.id == user_id).first()
+    user = db.query(User).filter(User.id == int(user_id)).first()
     if not user or user.user_type != UserType.EMPLOYER:
         raise HTTPException(status_code=404, detail="Employer not found")
 

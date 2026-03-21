@@ -1,5 +1,6 @@
 {
     "common": {
+        "welcome": "Welcome, {{name}}",
         "welcomeBack": "Welcome back, {{name}}",
         "available": "Available",
         "unavailable": "Unavailable",

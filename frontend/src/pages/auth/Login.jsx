@@ -4,56 +4,54 @@ import { useTranslation } from 'react-i18next';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
 import logo from '@/images/logo.jpeg';
-import { Mail, Lock, Phone } from 'lucide-react';
+import { Phone, Lock } from 'lucide-react';
+import { useAuth } from '@/lib/AuthContext';
 import { toast } from 'sonner';
+
 
 export default function Login() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const { loginWithPassword } = useAuth();
+
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('worker');
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-
-
 
   const handleSignIn = async (e) => {
     e.preventDefault();
     const newErrors = {};
 
-    // Validation
-    if (!phone.trim()) {
-      newErrors.phone = 'Phone number is required';
-    } else if (phone.length < 10) {
-      newErrors.phone = 'Please enter a valid phone number';
+    if (!phone.trim() || phone.length < 10) {
+      newErrors.phone = 'Valid 10-digit phone number is required';
     }
 
-    if (!password.trim()) {
-      newErrors.password = 'Password is required';
-    } else if (password.length < 6) {
+    if (!password.trim() || password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
     }
 
     setErrors(newErrors);
-
-    // If there are validation errors, don't proceed
-    if (Object.keys(newErrors).length > 0) {
-      return;
-    }
+    if (Object.keys(newErrors).length > 0) return;
 
     setIsLoading(true);
+    setErrors({});
+
     try {
-      // Standalone mode: Mocking authentication
-      console.log('Login attempt with:', { phone, password, role });
-
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Navigate to OTP verification instead of dashboard
-      navigate('/verify-otp', { state: { phone, role } });
+      const user = await loginWithPassword(phone, password);
+      toast.success(t('auth.loginSuccess') || 'Logged in successfully!');
+      
+      const role = user.user_type?.toLowerCase() || 'worker';
+      if (role === 'employer') {
+          navigate('/employer/dashboard');
+      } else {
+          navigate('/worker/dashboard');
+      }
     } catch (error) {
-      setErrors({ general: 'An error occurred. Please try again.' });
+      const msg = error.response?.data?.detail || 'Invalid phone or password';
+      setErrors({ general: msg });
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
@@ -74,29 +72,8 @@ export default function Login() {
 
         {/* Login Form Card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 space-y-6">
-          {/* Role Selection */}
-          <div className="flex p-1 bg-slate-100 rounded-xl">
-            <button
-              onClick={() => setRole('worker')}
-              className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${role === 'worker'
-                ? 'bg-white text-blue-600 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
-                }`}
-            >
-              {t('auth.worker')}
-            </button>
-            <button
-              onClick={() => setRole('employer')}
-              className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${role === 'employer'
-                ? 'bg-white text-blue-600 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
-                }`}
-            >
-              {t('auth.employer')}
-            </button>
-          </div>
 
-          {/* General Error */}
+
           {errors.general && (
             <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
               {errors.general}
@@ -111,12 +88,9 @@ export default function Login() {
               placeholder={t('auth.phonePlaceholder')}
               value={phone}
               onChange={(e) => {
-                let val = e.target.value;
-                val = val.replace(/\D/g, '').slice(0, 10);
+                const val = e.target.value.replace(/\D/g, '').slice(0, 10);
                 setPhone(val);
-                if (errors.phone) {
-                  setErrors({ ...errors, phone: '' });
-                }
+                if (errors.phone) setErrors({ ...errors, phone: '' });
               }}
               maxLength={10}
               error={errors.phone}
@@ -131,32 +105,27 @@ export default function Login() {
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
-                if (errors.password) {
-                  setErrors({ ...errors, password: '' });
-                }
+                if (errors.password) setErrors({ ...errors, password: '' });
               }}
               error={errors.password}
               icon={<Lock size={18} />}
             />
 
-            {/* Sign In Button */}
             <Button
+              type="submit"
               className="w-full py-3 mt-6"
-              onClick={handleSignIn}
               disabled={isLoading}
             >
               {isLoading ? t('common.signingIn') : t('auth.signIn')}
             </Button>
           </form>
 
-          {/* Divider */}
           <div className="relative flex items-center">
             <div className="flex-grow border-t border-gray-200"></div>
             <span className="px-3 text-sm text-gray-500">{t('common.or')}</span>
             <div className="flex-grow border-t border-gray-200"></div>
           </div>
 
-          {/* Sign Up Link */}
           <div className="text-center">
             <p className="text-gray-600 text-sm">
               {t('auth.noAccount')}{' '}
@@ -169,7 +138,6 @@ export default function Login() {
             </p>
           </div>
 
-          {/* Forgot Password Link */}
           <div className="text-center">
             <button
               onClick={() => toast.info(t('auth.forgotPasswordToast'))}
@@ -180,7 +148,6 @@ export default function Login() {
           </div>
         </div>
 
-        {/* Footer Note */}
         <p className="text-center text-xs text-gray-500 mt-6">
           {t('auth.termsPolicy')}
         </p>

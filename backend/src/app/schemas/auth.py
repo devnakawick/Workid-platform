@@ -19,6 +19,10 @@ class SendOTPRequest(BaseModel):
 
         return v
 
+class LoginRequest(BaseModel):
+    phone_number: str = Field(..., min_length=9, max_length=15)
+    password: str = Field(...)
+
 class VerifyOTPRequest(BaseModel):
     """Request schema for verifying OTP"""
     phone_number: str = Field(..., min_length=9, max_length=15)
@@ -47,8 +51,8 @@ class WorkerSignupRequest(SignupRequest):
     password: str
     city: Optional[str] = None
     district: Optional[str] = None
-    nic_number: str = Field(..., min_length=10, max_length=12)
-    primary_skill: str = Field(..., description="Primary skill category")
+    nic_number: Optional[str] = Field(None, min_length=10, max_length=12)
+    primary_skill: Optional[str] = Field(None, description="Primary skill category")
     other_skills: Optional[List[str]] = []
     experience_years: Optional[int] = Field(0, ge=0)
     daily_rate: Optional[float] = Field(None, ge=0)
@@ -82,6 +86,7 @@ class UserResponse(BaseModel):
     is_verified: bool
     is_active: bool
     created_at: datetime
+    full_name: Optional[str] = None
     
     class Config:
         from_attributes = True
