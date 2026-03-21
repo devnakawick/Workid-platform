@@ -10,15 +10,12 @@ import WorkerFilters from '../../components/employer/WorkerFilters';
 import WorkerProfileModal from '../../components/employer/WorkerProfileModal';
 import InviteModal from '../../components/employer/InviteModal';
 
-// Mock Data APIs
-import { getAllWorkersAPI } from '../../mocks/workerSearchData';
-import { getAllJobsAPI } from '../../mocks/jobData';
-import { sendInviteAPI } from '../../mocks/applicationData';
+// API Services
+import { employerService } from '../../services/employerService';
 
 const SearchWorkers = () => {
   const { t } = useTranslation();
   const { user, updateUser } = useAuth();
-
 
   // Worker Data
   const [workers, setWorkers] = useState([]);
@@ -43,13 +40,10 @@ const SearchWorkers = () => {
     verified: 'all',
   });
 
-
-
   useEffect(() => {
     fetchWorkers();
     fetchJobs();
   }, []);
-
 
   useEffect(() => {
     applyFilters();
@@ -58,15 +52,33 @@ const SearchWorkers = () => {
   const fetchWorkers = async () => {
     setLoading(true);
     try {
-      const result = await getAllWorkersAPI();
-      if (result.success) {
-        setWorkers(result.data);
-        setFilteredWorkers(result.data);
-      } else {
-        toast.error(t('searchWorkers.errors.fetchFailed') || "Failed to load workers");
-      }
+      const res = await employerService.searchWorkers();
+      const mapped = (res.data || []).map(w => {
+        const name = w.name || `${w.first_name || ''} ${w.last_name || ''}`.trim() || 'Worker';
+        const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        return {
+          id: w.id || w.user_id,
+          name,
+          initials,
+          verified: w.is_verified ?? w.verified ?? false,
+          availability: w.availability || 'available',
+          location: w.city || w.location || '',
+          age: w.age || '',
+          memberSince: w.created_at ? new Date(w.created_at).getFullYear() : '',
+          rating: w.rating ?? 0,
+          jobs: w.completed_jobs ?? w.jobs ?? 0,
+          bio: w.bio || w.description || '',
+          skills: w.skills || [],
+          category: w.category || (w.skills && w.skills[0]) || '',
+          completionRate: w.completion_rate ?? 0,
+          responseTime: w.response_time || 'N/A',
+          avatar: w.avatar || null,
+        };
+      });
+      setWorkers(mapped);
+      setFilteredWorkers(mapped);
     } catch {
-      toast.error(t('searchWorkers.errors.generic') || "Error loading data");
+      toast.error(t('searchWorkers.errors.fetchFailed') || "Failed to load workers");
     } finally {
       setLoading(false);
     }
@@ -74,16 +86,21 @@ const SearchWorkers = () => {
 
   const fetchJobs = async () => {
     try {
-      const result = await getAllJobsAPI();
-      if (result.success) {
-        setJobs(result.data);
-      }
+      const res = await employerService.getMyJobs();
+      const mapped = (res.data || []).map(j => ({
+        id: j.id,
+        title: j.title,
+        description: j.description || '',
+        location: j.city || '',
+        budget: j.budget,
+        salary: j.budget,
+        duration: j.duration || '',
+      }));
+      setJobs(mapped);
     } catch (error) {
       console.error("Failed to load jobs for invite", error);
     }
   };
-
-
 
   const applyFilters = () => {
     let f = [...workers];
@@ -115,8 +132,6 @@ const SearchWorkers = () => {
     location: 'all', minRating: 'all', verified: 'all'
   });
 
-
-
   const handleInviteClick = (worker) => {
     setWorkerToInvite(worker);
     setInviteModalOpen(true);
@@ -126,9 +141,7 @@ const SearchWorkers = () => {
     const job = jobs.find(j => j.id === jobId);
     if (!job || !workerToInvite) return;
 
-    // Send invite to mock API (Adds to 'Invited' list, hidden from Review list)
     toast.loading("Sending invite...", { id: 'invite' });
-    await sendInviteAPI(jobId, workerToInvite);
 
     // Save mock message to local storage so Messages.jsx can read it
     const storedMessages = JSON.parse(localStorage.getItem('mock_messages')) || [];

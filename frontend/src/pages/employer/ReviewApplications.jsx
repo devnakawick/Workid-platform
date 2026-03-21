@@ -9,18 +9,8 @@ import ApplicationFilters from '../../components/employer/ApplicationFilters';
 import ApplicationInbox from '../../components/employer/ApplicantsList';
 import ApplicationDetail from '../../components/employer/ApplicantsDetail';
 
-// API Data Imports
-import {
-  getAllApplicationsAPI,
-  updateApplicationStatusAPI,
-  MOCK_JOBS
-} from '../../mocks/applicationData';
-
-// Wallet API for Escrow
-import {
-  getEmployerWalletAPI,
-  processEscrowAPI
-} from '../../mocks/Walletdata';
+// Real API
+import { employerService } from '../../services/employerService';
 
 const ReviewApplications = () => {
   const { t } = useTranslation();
@@ -39,30 +29,80 @@ const ReviewApplications = () => {
     jobId: searchParams.get('jobId') || 'all',
   });
 
+  const [myJobs, setMyJobs] = useState([]);
+
   // Sync URL params to filters
   useEffect(() => {
     const urlJobId = searchParams.get('jobId');
     if (urlJobId) setFilters((prev) => ({ ...prev, jobId: urlJobId }));
   }, [searchParams]);
 
-  // Initial Data Fetch (Applications & Wallet)
+  // Fetch employer's jobs, then fetch applications for each
   useEffect(() => {
     const fetchData = async () => {
-    
-      const appRes = await getAllApplicationsAPI();
-      if (appRes.success) {
-        setApplications(appRes.data);
-      }
+      try {
+        // 1. Get employer's jobs
+        const jobsRes = await employerService.getMyJobs();
+        const jobs = jobsRes.data || [];
+        setMyJobs(jobs.map(j => ({ id: String(j.id), title: j.title, budget: Number(j.budget) || 0, status: j.status, location: j.city || '' })));
 
-      // Load Wallet Balance (for hiring check)
-      const walletRes = await getEmployerWalletAPI();
-      if (walletRes.success) {
-        setWalletBalance(walletRes.data.balance);
+        // 2. For each job, fetch applications
+        const allApps = [];
+        for (const job of jobs) {
+          try {
+            const appsRes = await employerService.getJobApplications(job.id);
+            const apps = appsRes.data || [];
+            apps.forEach(app => {
+              const name = app.worker_name || 'Worker';
+              const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+              allApps.push({
+                id: app.id,
+                jobId: String(app.job_id),
+                name: name,
+                initials: initials,
+                verified: false,
+                status: app.status,
+                job: job.title,
+                skills: [],
+                rating: app.worker_rating || 0,
+                jobs: 0,
+                rate: String(Number(job.budget) || 0),
+                appliedDate: app.applied_at ? new Date(app.applied_at).toLocaleDateString() : '',
+                appliedAgo: app.applied_at ? getTimeAgo(app.applied_at) : '',
+                bio: app.cover_letter || 'No message provided.',
+                location: '',
+                age: '-',
+                phone: '',
+                completionRate: 0,
+                responseTime: '-',
+                memberSince: '-',
+                isInvited: false,
+                reviews: [],
+              });
+            });
+          } catch (e) {
+            // Skip jobs with no applications endpoint access
+          }
+        }
+        setApplications(allApps);
+      } catch (err) {
+        console.error('Failed to fetch data:', err);
+        toast.error('Failed to load applications');
       }
     };
 
     fetchData();
   }, []);
+
+  // Helper: relative time
+  function getTimeAgo(dateStr) {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 60) return `${mins}m ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h ago`;
+    return `${Math.floor(hrs / 24)}d ago`;
+  }
 
   // Filter Logic
   const filteredApps = applications.filter((app) => {
@@ -97,50 +137,37 @@ const ReviewApplications = () => {
     setShowDetail(true);
   };
 
-  // HIRE LOGIC (WITH ESCROW)
+  // HIRE LOGIC - Accept application via real API
   const handleHireClick = async (id) => {
     const app = applications.find(a => a.id === id);
     if (!app) return;
 
-
-    const cost = app.rate ? parseFloat(app.rate.replace(/,/g, '')) : 0;
-
-    // CHECK BALANCE
-    if (walletBalance < cost) {
-      toast.error(`Insufficient Balance! You have LKR ${fmt(walletBalance)} but need LKR ${fmt(cost)}.`);
-      return;
-    }
-
-    // PROCESS ESCROW TRANSACTION
-    const loadingToast = toast.loading("Processing hiring & escrow...");
-    const res = await processEscrowAPI(cost, app.name, app.job);
-
-    if (res.success) {
-      await updateApplicationStatusAPI(id, 'accepted');
-
+    const loadingToast = toast.loading('Accepting application...');
+    try {
+      await employerService.acceptApplication(id);
       toast.dismiss(loadingToast);
 
       setApplications((prev) => prev.map((a) => (a.id === id ? { ...a, status: 'accepted' } : a)));
       setSelected((prev) => (prev?.id === id ? { ...prev, status: 'accepted' } : prev));
-      setWalletBalance(prev => prev - cost); // Update local balance immediately
-
-      toast.success(`Hired ${app.name}! Funds moved to Escrow.`);
-    } else {
+      toast.success(`Hired ${app.name}!`);
+    } catch (err) {
       toast.dismiss(loadingToast);
-      toast.error(res.error || "Hiring failed");
+      console.error('Accept failed:', err);
+      toast.error(err.response?.data?.detail || 'Failed to accept application');
     }
   };
 
   // REJECT LOGIC
   const handleRejectClick = async (id) => {
-   
-    await updateApplicationStatusAPI(id, 'rejected');
-
-  
-    setApplications((prev) => prev.map((a) => (a.id === id ? { ...a, status: 'rejected' } : a)));
-    setSelected((prev) => (prev?.id === id ? { ...prev, status: 'rejected' } : prev));
-
-    toast.error('Application rejected');
+    try {
+      await employerService.rejectApplication(id);
+      setApplications((prev) => prev.map((a) => (a.id === id ? { ...a, status: 'rejected' } : a)));
+      setSelected((prev) => (prev?.id === id ? { ...prev, status: 'rejected' } : prev));
+      toast.error('Application rejected');
+    } catch (err) {
+      console.error('Reject failed:', err);
+      toast.error(err.response?.data?.detail || 'Failed to reject application');
+    }
   };
 
   return (
@@ -161,7 +188,7 @@ const ReviewApplications = () => {
               filters={{ ...filters, filteredCount: filteredApps.length, totalCount: applications.length }}
               onFilterChange={handleFilterChange}
               onClearAll={handleClearAll}
-              jobs={MOCK_JOBS}
+              jobs={myJobs}
             />
           </div>
 

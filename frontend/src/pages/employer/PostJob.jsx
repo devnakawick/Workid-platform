@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Briefcase, ArrowLeft } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { createJobAPI } from '../../mocks/jobData';
+import { employerService } from '../../services/employerService';
 import JobForm from '../../components/employer/JobForm';
 
 const PostJob = () => {
@@ -18,22 +18,17 @@ const PostJob = () => {
     setLoading(true);
 
     try {
-      const result = await createJobAPI(jobData);
+      const res = await employerService.postJob(jobData);
+      console.log('Job Created Successfully:', res.data);
+      toast.success(t('postJob.success.posted', 'Job posted successfully!'));
 
-      if (result.success) {
-        toast.success(t('postJob.success.posted'));
-        console.log('Job Created Successfully:', result.data);
-
-        // Short delay so user sees the success toast before navigating away
-        setTimeout(() => {
-          navigate('/employer/jobs');
-        }, 1500);
-      } else {
-        toast.error(result.error || t('postJob.validation.fixErrors'));
-      }
+      setTimeout(() => {
+        navigate('/employer/jobs');
+      }, 1500);
     } catch (error) {
       console.error('Error posting job:', error);
-      toast.error(t('postJob.validation.fixErrors'));
+      const msg = error.response?.data?.detail || t('postJob.validation.fixErrors', 'Failed to post job');
+      toast.error(typeof msg === 'string' ? msg : JSON.stringify(msg));
     } finally {
       // Always re-enable the button regardless of success or failure
       setLoading(false);

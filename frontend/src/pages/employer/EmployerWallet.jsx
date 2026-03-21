@@ -9,14 +9,8 @@ import TransactionList from '../../components/wallet/TransactionList';
 import TopUpModal from '../../components/wallet/TopUpModal';
 import EscrowModal from '../../components/wallet/EscrowModal'; // Changed from PayModal
 
-// API Functions
-import {
-  getEmployerWalletAPI,
-  getEmployerTransactionsAPI,
-  depositToWalletAPI,
-  releaseEscrowAPI,
-  disputeEscrowAPI,
-} from '../../mocks/Walletdata';
+// API Service
+import { walletService } from '../../services/walletService';
 
 const EmployerWallet = () => {
 
@@ -44,14 +38,32 @@ const EmployerWallet = () => {
     if (!wallet) setLoading(true);
     try {
       const [walletRes, txnRes] = await Promise.all([
-        getEmployerWalletAPI(),
-        getEmployerTransactionsAPI(),
+        walletService.getEmployerWallet(),
+        walletService.getEmployerTransactions(),
       ]);
-      if (walletRes.success) setWallet(walletRes.data);
-      if (txnRes.success) {
-        setTransactions(txnRes.data);
-        setFilteredTxns(txnRes.data); // Update filtered list immediately
-      }
+      const w = walletRes.data;
+      setWallet({
+        id: w.id || 'wallet',
+        balance: w.balance ?? 0,
+        locked: w.locked ?? w.escrow_balance ?? 0,
+        currency: w.currency || 'LKR',
+        totalSpent: w.total_spent ?? w.totalSpent ?? 0,
+        totalDeposited: w.total_deposited ?? w.totalDeposited ?? 0,
+        lastUpdated: w.updated_at || w.lastUpdated || new Date().toISOString(),
+      });
+      const txns = (txnRes.data || []).map(t => ({
+        id: t.id || t.transaction_id,
+        type: t.type || 'payment',
+        method: t.method || 'wallet',
+        amount: t.amount ?? 0,
+        description: t.description || '',
+        date: t.date || t.created_at || new Date().toISOString(),
+        status: t.status || 'completed',
+        workerName: t.worker_name || t.workerName || null,
+        jobTitle: t.job_title || t.jobTitle || null,
+      }));
+      setTransactions(txns);
+      setFilteredTxns(txns);
     } catch {
       toast.error('Failed to load wallet data');
     } finally {
@@ -72,16 +84,12 @@ const EmployerWallet = () => {
   const handleDeposit = async ({ amount, method }) => {
     setDepositLoading(true);
     try {
-      const result = await depositToWalletAPI(Number(amount), method);
-      if (result.success) {
-        toast.success(result.message);
-        setShowDepositModal(false);
-        await fetchData(); // Refresh data
-      } else {
-        toast.error(result.error || 'Deposit failed');
-      }
-    } catch {
-      toast.error('Something went wrong');
+      await walletService.topUpWallet({ amount: Number(amount), method });
+      toast.success(`LKR ${Number(amount).toLocaleString()} added to wallet!`);
+      setShowDepositModal(false);
+      await fetchData(); // Refresh data
+    } catch (err) {
+      toast.error(err.response?.data?.detail || 'Deposit failed');
     } finally {
       setDepositLoading(false);
     }
@@ -92,15 +100,11 @@ const EmployerWallet = () => {
     if (!window.confirm(`Release LKR ${txn.amount.toLocaleString()} to ${txn.workerName}?`)) return;
     setActionLoading(true);
     try {
-      const res = await releaseEscrowAPI(txn.id);
-      if (res.success) {
-        toast.success("Funds released successfully!");
-        await fetchData();
-      } else {
-        toast.error(res.error || "Failed to release funds");
-      }
-    } catch {
-      toast.error("An error occurred");
+      await walletService.releaseEscrow(txn.id);
+      toast.success("Funds released successfully!");
+      await fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.detail || "Failed to release funds");
     } finally {
       setActionLoading(false);
     }
@@ -111,15 +115,11 @@ const EmployerWallet = () => {
     if (!window.confirm("Are you sure you want to dispute this payment? It will be flagged for admin review.")) return;
     setActionLoading(true);
     try {
-      const res = await disputeEscrowAPI(txn.id);
-      if (res.success) {
-        toast.success("Transaction flagged for dispute.");
-        await fetchData();
-      } else {
-        toast.error(res.error || "Failed to flag transaction");
-      }
-    } catch {
-      toast.error("An error occurred");
+      await walletService.disputeEscrow(txn.id);
+      toast.success("Transaction flagged for dispute.");
+      await fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.detail || "Failed to flag transaction");
     } finally {
       setActionLoading(false);
     }
