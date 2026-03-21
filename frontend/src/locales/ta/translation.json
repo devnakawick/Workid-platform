@@ -25,7 +25,12 @@
             "b": "B",
             "kb": "KB",
             "mb": "MB"
-        }
+        },
+        "any": "எதுவும்",
+        "under_amount": "{{amount}} க்கு கீழே",
+        "range": "{{min}} - {{max}}",
+        "plus": "{{amount}}+",
+        "locationPlaceholder": "உதாரணமாக: கொழும்பு, மேல் மாகாணம்"
     },
     "nav": {
         "dashboard": "டாஷ்போர்டு",

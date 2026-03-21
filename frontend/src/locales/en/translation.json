@@ -25,7 +25,12 @@
             "b": "B",
             "kb": "KB",
             "mb": "MB"
-        }
+        },
+        "any": "Any",
+        "under_amount": "Under {{amount}}",
+        "range": "{{min}} - {{max}}",
+        "plus": "{{amount}}+",
+        "locationPlaceholder": "e.g., Colombo, Western Province"
     },
     "nav": {
         "dashboard": "Dashboard",

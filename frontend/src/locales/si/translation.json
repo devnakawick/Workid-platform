@@ -25,7 +25,12 @@
             "b": "B",
             "kb": "KB",
             "mb": "MB"
-        }
+        },
+        "any": "ඕනෑම",
+        "under_amount": "{{amount}} ට අඩු",
+        "range": "{{min}} - {{max}}",
+        "plus": "{{amount}}+",
+        "locationPlaceholder": "උදා: කොළඹ, බස්නාහිර පළාත"
     },
     "nav": {
         "dashboard": "දළ විශ්ලේෂණය",
