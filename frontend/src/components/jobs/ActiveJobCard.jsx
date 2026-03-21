@@ -21,8 +21,8 @@ const ActiveJobCard = ({ job, basePath = '/worker/job-details' }) => {
             onClick={() => navigate(`${basePath}/${job.id}`)}
             className="flex flex-col bg-white border border-gray-100 rounded-2xl shadow-sm p-5 md:p-6 cursor-pointer hover:border-blue-200 hover:shadow-lg transition-all group duration-300 h-full"
         >
-            <div className="flex justify-between items-start mb-4">
-                <div className="flex items-center gap-3 md:gap-4 flex-1">
+            <div className="flex justify-between items-start mb-4 gap-2">
+                <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
                     <div className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
                         <Briefcase size={20} className="md:w-6 md:h-6" />
                     </div>
