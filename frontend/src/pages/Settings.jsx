@@ -177,8 +177,8 @@ export default function Settings() {
                 </div>
 
                 <div className="divide-y divide-gray-50">
-                    <div className="py-5 flex items-center justify-between">
-                        <div className="space-y-0.5">
+                    <div className="py-5 flex items-center justify-between gap-4">
+                        <div className="space-y-0.5 min-w-0">
                             <p className="text-base font-bold text-gray-900">{t('settings.newJobAlerts')}</p>
                             <p className="text-sm text-gray-500">{t('settings.jobAlertsDetail')}</p>
                         </div>
@@ -188,11 +188,11 @@ export default function Settings() {
                                 ...formData,
                                 notifications: { ...formData.notifications, jobAlerts: checked }
                             })}
-                            className="data-[state=checked]:bg-blue-600"
+                            className="data-[state=checked]:bg-blue-600 flex-shrink-0"
                         />
                     </div>
-                    <div className="py-5 flex items-center justify-between">
-                        <div className="space-y-0.5">
+                    <div className="py-5 flex items-center justify-between gap-4">
+                        <div className="space-y-0.5 min-w-0">
                             <p className="text-base font-bold text-gray-900">{t('settings.applicationUpdates')}</p>
                             <p className="text-sm text-gray-500">{t('settings.appUpdatesDetail')}</p>
                         </div>
@@ -202,11 +202,11 @@ export default function Settings() {
                                 ...formData,
                                 notifications: { ...formData.notifications, appUpdates: checked }
                             })}
-                            className="data-[state=checked]:bg-blue-600"
+                            className="data-[state=checked]:bg-blue-600 flex-shrink-0"
                         />
                     </div>
-                    <div className="py-5 flex items-center justify-between">
-                        <div className="space-y-0.5">
+                    <div className="py-5 flex items-center justify-between gap-4">
+                        <div className="space-y-0.5 min-w-0">
                             <p className="text-base font-bold text-gray-900">{t('settings.weeklySummary')}</p>
                             <p className="text-sm text-gray-500">{t('settings.weeklySummaryDetail')}</p>
                         </div>
@@ -216,7 +216,7 @@ export default function Settings() {
                                 ...formData,
                                 notifications: { ...formData.notifications, weeklySummary: checked }
                             })}
-                            className="data-[state=checked]:bg-blue-600"
+                            className="data-[state=checked]:bg-blue-600 flex-shrink-0"
                         />
                     </div>
                 </div>

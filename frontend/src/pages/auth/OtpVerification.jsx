@@ -100,6 +100,16 @@ export default function OtpVerification() {
                 toast.success('Account created successfully!');
                 // Mark as new signup so dashboard shows "Welcome" not "Welcome back"
                 localStorage.setItem('isNewSignup', 'true');
+
+                // Re-fetch full profile so navbar shows name immediately (not phone)
+                try {
+                    const { getMe } = await import('@/services/authService');
+                    const meRes = await getMe();
+                    updateUser(meRes.data);
+                } catch (_) {
+                    // Fallback: at least set the name from the form data
+                    updateUser({ full_name: formData.fullName });
+                }
             } else {
                 toast.success('Account verified successfully!');
             }

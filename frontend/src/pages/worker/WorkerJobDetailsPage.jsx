@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getJobDetails, startTravel, startJob, completeJob } from '@/services/jobProgressApi';
+import api from '@/services/api';
 import { useLocationTracking } from '@/hooks/useLocationTracking';
 import ActiveJobDetails from '@/components/jobs/ActiveJobDetails';
 import JobProgressBar from '@/components/progress/JobProgressBar';
@@ -12,7 +12,7 @@ import { Loader2, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const WorkerJobDetailsPage = () => {
-    const { jobId } = useParams();
+    const { id: jobId } = useParams();
     const navigate = useNavigate();
     const [job, setJob] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -22,14 +22,35 @@ const WorkerJobDetailsPage = () => {
 
     const { isTracking, startTracking, stopTracking, currentLocation } = useLocationTracking(jobId);
 
+    // Map backend status to display labels
+    const STATUS_MAP = {
+        'accepted': 'Accepted',
+        'worker_traveling': 'Traveling',
+        'in_progress': 'In Progress',
+        'waiting_payment': 'Waiting Payment',
+        'completed': 'Finished',
+    };
+
     useEffect(() => {
         const fetchJob = async () => {
             try {
-                const data = await getJobDetails(jobId);
-                setJob(data);
+                const res = await api.get(`/api/worker/jobs/${jobId}`);
+                const data = res.data;
+                const mapped = {
+                    id: data.job_id,
+                    title: data.title,
+                    description: data.description,
+                    budget: data.budget,
+                    status: STATUS_MAP[data.progress_status] || STATUS_MAP[data.status] || data.status,
+                    employerName: data.employer?.name || 'Employer',
+                    employerRating: data.employer?.rating || 0,
+                    location: data.location?.address || '',
+                    employerLocation: data.location ? { lat: data.location.lat, lng: data.location.lng } : null,
+                    workerLocation: null,
+                };
+                setJob(mapped);
 
-                // If job is already in progress, start tracking automatically (in a real app, this would check backend state)
-                if (data.status === 'In Progress' && !isTracking) {
+                if (mapped.status === 'In Progress' && !isTracking) {
                     startTracking();
                 }
             } catch (error) {
@@ -45,8 +66,12 @@ const WorkerJobDetailsPage = () => {
     }, [jobId]);
 
     const handleStartTravel = async () => {
-        const res = await startTravel(jobId);
-        setJob({ ...job, status: res.status });
+        try {
+            const res = await api.post(`/api/worker/jobs/${jobId}/start-travel`);
+            setJob({ ...job, status: 'Traveling' });
+        } catch (err) {
+            console.error('Start travel failed:', err);
+        }
     };
 
     const handleStartJobClick = () => {
@@ -55,16 +80,24 @@ const WorkerJobDetailsPage = () => {
 
     const confirmStartJob = async () => {
         setShowStartPopup(false);
-        const res = await startJob(jobId);
-        setJob({ ...job, status: res.status });
-        startTracking();
+        try {
+            const res = await api.post(`/api/worker/jobs/${jobId}/start-job`);
+            setJob({ ...job, status: 'In Progress' });
+            startTracking();
+        } catch (err) {
+            console.error('Start job failed:', err);
+        }
     };
 
     const handleJobDone = async () => {
-        const res = await completeJob(jobId);
-        setJob({ ...job, status: res.status });
-        stopTracking();
-        setShowStopPopup(true);
+        try {
+            const res = await api.post(`/api/worker/jobs/${jobId}/complete-job`);
+            setJob({ ...job, status: 'Waiting Payment' });
+            stopTracking();
+            setShowStopPopup(true);
+        } catch (err) {
+            console.error('Complete job failed:', err);
+        }
     };
 
     if (loading) {
