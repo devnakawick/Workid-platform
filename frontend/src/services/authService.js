@@ -3,11 +3,18 @@ import api from './api';
 export const sendOTP = (phone, role = 'worker', password = null) =>
   api.post('api/auth/send-otp', { phone_number: phone });
 
-export const verifyOTP = (phone, otp) =>
-  api.post('api/auth/verify-otp', {
+export const verifyOTP = (phone, otp) => {
+  console.log('verifyOTP called with:', { phone, otp });
+  return api.post('api/auth/verify-otp', {
     phone_number: phone,
     otp,
+  }).catch((error) => {
+    if (error.response.status === 400) {
+      console.error('400 error in verifyOTP:', error.response.data);
+    }
+    throw error;
   });
+};
 
 export const getMe = () =>
   api.get('api/auth/me');

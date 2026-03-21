@@ -13,7 +13,10 @@ api.interceptors.request.use((config) => {
     const publicPaths = [
         '/auth/verify-otp',
         '/auth/resend-otp',
-        '/auth/refresh'          
+        '/auth/refresh',
+        '/api/auth/verify-otp',
+        '/api/auth/resend-otp',
+        '/api/auth/refresh'
     ];
 
     const isPublic = publicPaths.some(path => config.url?.startsWith(path));

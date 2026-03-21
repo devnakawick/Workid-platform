@@ -27,8 +27,15 @@ async def verify_otp(request: VerifyOTPRequest, db: Session = Depends(get_db)):
     """
     Verify OTP and get authentication tokens
     """
+    logger.info(f"Verify OTP request for phone: {request.phone_number}")
     auth_service = AuthService(db)
-    return auth_service.verify_otp(request)
+    try:
+        result = auth_service.verify_otp(request)
+        logger.info(f"Verify OTP successful for phone: {request.phone_number}")
+        return result
+    except HTTPException as e:
+        logger.error(f"Verify OTP failed for phone {request.phone_number}: {e.detail}")
+        raise
 
 @router.post("/login", response_model=TokenResponse, status_code=status.HTTP_200_OK)
 async def login(request: LoginRequest, db: Session = Depends(get_db)):

@@ -64,8 +64,15 @@ export default function OtpVerification() {
         e.preventDefault();
         const code = otp.join('');
 
+        console.log('handleVerify - phone:', phone, 'code:', code);
+
         if (code.length < 6) {
             toast.error('Please enter the full 6-digit code');
+            return;
+        }
+
+        if (!phone) {
+            toast.error('Phone number is missing. Please go back and try again.');
             return;
         }
 
