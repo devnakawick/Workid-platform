@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Users, Star, CheckCircle2, UserCheck, Search as SearchIcon } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../lib/AuthContext';
 
 // Components
 import WorkerCard from '../../components/employer/WorkerCard';
@@ -16,6 +17,7 @@ import { sendInviteAPI } from '../../mocks/applicationData';
 
 const SearchWorkers = () => {
   const { t } = useTranslation();
+  const { user, updateUser } = useAuth();
 
 
   // Worker Data
@@ -125,9 +127,70 @@ const SearchWorkers = () => {
     if (!job || !workerToInvite) return;
 
     // Send invite to mock API (Adds to 'Invited' list, hidden from Review list)
+    toast.loading("Sending invite...", { id: 'invite' });
     await sendInviteAPI(jobId, workerToInvite);
 
+    // Save mock message to local storage so Messages.jsx can read it
+    const storedMessages = JSON.parse(localStorage.getItem('mock_messages')) || [];
+    const messageText = `Hello ${workerToInvite.name.split(' ')[0]},
 
+Based on your excellent profile and experience, I would like to officially invite you to apply for my open position: ${job.title}.
+
+We are currently looking for a skilled professional to help us with this project, which is located in ${job.location} and is expected to take around ${job.duration || 'a reasonable timeframe'} to complete.
+
+Job Description:
+${job.description || 'Please review the attached job card for a complete overview of the work required.'}
+
+We are offering Rs. ${job.budget || job.salary} for this work. If you are available and interested in taking this on, please accept this invitation below. Once accepted, we can discuss the exact dates, address, and any specific requirements in detail.
+
+I look forward to hearing from you!
+
+Best regards,
+${user?.name || "Employer"}`;
+
+    const newMessageObj = {
+        id: Date.now(),
+        text: messageText,
+        sender: user?.name || "Employer",
+        time: "Just now",
+        sent: false,
+        isJobInvite: true,
+        jobDetails: {
+            id: job.id,
+            title: job.title,
+            budget: job.budget,
+            location: job.location
+        }
+    };
+
+    const newChatId = Date.now();
+    const newMessage = {
+       id: newChatId,
+       sender: user?.name || "Employer",
+       preview: `Invitation to job: ${job.title}`,
+       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+       unread: true,
+       messages: [newMessageObj]
+    };
+    
+    // Check if a conversation with this Employer already exists
+    const existingIndex = storedMessages.findIndex(m => m.sender === (user?.name || "Employer"));
+    if (existingIndex > -1) {
+        // Append to existing conversation
+        storedMessages[existingIndex].messages.push({ ...newMessageObj, time: newMessage.time });
+        storedMessages[existingIndex].preview = `Invitation to job: ${job.title}`;
+        storedMessages[existingIndex].unread = true;
+        storedMessages[existingIndex].time = newMessage.time;
+    } else {
+        storedMessages.unshift(newMessage);
+    }
+
+    localStorage.setItem('mock_messages', JSON.stringify(storedMessages));
+    
+    updateUser({ messagesCount: (user?.messagesCount || 0) + 1 });
+    
+    toast.success("Invitation sent successfully!", { id: 'invite' });
+    handleCloseInvite();
   };
 
   const handleCloseInvite = () => {
