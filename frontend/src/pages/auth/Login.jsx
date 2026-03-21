@@ -4,13 +4,14 @@ import { useTranslation } from 'react-i18next';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
 import logo from '@/images/logo.jpeg';
-import { Phone, Lock } from 'lucide-react';
+import { Phone, Lock, Globe } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
+import { useLanguage } from '@/lib/LanguageContext';
 import { toast } from 'sonner';
-
 
 export default function Login() {
   const { t } = useTranslation();
+  const { language, changeLanguage } = useLanguage();
   const navigate = useNavigate();
 
   const { loginWithPassword } = useAuth();
@@ -68,6 +69,27 @@ export default function Login() {
             </button>
           </div>
           <p className="text-gray-500 text-sm md:text-base font-medium">{t('auth.signInTitle')}</p>
+          
+          {/* Language Switcher */}
+          <div className="flex justify-center gap-2 mt-4">
+            {[
+              { code: 'en', label: 'English' },
+              { code: 'si', label: 'සිංහල' },
+              { code: 'ta', label: 'தமிழ்' }
+            ].map((lang) => (
+              <button
+                key={lang.code}
+                onClick={() => changeLanguage(lang.code)}
+                className={`px-3 py-1 text-sm font-medium rounded-full transition-colors ${
+                  language === lang.code
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {lang.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Login Form Card */}

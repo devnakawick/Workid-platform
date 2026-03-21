@@ -1,5 +1,4 @@
-@import "tailwindcss";
-@config "../tailwind.config.js";
+@import "tailwindcss";  
 
 @media (min-width:1280px) {
   .main-content-with-sidebar {
@@ -84,10 +83,40 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    border-color: hsl(var(--border));
+    outline-color: hsl(var(--ring) / 0.5);
   }
 
   body {
-    @apply bg-background text-foreground;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+
+  /* Prevent long translated text (Sinhala/Tamil) from breaking layouts */
+  h1, h2, h3, h4, h5, h6, p, span, label, a, button {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* Language-specific font size adjustments */
+  html[lang="si"] {
+    h1 { font-size: 0.95em; }
+    h2 { font-size: 0.95em; }
+    h3 { font-size: 0.95em; }
+    h4 { font-size: 0.95em; }
+    h5 { font-size: 0.95em; }
+    h6 { font-size: 0.95em; }
+    p, span, label, a, button { font-size: 0.95em; }
+  }
+
+  html[lang="ta"] {
+    /* Tamil font sizes - smaller to prevent overflow */
+    h1 { font-size: 0.9em; }
+    h2 { font-size: 0.9em; }
+    h3 { font-size: 0.9em; }
+    h4 { font-size: 0.9em; }
+    h5 { font-size: 0.9em; }
+    h6 { font-size: 0.9em; }
+    p, span, label, a, button { font-size: 0.9em; }
   }
 }
