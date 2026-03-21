@@ -1,14 +1,33 @@
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any
 from jose import JWTError, jwt
-from passlib.context import CryptContext
+import bcrypt
 from app.config import settings
 import logging
 
 logger = logging.getLogger(__name__)
 
-# Password hashing context
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+def truncate_password(password: str) -> str:
+    """Truncate password to 72 bytes if longer (bcrypt limit)"""
+    password_bytes = password.encode('utf-8')
+    if len(password_bytes) > 72:
+        return password_bytes[:72].decode('utf-8', errors='ignore')
+    return password
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verify password against hash"""
+    truncated_password = truncate_password(plain_password)
+    password_bytes = truncated_password.encode('utf-8')
+    hash_bytes = hashed_password.encode('utf-8')
+    return bcrypt.checkpw(password_bytes, hash_bytes)
+
+def get_password_hash(password: str) -> str:
+    """Hash password"""
+    truncated_password = truncate_password(password)
+    password_bytes = truncated_password.encode('utf-8')
+    salt = bcrypt.gensalt()
+    hash_bytes = bcrypt.hashpw(password_bytes, salt)
+    return hash_bytes.decode('utf-8')
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     """Create JWT access token"""
@@ -62,11 +81,3 @@ def verify_token(token: str) -> Optional[Dict[str, Any]]:
     except JWTError as e:
         logger.error(f"Token verification failed: {str(e)}")
         return None
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify password against hash"""
-    return pwd_context.verify(plain_password, hashed_password)
-
-def get_password_hash(password: str) -> str:
-    """Hash password"""
-    return pwd_context.hash(password)
