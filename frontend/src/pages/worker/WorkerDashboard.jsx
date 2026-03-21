@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
 	Briefcase,
 	CheckCircle2,
@@ -12,6 +12,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import workerService from '@/services/workerService';
+import { useAuth } from '@/lib/AuthContext';
 
 const mock = {
 	user: 'John',
@@ -37,12 +39,35 @@ const mock = {
 const WorkerDashboard = () => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
+	const { user } = useAuth();
+
 	const [activeTab, setActiveTab] = useState('thisWeek');
+	const [stats, setStats] = useState(null);
+
+	useEffect(() => {
+		const fetchStats = async () => {
+			try {
+				const res = await workerService.getWorkerStats();
+				setStats(res.data);
+			} catch (err) {
+				console.error('Failed to load worker stats:', err);
+			}
+		};
+
+		fetchStats();
+	}, []);
 
 	const filteredUpcoming = mock.upcoming.filter(job => {
 		if (activeTab === 'thisMonth') return true;
 		return job.category === activeTab;
 	});
+
+	const dashboardStats = {
+		activeJobs: stats?.accepted_applications ?? mock.stats.activeJobs,
+		completedJobs: stats?.total_jobs_completed ?? mock.stats.completedJobs,
+		rating: stats?.rating ?? mock.stats.rating,
+		earnings: mock.stats.earnings 
+	};
 
 	return (
 		<div className="max-w-7xl mx-auto space-y-8">
@@ -76,23 +101,22 @@ const WorkerDashboard = () => {
 					<Button
 						variant="outline"
 						className="bg-white text-blue-600 border-white hover:bg-blue-50 font-bold px-8 py-6 text-lg rounded-xl"
-						onClick={() => navigate('/Profile')}
+						onClick={() => navigate('/worker/profile')}
 					>
 						{t('workerDashboard.completeNow')}
 					</Button>
 				</div>
 
-				{/* Decorative circle */}
 				<div className="absolute top-[-50%] right-[-10%] w-[400px] h-[400px] bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
 			</div>
 
 			{/* 2. Stats Grid */}
 			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 				{[
-					{ label: t('workerDashboard.stats.activeJobs'), value: mock.stats.activeJobs, change: '+ 12%', icon: Briefcase, color: 'blue' },
-					{ label: t('workerDashboard.stats.completedJobs'), value: mock.stats.completedJobs, change: '+ 8%', icon: CheckCircle2, color: 'green' },
-					{ label: t('workerDashboard.stats.rating'), value: mock.stats.rating, change: '-', icon: Star, color: 'amber' },
-					{ label: t('workerDashboard.stats.thisMonth'), value: mock.stats.earnings, change: '+ 24%', icon: WalletIcon, color: 'purple' },
+					{ label: t('workerDashboard.stats.activeJobs'), value: dashboardStats.activeJobs, change: '+ 12%', icon: Briefcase, bgClass: 'bg-blue-50', textClass: 'text-blue-600' },
+					{ label: t('workerDashboard.stats.completedJobs'), value: dashboardStats.completedJobs, change: '+ 8%', icon: CheckCircle2, bgClass: 'bg-green-50', textClass: 'text-green-600' },
+					{ label: t('workerDashboard.stats.rating'), value: dashboardStats.rating, change: '-', icon: Star, bgClass: 'bg-amber-50', textClass: 'text-amber-600' },
+					{ label: t('workerDashboard.stats.thisMonth'), value: dashboardStats.earnings, change: '+ 24%', icon: WalletIcon, bgClass: 'bg-purple-50', textClass: 'text-purple-600' },
 				].map((stat) => (
 					<div key={stat.label} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group transition-all hover:shadow-md">
 						<div className="space-y-1">
@@ -102,7 +126,7 @@ const WorkerDashboard = () => {
 								{stat.change}
 							</p>
 						</div>
-						<div className={`p-4 rounded-xl bg-${stat.color}-50 text-${stat.color}-600 group-hover:scale-110 transition-transform`}>
+						<div className={`p-4 rounded-xl ${stat.bgClass} ${stat.textClass} group-hover:scale-110 transition-transform`}>
 							<stat.icon size={28} />
 						</div>
 					</div>
@@ -111,7 +135,6 @@ const WorkerDashboard = () => {
 
 			{/* 3. Main Content Grid */}
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-				{/* Active Jobs List */}
 				<div className="lg:col-span-2 space-y-4">
 					<div className="flex items-center justify-between px-2">
 						<h3 className="text-xl font-bold text-gray-900">{t('workerDashboard.stats.activeJobs')}</h3>
@@ -131,8 +154,7 @@ const WorkerDashboard = () => {
 										<h4 className="text-lg font-bold text-gray-900">{job.title}</h4>
 										<p className="text-gray-500 text-sm leading-relaxed">{job.excerpt}</p>
 									</div>
-									<span className={`px-4 py-1.5 rounded-full text-xs font-bold ${job.status === 'In Progress' ? 'bg-blue-50 text-blue-600' : 'bg-green-50 text-green-600'
-										}`}>
+									<span className={`px-4 py-1.5 rounded-full text-xs font-bold ${job.status === 'In Progress' ? 'bg-blue-50 text-blue-600' : 'bg-green-50 text-green-600'}`}>
 										{job.status}
 									</span>
 								</div>
@@ -148,7 +170,6 @@ const WorkerDashboard = () => {
 					</div>
 				</div>
 
-				{/* Reputation / Rating Sidebar */}
 				<div className="space-y-4">
 					<div className="px-2">
 						<h3 className="text-xl font-bold text-gray-900">{t('workerDashboard.reputation')}</h3>
@@ -157,14 +178,14 @@ const WorkerDashboard = () => {
 					<div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm text-center flex flex-col items-center">
 						<div className="relative mb-6">
 							<div className="w-24 h-24 rounded-full border-4 border-blue-50 flex items-center justify-center relative">
-								<span className="text-3xl font-black text-blue-600">{mock.stats.rating}</span>
+								<span className="text-3xl font-black text-blue-600">{dashboardStats.rating}</span>
 								<div className="absolute inset-0 border-t-4 border-blue-600 rounded-full rotate-45"></div>
 							</div>
 						</div>
 
 						<div className="flex gap-1.5 mb-8">
 							{[1, 2, 3, 4, 5].map(i => (
-								<Star key={i} size={22} className={i <= Math.floor(mock.stats.rating) ? "fill-amber-400 text-amber-400" : "fill-gray-100 text-gray-200"} />
+								<Star key={i} size={22} className={i <= Math.floor(Number(dashboardStats.rating) || 0) ? "fill-amber-400 text-amber-400" : "fill-gray-100 text-gray-200"} />
 							))}
 						</div>
 
