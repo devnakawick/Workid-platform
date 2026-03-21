@@ -43,12 +43,18 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('access_token', access_token);
             localStorage.setItem('refresh_token', refresh_token);
 
-            const minimalUser = { id: user_id, phone_number: phone, user_type };
-            setUser(minimalUser);
-            setRole(user_type?.toLowerCase() || null);
+            // Immediately fetch full profile so navbar shows name, not phone
+            let fullUser = { id: user_id, phone_number: phone, user_type };
+            try {
+                const meRes = await getMe();
+                fullUser = meRes.data;
+            } catch (_) { /* fall back to minimal user */ }
+
+            setUser(fullUser);
+            setRole((fullUser.user_type || user_type)?.toLowerCase() || null);
             setIsAuthenticated(true);
 
-            return minimalUser;
+            return fullUser;
         } catch (err) {
             console.error('Login error:', err.response?.data || err);
             throw err;
@@ -64,12 +70,18 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('access_token', access_token);
             localStorage.setItem('refresh_token', refresh_token);
 
-            const minimalUser = { id: user_id, phone_number: phone, user_type };
-            setUser(minimalUser);
-            setRole(user_type?.toLowerCase() || null);
+            // Immediately fetch full profile so navbar shows name, not phone
+            let fullUser = { id: user_id, phone_number: phone, user_type };
+            try {
+                const meRes = await getMe();
+                fullUser = meRes.data;
+            } catch (_) { /* fall back to minimal user */ }
+
+            setUser(fullUser);
+            setRole((fullUser.user_type || user_type)?.toLowerCase() || null);
             setIsAuthenticated(true);
 
-            return minimalUser;
+            return fullUser;
         } catch (err) {
             console.error('Login with password error:', err.response?.data || err);
             throw err;

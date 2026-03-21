@@ -17,8 +17,10 @@ const DashboardHeader = ({
     const { t } = useTranslation();
     const navigate = useNavigate();
     
-    // Get name from user.full_name (from backend) or fall back to phone
-    const name = user?.full_name || user?.phone_number || 'User';
+    // Get full name from backend, extract first name for greeting
+    const fullName = user?.full_name || user?.phone_number || 'User';
+    const firstName = (user?.full_name || '').split(' ')[0] || fullName;
+    const name = firstName;
     
     // Get role from user object or AuthContext role
     const userRole = user?.user_type || user?.role || role || 'Member';
@@ -92,7 +94,7 @@ const DashboardHeader = ({
                     </div>
                 )}
 
-                <div className="flex items-center gap-3 pl-4 md:pl-6 border-l border-gray-100 min-w-max">
+                <div className="flex items-center gap-3 pl-4 md:pl-6 border-l border-gray-100 flex-shrink-0">
                     {/* Availability Toggle - Only for Workers */}
                     {showAvailability && (
                         <button
@@ -103,7 +105,7 @@ const DashboardHeader = ({
                                 }`}
                         >
                             <div className={`w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${isAvailable ? 'bg-emerald-500 animate-pulse' : 'bg-gray-400'}`}></div>
-                            <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider">
+                            <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider whitespace-nowrap">
                                 {isAvailable ? (
                                     <span className="inline md:inline">{t('common.available')}</span>
                                 ) : (
@@ -114,8 +116,8 @@ const DashboardHeader = ({
                     )}
 
                     <div className="text-right ml-1 md:ml-2">
-                        <p className="text-xs md:text-sm font-bold text-gray-900 truncate max-w-[80px] md:max-w-none">{name}</p>
-                        <p className="text-[10px] md:text-xs text-gray-500">{displayRole}</p>
+                        <p className="text-xs md:text-sm font-bold text-gray-900 truncate max-w-[80px] md:max-w-[120px]">{name}</p>
+                        <p className="text-[10px] md:text-xs text-gray-500 truncate">{displayRole}</p>
                     </div>
                     <div className="relative flex-shrink-0">
                         {user?.avatar ? (

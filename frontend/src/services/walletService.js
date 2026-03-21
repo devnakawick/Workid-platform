@@ -32,7 +32,17 @@ export const walletService = {
         }),
 
     releaseEscrow: (escrowId) =>
-        api.post(`api/escros/release/${escrowId}`),
+        api.post(`api/escrow/release/${escrowId}`),
+
+    disputeEscrow: (escrowId) =>
+        api.post(`api/escrow/dispute/${escrowId}`),
+
+    // Worker wallet
+    getWorkerWallet: () =>
+        api.get('api/worker/wallet'),
+
+    getWorkerTransactions: () =>
+        api.get('api/worker/transactions'),
 };
 
 export default walletService;

@@ -86,7 +86,7 @@ async def get_active_jobs(
     - Waiting for payment
     """
     # Get worker
-    worker = current_user.worker
+    worker = current_user.worker_profile
     
     # Get active job progress records
     active_progress = db.query(JobProgress).filter(
@@ -137,7 +137,7 @@ async def start_travel(
     Status: accepted → worker_traveling
     Location sharing starts
     """
-    worker = current_user.worker
+    worker = current_user.worker_profile
     
     # Update progress
     progress = ProgressService.start_travel(
@@ -165,7 +165,7 @@ async def start_job(
     
     Status: worker_traveling → in_progress
     """
-    worker = current_user.worker
+    worker = current_user.worker_profile
     
     # Update progress
     progress = ProgressService.start_job(
@@ -194,7 +194,7 @@ async def complete_job(
     Status: in_progress → waiting_payment
     Worker waits for employer to process payment
     """
-    worker = current_user.worker
+    worker = current_user.worker_profile
     
     # Update progress
     progress = ProgressService.complete_job(
@@ -229,7 +229,7 @@ async def rate_employer(
     - Job is completed
     - Payment has been received
     """
-    worker = current_user.worker
+    worker = current_user.worker_profile
     
     # Verify job belongs to worker
     progress = db.query(JobProgress).filter(

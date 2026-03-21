@@ -65,6 +65,11 @@
 	flex: 1;
 	padding: 12px 8px;
 	overflow-y: auto;
+	scrollbar-width: none;
+}
+
+.sidebar-nav::-webkit-scrollbar {
+	display: none;
 }
 
 .sidebar-nav .space-y-1 {
@@ -93,6 +98,8 @@
 	text-decoration: none;
 	margin-bottom: 6px;
 	transition: background 0.12s, transform 0.08s;
+	overflow: hidden;
+	min-width: 0;
 }
 
 .sidebar-link:hover {
@@ -102,10 +109,15 @@
 
 .sidebar-link .sidebar-icon {
 	opacity: 0.95;
+	flex-shrink: 0;
 }
 
 .sidebar-link .sidebar-label {
 	font-weight: 600;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	min-width: 0;
 }
 
 .sidebar-link.active {
@@ -195,9 +207,11 @@
 	align-items: center;
 	padding: 4px 2px;
 	min-width: 52px;
+	max-width: 80px;
 	flex: 1;
 	text-decoration: none;
 	color: #9ca3af;
+	overflow: hidden;
 }
 
 @media (max-width: 479px) {
@@ -213,7 +227,14 @@
 	font-weight: 700;
 	text-transform: uppercase;
 	margin-top: 3px;
-	white-space: nowrap;
+	max-width: 100%;
+	text-align: center;
+	line-height: 1.2;
+	display: -webkit-box;
+	line-clamp: 2;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
 }
 
 @media (min-width: 480px) {
