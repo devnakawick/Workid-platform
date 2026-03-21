@@ -67,10 +67,10 @@ export default function JobFilters({ filters, onFilterChange, onReset }) {
                             <SelectTrigger>
                                 <SelectValue />
                             </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">{t('applications.all')}</SelectItem>
+                            <SelectContent position="popper" side="bottom" align="start" sideOffset={4} className="bg-white border border-gray-200 shadow-lg">
+                                <SelectItem value="all" className="border-b border-gray-100">{t('applications.all')}</SelectItem>
                                 {CATEGORIES.map((cat) => (
-                                    <SelectItem key={cat} value={cat}>
+                                    <SelectItem key={cat} value={cat} className="border-b border-gray-100 last:border-b-0">
                                         {cat}
                                     </SelectItem>
                                 ))}
@@ -90,9 +90,9 @@ export default function JobFilters({ filters, onFilterChange, onReset }) {
                             <SelectTrigger>
                                 <SelectValue />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent position="popper" side="bottom" align="start" sideOffset={4} className="bg-white border border-gray-200 shadow-lg">
                                 {SALARY_RANGES.map((range, idx) => (
-                                    <SelectItem key={idx} value={idx.toString()}>
+                                    <SelectItem key={idx} value={idx.toString()} className="border-b border-gray-100 last:border-b-0">
                                         {idx === 0 ? t(range.label) :
                                             idx === 1 ? t(range.label, { amount: range.amount }) :
                                                 range.rangeText ? t('common.range', { min: range.min.toLocaleString(), max: range.max === Infinity ? t('common.plus', { amount: range.min.toLocaleString() }) : range.max.toLocaleString() }) : t(range.label)}

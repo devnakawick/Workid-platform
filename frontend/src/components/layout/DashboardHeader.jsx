@@ -116,7 +116,7 @@ const DashboardHeader = ({
                     )}
 
                     <div className="text-right ml-1 md:ml-2">
-                        <p className="text-xs md:text-sm font-bold text-gray-900 truncate max-w-[80px] md:max-w-[120px]">{name}</p>
+                        <p className="text-xs md:text-sm font-bold text-gray-900 truncate max-w-[80px] md:max-w-[120px]">{fullName}</p>
                         <p className="text-[10px] md:text-xs text-gray-500 truncate">{displayRole}</p>
                     </div>
                     <div className="relative flex-shrink-0">
