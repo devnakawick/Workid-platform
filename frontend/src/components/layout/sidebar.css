@@ -41,7 +41,7 @@
 
 .sidebar .brand-wrap .bg-indigo-600 {
 	background: rgba(255, 255, 255, 0.1);
-	padding: 8px;
+	padding: 12px;
 	border-radius: 10px;
 }
 
@@ -54,8 +54,8 @@
 }
 
 .sidebar-logo {
-	width: 48px;
-	height: 48px;
+	width: 64px;
+	height: 64px;
 	object-fit: cover;
 	border-radius: 8px;
 	border: 2px solid rgba(255, 255, 255, 0.08);

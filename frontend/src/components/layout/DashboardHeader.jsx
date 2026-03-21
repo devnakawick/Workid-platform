@@ -36,7 +36,7 @@ const DashboardHeader = ({
                     className="flex xl:hidden items-center gap-2 group transition-all flex-shrink-0"
                     aria-label="WorkID"
                 >
-                    <img src={logo} alt="WorkID" className="h-7 w-auto md:h-8 rounded-lg shadow-sm" />
+                    <img src={logo} alt="WorkID" className="h-7 w-auto md:h-8" />
                     <span className="hidden sm:inline text-blue-600 font-black text-lg tracking-tighter">WorkID</span>
                 </button>
 

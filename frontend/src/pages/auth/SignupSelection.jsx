@@ -9,7 +9,7 @@ export default function SignupSelection() {
     const navigate = useNavigate();
 
     return (
-        <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 sm:p-12">
+        <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 sm:p-12">
             <div className="w-full max-w-2xl text-center space-y-12">
                 {/* Logo & Header */}
                 <div className="flex flex-col items-center space-y-4">
@@ -17,7 +17,7 @@ export default function SignupSelection() {
                         onClick={() => navigate('/landing')}
                         className="transition-transform hover:scale-105 active:scale-95"
                     >
-                        <img src={logo} alt="WorkID" className="h-20 w-auto rounded-3xl shadow-xl border-4 border-white" />
+                        <img src={logo} alt="WorkID" className="h-28 md:h-36 w-auto" />
                     </button>
                     <div className="space-y-2">
                         <p className="text-slate-500 font-medium text-lg max-w-md mx-auto">{t('landing.getStartedDialogDesc')}</p>

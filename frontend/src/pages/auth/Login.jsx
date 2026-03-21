@@ -60,13 +60,13 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8 px-4">
-          <div className="inline-flex items-center justify-center w-14 h-14 mb-4">
+          <div className="inline-flex items-center justify-center mb-4">
             <button onClick={() => navigate('/')} className="cursor-pointer">
-              <img src={logo} alt="WorkID" className="w-14 h-14 rounded-xl object-cover shadow-md" />
+              <img src={logo} alt="WorkID" className="w-32 md:w-44 h-auto" />
             </button>
           </div>
           <p className="text-gray-500 text-sm md:text-base font-medium">{t('auth.signInTitle')}</p>

@@ -36,7 +36,7 @@ export default function LandingPage({ onLearnMore }) {
       {/* HEADER */}
       <header className="flex justify-between items-center px-6 md:px-8 py-4 bg-white shadow-sm sticky top-0 z-[60]">
         <div className="flex items-center">
-          <img src={logo} alt="WorkID" className="h-8 md:h-10 w-auto" />
+          <img src={logo} alt="WorkID" className="h-16 md:h-24 w-auto" />
         </div>
 
         {/* Desktop Nav */}
@@ -242,7 +242,7 @@ export default function LandingPage({ onLearnMore }) {
       <footer className="bg-slate-50 border-t border-slate-200 py-12 px-6">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-2">
-            <img src={logo} alt="WorkID" className="h-6 w-auto" />
+            <img src={logo} alt="WorkID" className="h-16 md:h-20 w-auto" />
             <span className="font-bold text-slate-900">WorkID</span>
           </div>
           <p className="text-slate-500 text-sm font-medium">
