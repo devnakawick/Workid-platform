@@ -9,6 +9,7 @@ import WorkerProfile from './pages/worker/WorkerProfile';
 import WorkerDashboard from './pages/worker/WorkerDashboard';
 import EmployerDashboard from './pages/employer/EmployerDashboard';
 import LandingPage from './pages/land/LandingPage';
+import LinksPage from './pages/land/LinksPage';
 import Login from './pages/auth/Login';
 import SignupEmployer from './pages/auth/SignupEmployer';
 import SignupWorker from './pages/auth/SignupWorker';
@@ -57,7 +58,8 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       {/* Original routes */}
-      <Route path="/" element={<LandingPage />} />
+      <Route path="/" element={<LinksPage />} />
+      <Route path="/website" element={<LandingPage />} />
       <Route path="/terms" element={<TermsOfService />} />
       <Route path="/privacy" element={<PrivacyPolicy />} />
       <Route path="/Applications" element={
