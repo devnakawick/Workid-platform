@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Input } from "@/components/ui/input";
@@ -13,12 +13,19 @@ import {
     SelectValue
 } from "@/components/ui/select";
 import { useAuth } from '@/lib/AuthContext';
+import { useNavigate } from 'react-router-dom';
+
+// Import services based on user role
+import workerService from '@/services/workerService';
+import employerService from '@/services/employerService';
 
 export default function Settings() {
     const { user, updateUser } = useAuth();
     const { t, i18n } = useTranslation();
+    const navigate = useNavigate();
     const fileInputRef = React.useRef(null);
     const [avatarPreview, setAvatarPreview] = useState(user?.avatar || null);
+    const [loading, setLoading] = useState(false);
 
     const [formData, setFormData] = useState({
         full_name: user?.name || 'John Doe',
@@ -27,13 +34,52 @@ export default function Settings() {
         location: user?.location || 'Colombo 07',
         role: user?.role || 'Plumber',
         experience: user?.experience || '5 Years Experience',
-        notifications: {
+        notifications: user?.notifications || {
             jobAlerts: true,
             appUpdates: true,
             weeklySummary: true,
         },
-        language: 'English (UK)'
+        language: user?.language || i18n.language || 'en'
     });
+
+    // Load profile data from backend on component mount
+    useEffect(() => {
+        console.log('Settings component mounted');
+        console.log('Initial i18n.language:', i18n.language);
+        console.log('Initial user.language:', user?.language);
+        console.log('Initial formData.language:', formData.language);
+        loadProfileData();
+    }, []);
+
+    const loadProfileData = async () => {
+        try {
+            setLoading(true);
+            let profileData;
+            
+            if (user?.role === 'worker') {
+                profileData = await workerService.getWorkerProfile();
+            } else if (user?.role === 'employer') {
+                profileData = await employerService.getEmployerProfile();
+            }
+
+            if (profileData?.data) {
+                setFormData(prev => ({
+                    ...prev,
+                    full_name: profileData.data.full_name || prev.full_name,
+                    email: profileData.data.email || prev.email,
+                    phone: profileData.data.phone_number || prev.phone,
+                    location: profileData.data.city || prev.location,
+                    experience: profileData.data.experience_years ? `${profileData.data.experience_years} Years Experience` : prev.experience,
+                }));
+                setAvatarPreview(profileData.data.profile_photo || null);
+            }
+        } catch (error) {
+            console.error('Failed to load profile data:', error);
+            toast.error('Failed to load profile data');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -47,18 +93,64 @@ export default function Settings() {
         }
     };
 
-    const handleSave = () => {
+    const handleLanguageChange = (value) => {
+        console.log('Language change triggered:', value);
+        i18n.changeLanguage(value);
+        setFormData(prev => ({ ...prev, language: value }));
+        // Save immediately to AuthContext for persistence
         updateUser({
-            name: formData.full_name,
-            email: formData.email,
-            phone: formData.phone,
-            location: formData.location,
-            experience: formData.experience,
-            avatar: avatarPreview
-            // Note: 'role' is intentionally excluded — it's permanent and cannot be changed.
+            ...user,
+            language: value
         });
-        toast.success(t('common.changesSaved'));
+        toast.success(t('common.languageChanged'));
     };
+
+    const handleSave = async () => {
+        try {
+            setLoading(true);
+            
+            // Prepare update data based on user role - only send fields that backend accepts
+            const updateData = {
+                full_name: formData.full_name,
+                city: formData.location,
+                experience_years: parseInt(formData.experience) || 0,
+            };
+
+            // Call appropriate service based on user role
+            if (user?.role === 'worker') {
+                await workerService.updateWorkerProfile(updateData);
+            } else if (user?.role === 'employer') {
+                await employerService.updateEmployerProfile(updateData);
+            }
+
+            // Update local auth context with all changes including avatar and notifications
+            updateUser({
+                name: formData.full_name,
+                email: formData.email,
+                phone: formData.phone,
+                location: formData.location,
+                experience: formData.experience,
+                avatar: avatarPreview,
+                notifications: formData.notifications,
+                language: formData.language
+            });
+
+            toast.success(t('common.changesSaved'));
+        } catch (error) {
+            console.error('Failed to save profile:', error);
+            toast.error('Failed to save changes. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="flex h-screen items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-4xl mx-auto space-y-6 pb-20">
@@ -95,6 +187,7 @@ export default function Settings() {
                             <Button
                                 onClick={() => fileInputRef.current.click()}
                                 className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 rounded-xl"
+                                disabled={loading}
                             >
                                 Change Photo
                             </Button>
@@ -102,6 +195,7 @@ export default function Settings() {
                                 variant="outline"
                                 onClick={() => setAvatarPreview(null)}
                                 className="bg-gray-50 border-gray-100 text-gray-600 font-bold px-6 rounded-xl hover:bg-gray-100"
+                                disabled={loading}
                             >
                                 Remove
                             </Button>
@@ -116,6 +210,7 @@ export default function Settings() {
                                 value={formData.full_name}
                                 onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                                 className="h-12 border-gray-100 bg-white rounded-lg focus:ring-blue-500"
+                                disabled={loading}
                             />
                         </div>
                         <div className="space-y-2">
@@ -126,6 +221,7 @@ export default function Settings() {
                                 value={formData.email}
                                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                 className="h-12 border-gray-100 bg-white rounded-lg focus:ring-blue-500"
+                                disabled={loading}
                             />
                         </div>
                         <div className="space-y-2">
@@ -135,6 +231,7 @@ export default function Settings() {
                                 value={formData.phone}
                                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                                 className="h-12 border-gray-100 bg-white rounded-lg focus:ring-blue-500"
+                                disabled={loading}
                             />
                         </div>
                         <div className="space-y-2">
@@ -144,6 +241,7 @@ export default function Settings() {
                                 value={formData.location}
                                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                                 className="h-12 border-gray-100 bg-white rounded-lg focus:ring-blue-500"
+                                disabled={loading}
                             />
                         </div>
 
@@ -154,6 +252,7 @@ export default function Settings() {
                                 value={formData.experience}
                                 onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
                                 className="h-12 border-gray-100 bg-white rounded-lg focus:ring-blue-500"
+                                disabled={loading}
                             />
                         </div>
                     </div>
@@ -163,8 +262,16 @@ export default function Settings() {
                     <Button
                         onClick={handleSave}
                         className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-10 py-6 text-lg rounded-xl shadow-lg shadow-blue-200"
+                        disabled={loading}
                     >
-                        {t('common.saveChanges')}
+                        {loading ? (
+                            <div className="flex items-center gap-2">
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                {t('common.saving')}...
+                            </div>
+                        ) : (
+                            t('common.saveChanges')
+                        )}
                     </Button>
                 </div>
             </div>
@@ -173,7 +280,7 @@ export default function Settings() {
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
                 <div className="mb-8">
                     <h2 className="text-2xl font-bold text-gray-900">{t('settings.notifications')}</h2>
-                    <p className="text-gray-500 text-sm mt-1">{t('settings.smsNotificationsDesc')}</p>
+                    <p className="text-gray-500 text-sm mt-1">{t('settings.emailNotificationsDesc')}</p>
                 </div>
 
                 <div className="divide-y divide-gray-50">
@@ -184,11 +291,19 @@ export default function Settings() {
                         </div>
                         <Switch
                             checked={formData.notifications.jobAlerts}
-                            onCheckedChange={(checked) => setFormData({
-                                ...formData,
-                                notifications: { ...formData.notifications, jobAlerts: checked }
-                            })}
-                            className="data-[state=checked]:bg-blue-600 flex-shrink-0"
+                            onCheckedChange={(checked) => {
+                                const newFormData = {
+                                    ...formData,
+                                    notifications: { ...formData.notifications, jobAlerts: checked }
+                                };
+                                setFormData(newFormData);
+                                // Save immediately to AuthContext for persistence
+                                updateUser({
+                                    ...user,
+                                    notifications: newFormData.notifications
+                                });
+                            }}
+                            className="data-[state=checked]:bg-blue-500 data-[state=unchecked]:bg-gray-300 flex-shrink-0 [&_[data-state=checked]_span]:bg-white [&_[data-state=unchecked]_span]:bg-gray-500 [&_span]:shadow-lg [&_span]:border-2 [&_[data-state=checked]_span]:border-blue-600 [&_[data-state=unchecked]_span]:border-gray-400"
                         />
                     </div>
                     <div className="py-5 flex items-center justify-between gap-4">
@@ -198,11 +313,19 @@ export default function Settings() {
                         </div>
                         <Switch
                             checked={formData.notifications.appUpdates}
-                            onCheckedChange={(checked) => setFormData({
-                                ...formData,
-                                notifications: { ...formData.notifications, appUpdates: checked }
-                            })}
-                            className="data-[state=checked]:bg-blue-600 flex-shrink-0"
+                            onCheckedChange={(checked) => {
+                                const newFormData = {
+                                    ...formData,
+                                    notifications: { ...formData.notifications, appUpdates: checked }
+                                };
+                                setFormData(newFormData);
+                                // Save immediately to AuthContext for persistence
+                                updateUser({
+                                    ...user,
+                                    notifications: newFormData.notifications
+                                });
+                            }}
+                            className="data-[state=checked]:bg-blue-500 data-[state=unchecked]:bg-gray-300 flex-shrink-0 [&_[data-state=checked]_span]:bg-white [&_[data-state=unchecked]_span]:bg-gray-500 [&_span]:shadow-lg [&_span]:border-2 [&_[data-state=checked]_span]:border-blue-600 [&_[data-state=unchecked]_span]:border-gray-400"
                         />
                     </div>
                     <div className="py-5 flex items-center justify-between gap-4">
@@ -212,11 +335,19 @@ export default function Settings() {
                         </div>
                         <Switch
                             checked={formData.notifications.weeklySummary}
-                            onCheckedChange={(checked) => setFormData({
-                                ...formData,
-                                notifications: { ...formData.notifications, weeklySummary: checked }
-                            })}
-                            className="data-[state=checked]:bg-blue-600 flex-shrink-0"
+                            onCheckedChange={(checked) => {
+                                const newFormData = {
+                                    ...formData,
+                                    notifications: { ...formData.notifications, weeklySummary: checked }
+                                };
+                                setFormData(newFormData);
+                                // Save immediately to AuthContext for persistence
+                                updateUser({
+                                    ...user,
+                                    notifications: newFormData.notifications
+                                });
+                            }}
+                            className="data-[state=checked]:bg-blue-500 data-[state=unchecked]:bg-gray-300 flex-shrink-0 [&_[data-state=checked]_span]:bg-white [&_[data-state=unchecked]_span]:bg-gray-500 [&_span]:shadow-lg [&_span]:border-2 [&_[data-state=checked]_span]:border-blue-600 [&_[data-state=unchecked]_span]:border-gray-400"
                         />
                     </div>
                 </div>
@@ -231,7 +362,7 @@ export default function Settings() {
 
                 <div className="max-w-md space-y-2">
                     <Label className="text-sm font-bold text-gray-700">{t('settings.language')}</Label>
-                    <Select defaultValue={i18n.language} onValueChange={(value) => i18n.changeLanguage(value)}>
+                    <Select value={formData.language} onValueChange={handleLanguageChange}>
                         <SelectTrigger className="h-12 border-gray-100 focus:ring-blue-500">
                             <SelectValue placeholder={t('settings.selectLanguage')} />
                         </SelectTrigger>
