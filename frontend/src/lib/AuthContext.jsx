@@ -219,8 +219,18 @@ export const AuthProvider = ({ children }) => {
     };
 
     const updateUser = (updates) => {
+        if (!updates || Object.keys(updates).length === 0) return;
+
         setUser((prev) => {
-            const updatedUser = { ...prev, ...updates };
+            // Ensure consistency between 'name' and 'full_name'
+            const syncUpdates = { ...updates };
+            if (updates.full_name && !updates.name) {
+                syncUpdates.name = updates.full_name;
+            } else if (updates.name && !updates.full_name) {
+                syncUpdates.full_name = updates.name;
+            }
+
+            const updatedUser = { ...prev, ...syncUpdates };
             // Also update localStorage for persistence
             localStorage.setItem('user', JSON.stringify(updatedUser));
             return updatedUser;

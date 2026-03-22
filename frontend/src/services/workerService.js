@@ -5,8 +5,8 @@ const BASE_JOBS = '/api/jobs';
 
 export const workerService = {
     // Profile
-    getWorkerProfile: () =>
-        api.get(`${BASE_WORKER}/profile`),
+    getWorkerProfile: (refresh = false) =>
+        api.get(`${BASE_WORKER}/profile`, refresh ? { params: { _t: Date.now() } } : {}),
 
     createWorkerProfile: (data) =>
         api.post(`${BASE_WORKER}/profile`, data),

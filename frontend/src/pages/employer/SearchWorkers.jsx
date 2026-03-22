@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Users, Star, CheckCircle2, UserCheck, Search as SearchIcon } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import { useAuth } from '../../lib/AuthContext';
 
 // Components
@@ -12,6 +13,7 @@ import InviteModal from '../../components/employer/InviteModal';
 
 // API Services
 import { employerService } from '../../services/employerService';
+import { aiService } from '../../services/aiService';
 
 const SearchWorkers = () => {
   const { t } = useTranslation();
@@ -21,6 +23,11 @@ const SearchWorkers = () => {
   const [workers, setWorkers] = useState([]);
   const [filteredWorkers, setFilteredWorkers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isRecommendationMode, setIsRecommendationMode] = useState(false);
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const targetJobId = queryParams.get('jobId');
 
   // Job Data (Needed for Invite Modal)
   const [jobs, setJobs] = useState([]);
@@ -52,8 +59,15 @@ const SearchWorkers = () => {
   const fetchWorkers = async () => {
     setLoading(true);
     try {
-      const res = await employerService.searchWorkers();
-      const mapped = (res.data || []).map(w => {
+      let res;
+      if (targetJobId) {
+        setIsRecommendationMode(true);
+        res = await aiService.getRecommendedWorkers(targetJobId);
+      } else {
+        res = await employerService.searchWorkers();
+      }
+
+      const mapped = (res.data?.workers || res.data || []).map(w => {
         const name = w.name || `${w.first_name || ''} ${w.last_name || ''}`.trim() || 'Worker';
         const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
         return {
@@ -221,10 +235,10 @@ ${user?.name || "Employer"}`;
           <div className="mb-6">
             <h1 className="flex items-center text-3xl md:text-4xl font-bold text-gray-900 mb-2">
               <SearchIcon className="w-8 h-8 md:w-10 md:h-10 mr-3 text-blue-600" />
-              {t('searchWorkers.title') || "Find Workers"}
+              {isRecommendationMode ? 'AI Recommended Workers' : (t('searchWorkers.title') || "Find Workers")}
             </h1>
             <p className="text-gray-600 text-sm md:text-base">
-              {t('searchWorkers.subtitle') || "Browse and invite top talent for your jobs"}
+              {isRecommendationMode ? 'Here are the best matches for your job based on their skills and reputation.' : (t('searchWorkers.subtitle') || "Browse and invite top talent for your jobs")}
             </p>
           </div>
 

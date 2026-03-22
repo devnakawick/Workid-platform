@@ -4,6 +4,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import workerService from '@/services/workerService';
+import { aiService } from '@/services/aiService';
 import { toast } from 'sonner';
 
 const mock = {
@@ -37,32 +38,37 @@ export default function WorkerProfile() {
   const fetchProfileData = async () => {
     try {
       setLoading(true);
-      const profileRes = await workerService.getWorkerProfile();
+      const profileRes = await workerService.getWorkerProfile(true);
       const statsRes = await workerService.getWorkerStats();
       
+      let reputationData = null;
+      try {
+        const repRes = await aiService.getMyReputation();
+        reputationData = repRes.data;
+      } catch (err) {
+        console.warn('AI Reputation not available yet', err);
+      }
+
       const profileInfo = {
         ...profileRes.data,
-        stats: statsRes.data
+        stats: statsRes.data,
+        aiReputation: reputationData
       };
       
       setProfileData(profileInfo);
       
       // Update AuthContext with profile data to sync with navbar
       const updatedUserData = {
-        name: profileInfo.data?.full_name || profileInfo.data?.name || user?.name,
-        phone: profileInfo.data?.phone_number || profileInfo.data?.phone || user?.phone,
-        location: profileInfo.data?.city || profileInfo.data?.location || user?.location,
-        email: profileInfo.data?.email || user?.email,
-        avatar: profileInfo.data?.profile_photo || user?.avatar,
-        role: profileInfo.data?.role || user?.role
+        name: profileInfo.full_name || profileInfo.name || user?.name,
+        full_name: profileInfo.full_name || user?.full_name,
+        phone: profileInfo.phone_number || profileInfo.phone || user?.phone,
+        location: profileInfo.city || profileInfo.location || user?.location,
+        email: profileInfo.email || user?.email,
+        avatar: profileInfo.profile_photo || user?.avatar,
+        role: profileInfo.role || user?.role
       };
       
       updateUser(updatedUserData);
-      
-      // Also update localStorage for persistence
-      const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-      const updatedUser = { ...currentUser, ...updatedUserData };
-      localStorage.setItem('user', JSON.stringify(updatedUser));
     } catch (error) {
       console.error('Failed to fetch profile data:', error);
       toast.error('Failed to load profile data');
@@ -83,7 +89,7 @@ export default function WorkerProfile() {
   // Use avatar from user context first (synced from backend), then fallback to data
   const avatar = user?.avatar || data.avatar || data.profile_photo;
   const badges = data.badges || mock.badges;
-  const reputation = data.stats || mock.reputation;
+  const reputation = data.aiReputation || data.stats || mock.reputation;
   const reviews = data.reviews || mock.reviews;
   const skills = data.skills || ['Professional Plumbing', 'Pipe Installation', 'Leak Repair', 'Bathroom Fitting', 'Emergency Repairs', 'Water Heater Maintenance'];
 
@@ -205,7 +211,12 @@ export default function WorkerProfile() {
                 <div className="text-3xl font-extrabold text-gray-900">{reputation.on_time_rate || reputation.onTime || '97%'}</div>
                 <div className="text-sm font-bold text-gray-500 mt-1 uppercase tracking-wider">On-Time Rate</div>
               </div>
-              <div className="p-6 rounded-2xl bg-gray-50/50 border border-gray-100 text-center">
+              <div className="p-6 rounded-2xl bg-gray-50/50 border border-gray-100 text-center relative overflow-hidden">
+                {data.aiReputation && (
+                  <div className="absolute top-0 right-0 bg-blue-100 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-bl-lg flex items-center gap-1">
+                    <Star size={10} className="fill-current" /> AI Verified
+                  </div>
+                )}
                 <div className="text-3xl font-extrabold text-blue-600">{reputation.trust_score || reputation.trust || '92%'}</div>
                 <div className="text-sm font-bold text-gray-500 mt-1 uppercase tracking-wider">Trust Score</div>
               </div>

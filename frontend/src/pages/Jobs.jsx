@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Briefcase } from 'lucide-react';
+import { Briefcase, Sparkles, Loader2 } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,7 @@ import JobDetails from '../components/jobs/JobDetails';
 import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
 import { jobService } from '../services/jobService';
+import { aiService } from '../services/aiService';
 
 export default function Jobs() {
     const { t } = useTranslation();
@@ -30,6 +31,7 @@ export default function Jobs() {
     const [detailedJob, setDetailedJob] = useState(null);
     const [loading, setLoading] = useState(true);
     const [applyLoading, setApplyLoading] = useState(false);
+    const [smartSearchLoading, setSmartSearchLoading] = useState(false);
 
     // Map backend job to frontend shape
     const mapJob = (job) => ({
@@ -119,9 +121,33 @@ export default function Jobs() {
         }
     };
 
+    const handleSmartSearch = async () => {
+        if (!searchQuery.trim()) {
+            toast.error("Please enter a search query first.");
+            return;
+        }
+        setSmartSearchLoading(true);
+        try {
+            const res = await aiService.executeSearch({ q: searchQuery });
+            const data = res.data?.jobs || res.data || [];
+            if (data.length > 0) {
+                setJobs(Array.isArray(data) ? data.map(mapJob) : []);
+                toast.success('AI smartly filtered jobs for you!');
+            } else {
+                toast.error('No smart matches found. Try different terms.');
+            }
+        } catch (err) {
+            console.error('Smart search failed', err);
+            toast.error('Smart search failed.');
+        } finally {
+            setSmartSearchLoading(false);
+        }
+    };
+
     const handleResetFilters = () => {
         setFilters({ location: '', category: 'all', salaryRange: '0' });
         setSearchQuery('');
+        fetchJobs(); // Re-fetch all jobs to reset AI search
     };
 
     const handleBackToList = () => {
@@ -187,8 +213,18 @@ export default function Jobs() {
                 </div>
 
                 {/* Search */}
-                <div className="mb-6">
-                    <JobSearch value={searchQuery} onChange={setSearchQuery} />
+                <div className="mb-6 flex gap-3">
+                    <div className="flex-1">
+                        <JobSearch value={searchQuery} onChange={setSearchQuery} />
+                    </div>
+                    <Button 
+                        onClick={handleSmartSearch} 
+                        disabled={smartSearchLoading} 
+                        className="bg-indigo-600 hover:bg-indigo-700 h-12 px-6 flex items-center gap-2 text-base font-bold text-white shadow-sm border border-transparent"
+                    >
+                        {smartSearchLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5 text-indigo-200" />}
+                        <span className="hidden sm:inline">Smart AI Search</span>
+                    </Button>
                 </div>
 
                 {/* Filters */}

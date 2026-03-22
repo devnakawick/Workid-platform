@@ -2,12 +2,11 @@ import api from './api';
 
 const BASE_EMPLOYER = '/api/employer';
 const BASE_JOBS = '/api/jobs';
-const BASE_AI = '/api/ai';
 
 export const employerService = {
     // Profile
-    getEmployerProfile: () => 
-        api.get(`${BASE_EMPLOYER}/profile`),
+    getEmployerProfile: (refresh = false) => 
+        api.get(`${BASE_EMPLOYER}/profile`, refresh ? { params: { _t: Date.now() } } : {}),
 
     createEmployerProfile: (data) =>
         api.post(`${BASE_EMPLOYER}/profile`, data),
@@ -60,12 +59,6 @@ export const employerService = {
     getWorkerProfile: (workerId) => 
         api.get(`${BASE_EMPLOYER}/workers/${workerId}`),
 
-    // AI Features
-    getRecommendedWorkers: (jobId) => 
-        api.get(`${BASE_AI}/workers/recommended/${jobId}`),
-
-    getWorkerReputation: (workerId) => 
-        api.get(`${BASE_AI}/reputation/worker/${workerId}`),
 };
 
 export default employerService;

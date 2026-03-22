@@ -16,7 +16,7 @@ export default function SignupSelection() {
                 {/* Logo & Header */}
                 <div className="flex flex-col items-center space-y-4">
                     <button
-                        onClick={() => navigate('/landing')}
+                        onClick={() => navigate('/')}
                         className="transition-transform hover:scale-105 active:scale-95"
                     >
                         <img src={logo} alt="WorkID" className="h-20 w-auto rounded-3xl shadow-xl border-4 border-white" />
@@ -101,7 +101,7 @@ export default function SignupSelection() {
                     </div>
 
                     <button
-                        onClick={() => navigate('/landing')}
+                        onClick={() => navigate('/')}
                         className="group inline-flex items-center gap-2 text-slate-400 hover:text-slate-600 font-bold transition-all text-sm uppercase tracking-tighter"
                     >
                         <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />

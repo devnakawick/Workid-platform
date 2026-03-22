@@ -16,8 +16,8 @@ export const verifyOTP = (phone, otp) => {
   });
 };
 
-export const getMe = () =>
-  api.get('api/auth/me');
+export const getMe = (refresh = false) =>
+  api.get('api/auth/me', refresh ? { params: { _t: Date.now() } } : {});
 
 export const refreshToken = (refreshToken) =>
   api.post('api/auth/refresh', { refresh_token: refreshToken });

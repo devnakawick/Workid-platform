@@ -18,12 +18,12 @@ const DashboardHeader = ({
     const navigate = useNavigate();
     
     // Get full name from backend, extract first name for greeting
-    const fullName = user?.name || user?.full_name || user?.phone || 'User';
-    const firstName = (user?.name || user?.full_name || '').split(' ')[0] || fullName;
+    const fullName = user?.full_name || user?.name || user?.phone || 'User';
+    const firstName = (user?.full_name || user?.name || '').split(' ')[0] || fullName;
     const name = firstName;
     
-    // Get role from user object or AuthContext role
-    const userRole = user?.role || user?.user_type || role || 'Member';
+    // Get role from user object - prioritize user_type from backend, fall back to role/context
+    const userRole = user?.user_type || user?.role || role || 'Member';
     const displayRole = userRole.charAt(0).toUpperCase() + userRole.slice(1);
     
     // Determine correct paths based on role

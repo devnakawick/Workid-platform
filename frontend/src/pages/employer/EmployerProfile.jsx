@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Star, MapPin, Phone, Briefcase, Calendar, Edit3, MessageCircle, Share2 } from 'lucide-react';
 import employerService from '@/services/employerService';
+import { aiService } from '@/services/aiService';
 import { toast } from 'sonner';
 
 const mock = {
@@ -35,34 +36,39 @@ export default function EmployerProfile() {
   const fetchProfileData = async () => {
     try {
       setLoading(true);
-      const profileRes = await employerService.getEmployerProfile();
+      const profileRes = await employerService.getEmployerProfile(true);
       const statsRes = await employerService.getEmployerStats();
       const jobsRes = await employerService.getMyJobs();
+      
+      let reputationData = null;
+      try {
+        const repRes = await aiService.getMyReputation();
+        reputationData = repRes.data;
+      } catch (err) {
+        console.warn('AI Reputation not available yet', err);
+      }
       
       const profileInfo = {
         ...profileRes.data,
         stats: statsRes.data,
-        jobs: jobsRes.data
+        jobs: jobsRes.data,
+        aiReputation: reputationData
       };
       
       setProfileData(profileInfo);
       
       // Update AuthContext with profile data to sync with navbar
       const updatedUserData = {
-        name: profileInfo.data?.full_name || profileInfo.data?.name || user?.name,
-        phone: profileInfo.data?.phone_number || profileInfo.data?.contact || user?.phone,
-        location: profileInfo.data?.city || profileInfo.data?.location || user?.location,
-        email: profileInfo.data?.email || user?.email,
-        avatar: profileInfo.data?.profile_photo || user?.avatar,
-        role: profileInfo.data?.role || user?.role
+        name: profileInfo.full_name || profileInfo.name || user?.name,
+        full_name: profileInfo.full_name || user?.full_name,
+        phone: profileInfo.phone_number || profileInfo.phone || user?.phone,
+        location: profileInfo.city || profileInfo.location || user?.location,
+        email: profileInfo.email || user?.email,
+        avatar: profileInfo.profile_photo || user?.avatar,
+        role: profileInfo.role || user?.role
       };
       
       updateUser(updatedUserData);
-      
-      // Also update localStorage for persistence
-      const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-      const updatedUser = { ...currentUser, ...updatedUserData };
-      localStorage.setItem('user', JSON.stringify(updatedUser));
     } catch (error) {
       console.error('Failed to fetch profile data:', error);
       toast.error('Failed to load profile data');
@@ -79,6 +85,7 @@ export default function EmployerProfile() {
   const location = user?.location || data.location || 'Colombo 05';
   const contact = user?.phone || data.contact || '077-9876543';
   const rating = data.stats?.rating || data.rating || 4.6;
+  const trustScore = data.aiReputation?.trust_score || data.aiReputation?.trust || null;
   const ongoingJobs = data.ongoing || data.jobs?.filter(job => job.status === 'active' || job.status === 'in_progress') || mock.ongoing;
   const pastJobs = data.history || data.jobs?.filter(job => job.status === 'completed') || mock.history;
 
@@ -105,12 +112,23 @@ export default function EmployerProfile() {
                 <div className="text-gray-500 mt-1">{role} • {location}</div>
                 <div className="text-gray-600 mt-2">Contact: {contact}</div>
               </div>
-              <div className="text-center">
-                <div className="text-sm text-gray-500 mb-1">Rating</div>
-                <div className="flex items-center gap-1 justify-center">
-                  <span className="text-2xl font-bold text-gray-900">{rating}</span>
-                  <Star className="w-6 h-6 fill-yellow-400 text-yellow-400" />
+              <div className="flex gap-6">
+                <div className="text-center">
+                  <div className="text-sm text-gray-500 mb-1">Rating</div>
+                  <div className="flex items-center gap-1 justify-center">
+                    <span className="text-2xl font-bold text-gray-900">{rating}</span>
+                    <Star className="w-6 h-6 fill-yellow-400 text-yellow-400" />
+                  </div>
                 </div>
+                {trustScore && (
+                  <div className="text-center relative">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-100 text-blue-600 text-[9px] font-bold px-1.5 py-0.5 rounded-sm whitespace-nowrap">AI Verified</div>
+                    <div className="text-sm text-gray-500 mb-1 mt-2">Trust</div>
+                    <div className="flex items-center gap-1 justify-center">
+                      <span className="text-2xl font-bold text-blue-600">{trustScore}</span>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
             <div className="flex gap-3 mt-6">

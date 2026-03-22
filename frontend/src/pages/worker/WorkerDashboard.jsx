@@ -7,13 +7,15 @@ import {
 	MapPin,
 	Calendar,
 	ChevronRight,
-	Circle
+	Circle,
+	TrendingUp
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import workerService from '@/services/workerService';
 import { jobService } from '@/services/jobService';
+import { aiService } from '@/services/aiService';
 import { useAuth } from '@/lib/AuthContext';
 
 const WorkerDashboard = () => {
@@ -25,6 +27,8 @@ const WorkerDashboard = () => {
 	const [stats, setStats] = useState(null);
 	const [activeJobsList, setActiveJobsList] = useState([]);
 	const [upcomingJobs] = useState([]);
+	const [recommendedJobs, setRecommendedJobs] = useState([]);
+	const [trendingJobs, setTrendingJobs] = useState([]);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -51,6 +55,16 @@ const WorkerDashboard = () => {
 			} catch (err) {
 				console.error('Failed to load active jobs:', err);
 			}
+			try {
+				const [aiRec, aiTrend] = await Promise.all([
+					aiService.getRecommendedJobs(3),
+					aiService.getTrendingJobs(3)
+				]);
+				setRecommendedJobs(aiRec.data?.jobs || []);
+				setTrendingJobs(aiTrend.data?.jobs || []);
+			} catch (err) {
+				console.error('Failed to load AI job features:', err);
+			}
 		};
 
 		fetchData();
@@ -71,7 +85,7 @@ const WorkerDashboard = () => {
 	return (
 		<div className="max-w-7xl mx-auto space-y-8">
 
-			{/* 1. Profile Completion Banner */}
+			{/* Profile Completion Banner */}
 			<div className="relative overflow-hidden bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl p-8 text-white shadow-lg">
 				<div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
 					<div className="space-y-4 flex-1">
@@ -109,7 +123,7 @@ const WorkerDashboard = () => {
 				<div className="absolute top-[-50%] right-[-10%] w-[400px] h-[400px] bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
 			</div>
 
-			{/* 2. Stats Grid */}
+			{/* Stats Grid */}
 			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 				{[
 					{ label: t('workerDashboard.stats.activeJobs'), value: dashboardStats.activeJobs, change: '+ 12%', icon: Briefcase, bgClass: 'bg-blue-50', textClass: 'text-blue-600' },
@@ -132,7 +146,7 @@ const WorkerDashboard = () => {
 				))}
 			</div>
 
-			{/* 3. Main Content Grid */}
+			{/* Main Content Grid */}
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 				<div className="lg:col-span-2 space-y-4">
 					<div className="flex items-center justify-between px-2">
@@ -219,7 +233,7 @@ const WorkerDashboard = () => {
 				</div>
 			</div>
 
-			{/* 4. Upcoming Jobs */}
+			{/* Upcoming Jobs */}
 			<div className="space-y-6">
 				<div className="flex items-center justify-between px-2">
 					<h3 className="text-xl font-bold text-gray-900">{t('workerDashboard.upcomingJobs')}</h3>
@@ -267,6 +281,59 @@ const WorkerDashboard = () => {
 					)}
 				</div>
 			</div>
+
+			{/* 5. Recommended For You (AI Feature) */}
+			<div className="space-y-6">
+				<div className="flex items-center justify-between px-2">
+					<h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+						Recommended For You
+					</h3>
+					<button onClick={() => navigate('/worker/find-jobs')} className="text-blue-600 text-sm font-bold hover:underline">{t('common.viewAll')}</button>
+				</div>
+				<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+					{recommendedJobs.length > 0 ? recommendedJobs.map((job) => (
+						<div key={job.id} onClick={() => navigate(`/worker/jobs/${job.id}`)} className="bg-gradient-to-br from-white to-blue-50/30 p-6 rounded-2xl border border-blue-100 shadow-sm hover:shadow-md transition-all cursor-pointer group">
+							<h4 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors mb-2">{job.title}</h4>
+							<p className="text-gray-500 text-sm mb-4 line-clamp-2">{job.description}</p>
+							<div className="flex justify-between items-center text-xs font-bold text-gray-500">
+								<span className="flex items-center gap-1 text-blue-600 bg-blue-50 px-2 py-1 rounded-md">{job.payment_type}</span>
+								<span className="text-gray-900">Rs. {job.budget}</span>
+							</div>
+						</div>
+					)) : (
+						<div className="col-span-full py-8 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+							<p className="text-gray-400 font-medium">Keep completing jobs to get personalized recommendations!</p>
+						</div>
+					)}
+				</div>
+			</div>
+
+			{/* 6. Trending Jobs (AI Feature) */}
+			<div className="space-y-6">
+				<div className="flex items-center justify-between px-2">
+					<h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+						Trending Jobs
+					</h3>
+					<button onClick={() => navigate('/worker/find-jobs')} className="text-blue-600 text-sm font-bold hover:underline">{t('common.viewAll')}</button>
+				</div>
+				<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+					{trendingJobs.length > 0 ? trendingJobs.map((job) => (
+						<div key={job.id} onClick={() => navigate(`/worker/jobs/${job.id}`)} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:border-green-200 hover:shadow-md transition-all cursor-pointer group">
+							<h4 className="text-lg font-bold text-gray-900 group-hover:text-green-600 transition-colors mb-2">{job.title}</h4>
+							<p className="text-gray-500 text-sm mb-4 line-clamp-2">{job.description}</p>
+							<div className="flex justify-between items-center text-xs font-bold text-gray-500">
+								<span className="flex items-center gap-1"><MapPin size={12}/> {job.city || 'Remote'}</span>
+								<span className="text-green-600 bg-green-50 px-2 py-1 rounded-md">High Demand</span>
+							</div>
+						</div>
+					)) : (
+						<div className="col-span-full py-8 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+							<p className="text-gray-400 font-medium">No trending data available right now.</p>
+						</div>
+					)}
+				</div>
+			</div>
+
 		</div>
 	);
 };

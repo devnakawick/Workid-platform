@@ -58,9 +58,9 @@ export default function Settings() {
             
             const userRole = (user?.user_type || user?.role || '').toLowerCase();
             if (userRole === 'worker') {
-                profileData = await workerService.getWorkerProfile();
+                profileData = await workerService.getWorkerProfile(true);
             } else if (userRole === 'employer') {
-                profileData = await employerService.getEmployerProfile();
+                profileData = await employerService.getEmployerProfile(true);
             }
 
             if (profileData?.data) {
@@ -81,6 +81,21 @@ export default function Settings() {
             setLoading(false);
         }
     };
+
+    // Update formData when the user object from context changes
+    useEffect(() => {
+        if (user) {
+            setFormData(prev => ({
+                ...prev,
+                full_name: user.name || user.full_name || prev.full_name,
+                email: user.email || prev.email,
+                phone: user.phone || prev.phone,
+                location: user.location || user.city || prev.location,
+                experience: user.experience || prev.experience
+            }));
+            if (user.avatar) setAvatarPreview(user.avatar);
+        }
+    }, [user]);
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -137,6 +152,15 @@ export default function Settings() {
                 notifications: formData.notifications,
                 language: formData.language
             });
+
+            // Re-fetch user info from backend to be absolutely sure of data consistency
+            try {
+                const { getMe } = await import('@/services/authService');
+                const meRes = await getMe(true);
+                updateUser(meRes.data);
+            } catch (err) {
+                console.warn('Post-save refresh failed:', err);
+            }
 
             toast.success(t('common.changesSaved'));
         } catch (error) {

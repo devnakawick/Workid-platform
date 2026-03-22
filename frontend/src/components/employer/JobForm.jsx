@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { FileText, Wallet, MapPin, Banknote, Clock, Users, ClipboardList, Plus, X, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { aiService } from '../../services/aiService';
+import { Sparkles, Loader2 } from 'lucide-react';
 // Backend-compatible categories
 const categories = [
   'plumbing', 'electrical', 'carpentry',
@@ -34,6 +36,8 @@ const JobForm = ({
   const [formData, setFormData] = useState(initialData);
   const [requirementInput, setRequirementInput] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
+  const [predictingWage, setPredictingWage] = useState(false);
+  const [extractingSkills, setExtractingSkills] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -78,6 +82,61 @@ const JobForm = ({
       requirements: prev.requirements.filter(r => r !== requirement)
     }));
     toast.success(t('postJob.success.reqRemoved', 'Requirement removed'));
+  };
+
+  const handlePredictWage = async () => {
+    if (!formData.title || !formData.category) {
+      toast.error(t('postJob.ai.wageError', 'Please enter a job title and category first.'));
+      return;
+    }
+    setPredictingWage(true);
+    try {
+      const categoryToUse = formData.category === 'other' ? formData.customCategory : formData.category;
+      const res = await aiService.predictWage({ 
+        title: formData.title, 
+        category: categoryToUse || 'general_labor', 
+        city: formData.city || 'Colombo'
+      });
+      if (res.data?.predicted_wage) {
+        setFormData(prev => ({ ...prev, salary: res.data.predicted_wage.toString() }));
+        toast.success(t('postJob.ai.wageSuccess', 'Suggested fair wage applied!'));
+      } else {
+        toast.error('Prediction failed. Please enter manually.');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to predict wage.');
+    } finally {
+      setPredictingWage(false);
+    }
+  };
+
+  const handleExtractSkills = async () => {
+    if (!formData.description || formData.description.length < 10) {
+      toast.error(t('postJob.ai.skillsError', 'Please enter a detailed job description first.'));
+      return;
+    }
+    setExtractingSkills(true);
+    try {
+      const res = await aiService.extractSkills({ text: formData.description });
+      const skills = res.data?.skills || [];
+      if (skills.length > 0) {
+        // filter out already added skills
+        const newSkills = skills.filter(s => !formData.requirements.includes(s));
+        setFormData(prev => ({
+          ...prev,
+          requirements: [...prev.requirements, ...newSkills]
+        }));
+        toast.success(t('postJob.ai.skillsSuccess', `Extracted ${newSkills.length} new requirements!`));
+      } else {
+        toast.error('No specific skills found to extract.');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to extract skills.');
+    } finally {
+      setExtractingSkills(false);
+    }
   };
 
   const validateForm = () => {
@@ -298,8 +357,17 @@ const JobForm = ({
               placeholder={t('postJob.basics.descriptionPlaceholder', 'Describe the work to be done...')}
               maxLength={1000}
             />
-            <div className="flex justify-end">
-              <p className="text-sm text-gray-600 mt-1">{t('postJob.basics.charCount', { count: formData.description.length })}</p>
+            <div className="flex justify-between mt-2">
+              <button
+                type="button"
+                onClick={handleExtractSkills}
+                disabled={extractingSkills}
+                className="text-xs bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 hover:bg-indigo-100 transition-colors disabled:opacity-50"
+              >
+                {extractingSkills ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+                Auto-extract Requirements
+              </button>
+              <p className="text-sm text-gray-600">{t('postJob.basics.charCount', { count: formData.description.length })}</p>
             </div>
             {fieldErrors.description && (
               <span className="flex items-start text-red-600 text-sm font-medium mt-2">
@@ -441,7 +509,19 @@ const JobForm = ({
                 {fieldErrors.salary}
               </span>
             )}
-            <span className="text-xs text-gray-600 mt-1 block">{t('postJob.locationPay.paymentHint', 'Enter the amount you are willing to pay per period')}</span>
+            
+            <div className="flex justify-between items-center mt-2">
+              <span className="text-xs text-gray-600 block">{t('postJob.locationPay.paymentHint', 'Enter the amount you are willing to pay per period')}</span>
+              <button
+                type="button"
+                onClick={handlePredictWage}
+                disabled={predictingWage}
+                className="text-xs bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 hover:bg-indigo-100 transition-colors disabled:opacity-50"
+              >
+                {predictingWage ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+                Suggest Fair Wage
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

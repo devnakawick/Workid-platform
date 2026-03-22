@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '@/services/api';
+import { aiService } from '@/services/aiService';
 import { useLocationTracking } from '@/hooks/useLocationTracking';
 import ActiveJobDetails from '@/components/jobs/ActiveJobDetails';
 import JobProgressBar from '@/components/progress/JobProgressBar';
@@ -36,6 +37,17 @@ const WorkerJobDetailsPage = () => {
             try {
                 const res = await api.get(`/api/worker/jobs/${jobId}`);
                 const data = res.data;
+                let trustScore = null;
+                const employerId = data.employer?.id || data.employer_id;
+                if (employerId) {
+                    try {
+                        const repRes = await aiService.getEmployerReputation(employerId);
+                        trustScore = repRes.data?.trust_score || repRes.data?.trust;
+                    } catch (e) {
+                        console.warn('Failed to fetch employer AI reputation', e);
+                    }
+                }
+
                 const mapped = {
                     id: data.job_id,
                     title: data.title,
@@ -43,7 +55,9 @@ const WorkerJobDetailsPage = () => {
                     budget: data.budget,
                     status: STATUS_MAP[data.progress_status] || STATUS_MAP[data.status] || data.status,
                     employerName: data.employer?.name || 'Employer',
+                    employerId: employerId,
                     employerRating: data.employer?.rating || 0,
+                    employerTrustScore: trustScore,
                     location: data.location?.address || '',
                     employerLocation: data.location ? { lat: data.location.lat, lng: data.location.lng } : null,
                     workerLocation: null,

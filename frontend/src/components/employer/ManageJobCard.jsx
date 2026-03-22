@@ -1,7 +1,7 @@
-import { MapPin, Users, Clock, Edit, Trash2, MessageCircle } from 'lucide-react';
+import { MapPin, Users, Clock, Edit, Trash2, MessageCircle, Sparkles } from 'lucide-react';
 
 
-const ManageJobCard = ({ job,  onEdit, onDelete, onViewApplications }) => {
+const ManageJobCard = ({ job,  onEdit, onDelete, onViewApplications, onRecommendWorkers }) => {
 
   // Format date to readable format
   const formatDate = (dateString) =>
@@ -83,6 +83,15 @@ const ManageJobCard = ({ job,  onEdit, onDelete, onViewApplications }) => {
             {job.applicationsCount > 0 && (
               <div className="absolute inset-0 bg-blue-400 rounded-xl animate-ping opacity-20 pointer-events-none" />
             )}
+          </button>
+
+          {/* Match Workers (AI) button */}
+          <button onClick={() => onRecommendWorkers(job.id)} className="relative group/btn">
+            <div className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-50 to-indigo-100/50 hover:from-indigo-100 hover:to-indigo-200 text-indigo-700 border border-indigo-200 rounded-xl font-bold text-sm transition-all duration-200">
+              <Sparkles className="w-4 h-4" />
+              <span>Smart Match</span>
+            </div>
+            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">AI Worker Recommendations</span>
           </button>
 
           {/* Posted date */}

@@ -177,7 +177,7 @@ const ManageJobs = () => {
                   </h1>
                   <p className="text-gray-600 text-sm md:text-base">Manage and track all your posted jobs.</p>
                 </div>
-                <button onClick={() => navigate('/employer/jobs/new')}
+                <button onClick={() => navigate('/employer/post-job')}
                   className="flex items-center justify-center w-full md:w-auto px-6 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-base font-semibold shadow-md transition-all">
                   <Plus className="w-5 h-5 mr-2" />Post New Job
                 </button>
@@ -229,7 +229,7 @@ const ManageJobs = () => {
                 <EmptyState
                   hasFilters={hasActiveFilters()}
                   onClearFilters={clearAllFilters}
-                  onPostJob={() => navigate('/employer/jobs/new')}
+                  onPostJob={() => navigate('/employer/post-job')}
                 />
               ) : (
                 filteredJobs.map(job => (
@@ -237,6 +237,7 @@ const ManageJobs = () => {
                     onEdit={(id) => navigate(`/employer/edit-job/${id}`)}
                     onDelete={setDeleteConfirm}
                     onViewApplications={(id) => navigate(`/employer/applications?jobId=${id}`)}
+                    onRecommendWorkers={(id) => navigate(`/employer/find-workers?jobId=${id}`)}
                   />
                 ))
               )}
