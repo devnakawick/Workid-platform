@@ -128,6 +128,7 @@ export default function Settings() {
             // Update local auth context with all changes including avatar and notifications
             updateUser({
                 name: formData.full_name,
+                full_name: formData.full_name,
                 email: formData.email,
                 phone: formData.phone,
                 location: formData.location,

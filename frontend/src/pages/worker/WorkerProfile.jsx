@@ -24,7 +24,7 @@ const mock = {
 };
 
 export default function WorkerProfile() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const navigate = useNavigate();
   const [showAllReviews, setShowAllReviews] = useState(false);
   const [profileData, setProfileData] = useState(null);

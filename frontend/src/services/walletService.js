@@ -44,9 +44,12 @@ export const walletService = {
     getWorkerTransactions: () =>
         api.get('api/wallet/transactions'),
 
-    // Payment history
-    getPaymentHistory: () =>
-        api.get('api/payments/history'),
+    // Webhooks
+    paymentWebhook: (data) =>
+        api.post('api/payments/webhook', data),
+
+    paymentNotify: (data) =>
+        api.post('api/payments/notify', data),
 };
 
 export default walletService;
