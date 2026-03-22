@@ -2,9 +2,22 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
-  Facebook, Twitter, Instagram, Linkedin, Youtube, Github,
-  Mail, Globe, Smartphone, Users, Briefcase, BookOpen,
-  MessageCircle, ArrowRight, TrendingUp, ShieldCheck,
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  Youtube,
+  Github,
+  Mail,
+  Globe,
+  Smartphone,
+  Users,
+  Briefcase,
+  BookOpen,
+  MessageCircle,
+  ArrowRight,
+  TrendingUp,
+  ShieldCheck,
 } from "lucide-react";
 
 function Counter({ to, suffix = "" }) {
@@ -14,40 +27,86 @@ function Counter({ to, suffix = "" }) {
     const step = Math.ceil(to / 50);
     const id = setInterval(() => {
       v += step;
-      if (v >= to) { setVal(to); clearInterval(id); }
-      else setVal(v);
+      if (v >= to) {
+        setVal(to);
+        clearInterval(id);
+      } else setVal(v);
     }, 24);
     return () => clearInterval(id);
   }, [to]);
-  return <>{to >= 1000 ? val.toLocaleString() : val}{suffix}</>;
+  return (
+    <>
+      {to >= 1000 ? val.toLocaleString() : val}
+      {suffix}
+    </>
+  );
 }
 
 export default function LinksPage() {
   const navigate = useNavigate();
 
   const mainLinks = [
-    { title: "Visit Our Website",  desc: "Explore features, how it works & more",   icon: Globe,      bg: "linear-gradient(135deg,#6D28D9,#8B5CF6)", glow: "rgba(109,40,217,0.28)", internal: true },
-    { title: "Launch WorkID App",  desc: "Find work or hire workers instantly",       icon: Smartphone, bg: "linear-gradient(135deg,#1D4ED8,#38BDF8)", glow: "rgba(29,78,216,0.25)" },
-    { title: "For Workers",        desc: "Create profile & get AI-matched to jobs",   icon: Users,      bg: "linear-gradient(135deg,#7C3AED,#C084FC)", glow: "rgba(124,58,237,0.25)" },
-    { title: "For Employers",      desc: "Post jobs & hire verified workers",          icon: Briefcase,  bg: "linear-gradient(135deg,#0891B2,#34D399)", glow: "rgba(8,145,178,0.25)" },
-  ];
-
-  const secondaryLinks = [
-    { title: "Documentation",  url: "https://docs.workid.lk",    icon: BookOpen },
-    { title: "Support Center", url: "https://support.workid.lk", icon: MessageCircle },
+    {
+      title: "Visit Our Website",
+      desc: "Explore features, how it works & more",
+      icon: Globe,
+      bg: "linear-gradient(135deg,#6D28D9,#8B5CF6)",
+      glow: "rgba(109,40,217,0.28)",
+      internal: true,
+    },
+    {
+      title: "Launch WorkID App",
+      desc: "Coming soon",
+      icon: Smartphone,
+      bg: "linear-gradient(135deg,#1D4ED8,#38BDF8)",
+      glow: "rgba(29,78,216,0.25)",
+    },
+    {
+      title: "For Workers",
+      desc: "Create profile & get AI-matched to jobs",
+      icon: Users,
+      bg: "linear-gradient(135deg,#7C3AED,#C084FC)",
+      glow: "rgba(124,58,237,0.25)",
+    },
+    {
+      title: "For Employers",
+      desc: "Post jobs & hire verified workers",
+      icon: Briefcase,
+      bg: "linear-gradient(135deg,#0891B2,#34D399)",
+      glow: "rgba(8,145,178,0.25)",
+    },
   ];
 
   const socials = [
-    { name: "Facebook",  url: "https://facebook.com/workid",          icon: Facebook,  color: "#1877F2" },
-    { name: "Instagram", url: "https://instagram.com/workid",         icon: Instagram, color: "#E4405F" },
-    { name: "Twitter",   url: "https://twitter.com/workid",           icon: Twitter,   color: "#1DA1F2" },
-    { name: "LinkedIn",  url: "https://linkedin.com/company/workid",  icon: Linkedin,  color: "#0A66C2" },
-    { name: "YouTube",   url: "https://youtube.com/@workid",          icon: Youtube,   color: "#FF0000" },
-    { name: "GitHub",    url: "https://github.com/workid",            icon: Github,    color: "#24292E" },
+    {
+      name: "Facebook",
+      url: "https://facebook.com/workid",
+      icon: Facebook,
+      color: "#1877F2",
+    },
+    {
+      name: "Instagram",
+      url: "https://instagram.com/workid",
+      icon: Instagram,
+      color: "#E4405F",
+    },
+    {
+      name: "LinkedIn",
+      url: "https://linkedin.com/company/workid",
+      icon: Linkedin,
+      color: "#0A66C2",
+    },
   ];
 
   const c = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
-  const u = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 120, damping: 20 } } };
+  const u = {
+    hidden: { opacity: 0, y: 20 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring", stiffness: 120, damping: 20 },
+    },
+  };
 
   return (
     <>
@@ -63,7 +122,7 @@ export default function LinksPage() {
         .blob { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; }
 
         /* ── Content ── */
-        .w { position: relative; z-index: 1; width: 100%; max-width: 580px; padding: 52px 22px 68px; display: flex; flex-direction: column; align-items: center; }
+        .w { position: relative; z-index: 1; width: 100%; max-width: 580px; padding: 48px 18px 64px; display: flex; flex-direction: column; align-items: center; }
 
         /* ── Logo ── */
         .logo-shell {
@@ -136,7 +195,7 @@ export default function LinksPage() {
 
         /* ── Heading ── matches marketing page font weight / size ── */
         .h1 {
-          font-size: clamp(50px, 11vw, 68px);
+          font-size: clamp(38px, 10vw, 64px);
           font-weight: 900;
           letter-spacing: -3.5px;
           line-height: 1;
@@ -206,7 +265,8 @@ export default function LinksPage() {
         .btn-outline:hover { transform: translateY(-2px); border-color: #93C5FD; box-shadow: 0 6px 20px rgba(29,78,216,0.12); }
 
         /* ── Stats — borderless matching marketing page ── */
-        .stats { display: flex; gap: 44px; justify-content: center; flex-wrap: wrap; margin-bottom: 48px; }
+   
+        .stats { display: flex; gap: 44px; @media (min-width: 640px) justify-content: center; flex-wrap: wrap; margin-bottom: 48px; }
         .stat { display: flex; flex-direction: column; align-items: center; gap: 2px; }
         .stat-icon { width: 40px; height: 40px; border-radius: 13px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
         .stat-num { font-size: 26px; font-weight: 900; color: #0A0720; letter-spacing: -1px; line-height: 1; }
@@ -318,13 +378,42 @@ export default function LinksPage() {
       `}</style>
 
       {/* Blobs */}
-      <div className="blob" style={{ width:960, height:960, top:-260, right:-280, background:"radial-gradient(circle, rgba(216,180,254,0.82) 0%, rgba(192,150,250,0.4) 38%, transparent 65%)" }} />
-      <div className="blob" style={{ width:720, height:720, bottom:-160, left:-220, background:"radial-gradient(circle, rgba(147,197,253,0.72) 0%, rgba(120,200,250,0.3) 38%, transparent 65%)" }} />
-      <div className="blob" style={{ width:440, height:440, top:"35%", left:"40%", background:"radial-gradient(circle, rgba(233,213,255,0.32) 0%, transparent 65%)" }} />
+      <div
+        className="blob"
+        style={{
+          width: 960,
+          height: 960,
+          top: -260,
+          right: -280,
+          background:
+            "radial-gradient(circle, rgba(216,180,254,0.82) 0%, rgba(192,150,250,0.4) 38%, transparent 65%)",
+        }}
+      />
+      <div
+        className="blob"
+        style={{
+          width: 720,
+          height: 720,
+          bottom: -160,
+          left: -220,
+          background:
+            "radial-gradient(circle, rgba(147,197,253,0.72) 0%, rgba(120,200,250,0.3) 38%, transparent 65%)",
+        }}
+      />
+      <div
+        className="blob"
+        style={{
+          width: 440,
+          height: 440,
+          top: "35%",
+          left: "40%",
+          background:
+            "radial-gradient(circle, rgba(233,213,255,0.32) 0%, transparent 65%)",
+        }}
+      />
 
       <div className="p">
         <motion.div className="w" variants={c} initial="hidden" animate="show">
-
           {/* Logo with spinning ring */}
           <motion.div variants={u} style={{ marginBottom: 22 }}>
             <motion.div
@@ -347,21 +436,35 @@ export default function LinksPage() {
           </motion.div>
 
           {/* Heading */}
-          <motion.h1 variants={u} className="h1">WorkID</motion.h1>
-          <motion.p variants={u} className="tagline">Your Digital <span className="v">Identity.</span> Your Future.</motion.p>
+          <motion.h1 variants={u} className="h1">
+            WorkID
+          </motion.h1>
+          <motion.p variants={u} className="tagline">
+            Your Digital <span className="v">Identity.</span> Your Future.
+          </motion.p>
           <motion.p variants={u} className="desc">
             WorkID connects informal workers with fair job opportunities through{" "}
-            <strong style={{ color:"#2563EB" }}>AI-powered matching</strong>,{" "}
-            <strong style={{ color:"#7C3AED" }}>digital wallets</strong>, and{" "}
-            <strong style={{ color:"#7C3AED" }}>verified credentials</strong>.
+            <strong style={{ color: "#2563EB" }}>AI-powered matching</strong>,{" "}
+            <strong style={{ color: "#7C3AED" }}>digital wallets</strong>, and{" "}
+            <strong style={{ color: "#7C3AED" }}>verified credentials</strong>.
           </motion.p>
 
           {/* CTA buttons — matching marketing page */}
           <motion.div variants={u} className="cta-row">
-            <a href="https://workid-app.vercel.app/signup/worker" target="_blank" rel="noopener noreferrer" className="btn-primary">
+            <a
+              href="https://workid-app.vercel.app/signup/worker"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-primary"
+            >
               Find Work Now <ArrowRight size={16} />
             </a>
-            <a href="https://workid-app.vercel.app/signup/employer" target="_blank" rel="noopener noreferrer" className="btn-outline">
+            <a
+              href="https://workid-app.vercel.app/signup/employer"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-outline"
+            >
               Hire Workers
             </a>
           </motion.div>
@@ -369,20 +472,49 @@ export default function LinksPage() {
           {/* Stats */}
           <motion.div variants={u} className="stats">
             {[
-              { icon: Users,       color:"#7C3AED", bg:"rgba(124,58,237,0.09)", to:10000, suffix:"+", label:"Workers"  },
-              { icon: TrendingUp,  color:"#2563EB", bg:"rgba(37,99,235,0.09)",  to:95,    suffix:"%", label:"Success"  },
-              { icon: ShieldCheck, color:"#0891B2", bg:"rgba(8,145,178,0.09)",  to:100,   suffix:"%", label:"Verified" },
-            ].map(({ icon:Icon, color, bg, to, suffix, label }) => (
+              {
+                icon: Users,
+                color: "#7C3AED",
+                bg: "rgba(124,58,237,0.09)",
+                to: 10000,
+                suffix: "+",
+                label: "Workers",
+              },
+              {
+                icon: TrendingUp,
+                color: "#2563EB",
+                bg: "rgba(37,99,235,0.09)",
+                to: 95,
+                suffix: "%",
+                label: "Success",
+              },
+              {
+                icon: ShieldCheck,
+                color: "#0891B2",
+                bg: "rgba(8,145,178,0.09)",
+                to: 100,
+                suffix: "%",
+                label: "Verified",
+              },
+            ].map(({ icon: Icon, color, bg, to, suffix, label }) => (
               <div key={label} className="stat">
-                <div className="stat-icon" style={{ background: bg }}><Icon size={20} color={color} /></div>
-                <span className="stat-num"><Counter to={to} suffix={suffix} /></span>
+                <div className="stat-icon" style={{ background: bg }}>
+                  <Icon size={20} color={color} />
+                </div>
+                <span className="stat-num">
+                  <Counter to={to} suffix={suffix} />
+                </span>
                 <span className="stat-lbl">{label}</span>
               </div>
             ))}
           </motion.div>
 
           {/* Divider */}
-          <motion.div variants={u} className="divider" style={{ width:"100%" }}>
+          <motion.div
+            variants={u}
+            className="divider"
+            style={{ width: "100%" }}
+          >
             <span>Quick Links</span>
           </motion.div>
 
@@ -391,14 +523,22 @@ export default function LinksPage() {
             {mainLinks.map((link, i) => {
               const inner = (
                 <div className="card-row">
-                  <div className="card-icon" style={{ background: link.bg, boxShadow: `0 8px 20px ${link.glow}` }}>
+                  <div
+                    className="card-icon"
+                    style={{
+                      background: link.bg,
+                      boxShadow: `0 8px 20px ${link.glow}`,
+                    }}
+                  >
                     <link.icon size={22} color="#fff" />
                   </div>
                   <div>
                     <div className="card-title">{link.title}</div>
                     <div className="card-desc">{link.desc}</div>
                   </div>
-                  <div className="arrow"><ArrowRight size={16} /></div>
+                  <div className="arrow">
+                    <ArrowRight size={16} />
+                  </div>
                 </div>
               );
               return (
@@ -406,35 +546,49 @@ export default function LinksPage() {
                   key={link.title}
                   variants={u}
                   className={`card${i === 0 ? " featured" : ""}`}
-                  onClick={link.internal ? () => navigate("/website") : undefined}
+                  onClick={
+                    link.internal ? () => navigate("/website") : undefined
+                  }
                   whileTap={{ scale: 0.99 }}
                 >
-                  {link.internal ? inner : <a href={`https://workid-app.vercel.app${i === 2 ? "/signup/worker" : i === 3 ? "/signup/employer" : ""}`} target="_blank" rel="noopener noreferrer">{inner}</a>}
+                  {link.internal ? (
+                    inner
+                  ) : (
+                    <a
+                      href={`https://workid-app.vercel.app${i === 2 ? "/signup/worker" : i === 3 ? "/signup/employer" : ""}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {inner}
+                    </a>
+                  )}
                 </motion.div>
               );
             })}
           </div>
 
-          {/* Secondary */}
-          <motion.div variants={u} className="sec-grid">
-            {secondaryLinks.map(l => (
-              <a key={l.title} href={l.url} target="_blank" rel="noopener noreferrer" className="sec-card">
-                <div className="sec-icon"><l.icon size={22} color="#7C3AED" /></div>
-                <span>{l.title}</span>
-              </a>
-            ))}
-          </motion.div>
-
           {/* Divider */}
-          <motion.div variants={u} className="divider" style={{ width:"100%", marginBottom: 14 }}>
+          <motion.div
+            variants={u}
+            className="divider"
+            style={{ width: "100%", marginBottom: 14 }}
+          >
             <span>Connect With Us</span>
           </motion.div>
 
           {/* Socials */}
           <motion.div variants={u} className="socials">
-            {socials.map(s => (
-              <motion.a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer"
-                aria-label={s.name} className="soc" style={{ "--c": s.color }} whileTap={{ scale:0.9 }}>
+            {socials.map((s) => (
+              <motion.a
+                key={s.name}
+                href={s.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={s.name}
+                className="soc"
+                style={{ "--c": s.color }}
+                whileTap={{ scale: 0.9 }}
+              >
                 <s.icon size={19} color="#64748B" />
               </motion.a>
             ))}
@@ -443,11 +597,12 @@ export default function LinksPage() {
           {/* Email */}
           <motion.div variants={u} className="email-row">
             <Mail size={14} color="#CBD5E1" />
-            <a href="mailto:hello@workid.lk">hello@workid.lk</a>
+            <a href="mailto:workidjobs@gmail.com">workidjobs@gmail.com</a>
           </motion.div>
 
-          <motion.p variants={u} className="footer">© 2026 WorkID · All rights reserved.</motion.p>
-
+          <motion.p variants={u} className="footer">
+            © 2026 WorkID · All rights reserved.
+          </motion.p>
         </motion.div>
       </div>
     </>
