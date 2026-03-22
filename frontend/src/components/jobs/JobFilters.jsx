@@ -15,9 +15,9 @@ const CATEGORIES = [
 export const SALARY_RANGES = [
     { label: "common.any", min: 0, max: Infinity },
     { label: "common.under_amount", amount: "2,000", min: 0, max: 2000 },
-    { label: "range", min: 2000, max: 5000, rangeText: "2,000 - 5,000" },
-    { label: "range", min: 5000, max: 10000, rangeText: "5,000 - 10,000" },
-    { label: "range", min: 10000, max: Infinity, rangeText: "10,000+" }
+    { label: "common.range", min: 2000, max: 5000, rangeText: "2,000 - 5,000" },
+    { label: "common.range", min: 5000, max: 10000, rangeText: "5,000 - 10,000" },
+    { label: "common.range", min: 10000, max: Infinity, rangeText: "10,000+" }
 ];
 
 export default function JobFilters({ filters, onFilterChange, onReset }) {
@@ -71,7 +71,7 @@ export default function JobFilters({ filters, onFilterChange, onReset }) {
                                 <SelectItem value="all">{t('applications.all')}</SelectItem>
                                 {CATEGORIES.map((cat) => (
                                     <SelectItem key={cat} value={cat}>
-                                        {t(`mock.jobs.${cat}`, cat)}
+                                        {cat}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -93,9 +93,9 @@ export default function JobFilters({ filters, onFilterChange, onReset }) {
                             <SelectContent>
                                 {SALARY_RANGES.map((range, idx) => (
                                     <SelectItem key={idx} value={idx.toString()}>
-                                        {idx === 0 ? t(range.label) :
-                                            idx === 1 ? t(range.label, { amount: range.amount }) :
-                                                range.rangeText ? t('common.range', { min: range.min.toLocaleString(), max: range.max === Infinity ? t('common.plus', { amount: range.min.toLocaleString() }) : range.max.toLocaleString() }) : t(range.label)}
+                                        {idx === 0 && t(range.label)}
+                                        {idx === 1 && t(range.label, { amount: range.amount })}
+                                        {idx >= 2 && range.rangeText}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -116,7 +116,7 @@ export default function JobFilters({ filters, onFilterChange, onReset }) {
                         )}
                         {filters.category && filters.category !== 'all' && (
                             <Badge variant="secondary" className="gap-1">
-                                {t(`mock.jobs.${filters.category}`, filters.category)}
+                                {filters.category}
                                 <X
                                     className="w-3 h-3 cursor-pointer"
                                     onClick={() => onFilterChange({ ...filters, category: 'all' })}

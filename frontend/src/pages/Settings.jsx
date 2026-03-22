@@ -41,7 +41,7 @@ export default function Settings() {
             const reader = new FileReader();
             reader.onloadend = () => {
                 setAvatarPreview(reader.result);
-                toast.success('Photo uploaded! Click Save to confirm.');
+                toast.success(t('common.photoUploaded'));
             };
             reader.readAsDataURL(file);
         }
@@ -57,7 +57,7 @@ export default function Settings() {
             avatar: avatarPreview
             // Note: 'role' is intentionally excluded — it's permanent and cannot be changed.
         });
-        toast.success('Changes saved successfully! ✓');
+        toast.success(t('common.changesSaved'));
     };
 
     return (
@@ -66,8 +66,8 @@ export default function Settings() {
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 <div className="p-8">
                     <div className="mb-8">
-                        <h2 className="text-2xl font-bold text-gray-900">Account</h2>
-                        <p className="text-gray-500 text-sm mt-1">Update your personal information and profile picture...</p>
+                        <h2 className="text-2xl font-bold text-gray-900">{t('settings.account')}</h2>
+                        <p className="text-gray-500 text-sm mt-1">{t('settings.manageAccountDesc')}</p>
                     </div>
 
                     <div className="flex items-center gap-6 mb-10">
@@ -110,7 +110,7 @@ export default function Settings() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                         <div className="space-y-2">
-                            <Label htmlFor="full-name" className="text-sm font-bold text-gray-700">Full Name</Label>
+                            <Label htmlFor="full-name" className="text-sm font-bold text-gray-700">{t('settings.fullName')}</Label>
                             <Input
                                 id="full-name"
                                 value={formData.full_name}
@@ -119,7 +119,7 @@ export default function Settings() {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="email" className="text-sm font-bold text-gray-700">Email Address</Label>
+                            <Label htmlFor="email" className="text-sm font-bold text-gray-700">{t('settings.email')}</Label>
                             <Input
                                 id="email"
                                 type="email"
@@ -129,7 +129,7 @@ export default function Settings() {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="phone" className="text-sm font-bold text-gray-700">Phone Number</Label>
+                            <Label htmlFor="phone" className="text-sm font-bold text-gray-700">{t('settings.phone')}</Label>
                             <Input
                                 id="phone"
                                 value={formData.phone}
@@ -138,7 +138,7 @@ export default function Settings() {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="location" className="text-sm font-bold text-gray-700">Location</Label>
+                            <Label htmlFor="location" className="text-sm font-bold text-gray-700">{t('settings.location')}</Label>
                             <Input
                                 id="location"
                                 value={formData.location}
@@ -148,7 +148,7 @@ export default function Settings() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="experience" className="text-sm font-bold text-gray-700">Experience</Label>
+                            <Label htmlFor="experience" className="text-sm font-bold text-gray-700">{t('common.experience')}</Label>
                             <Input
                                 id="experience"
                                 value={formData.experience}
@@ -164,7 +164,7 @@ export default function Settings() {
                         onClick={handleSave}
                         className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-10 py-6 text-lg rounded-xl shadow-lg shadow-blue-200"
                     >
-                        Save Change
+                        {t('common.saveChanges')}
                     </Button>
                 </div>
             </div>
@@ -172,15 +172,15 @@ export default function Settings() {
             {/* 2. Notifications Section */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
                 <div className="mb-8">
-                    <h2 className="text-2xl font-bold text-gray-900">Notifications</h2>
-                    <p className="text-gray-500 text-sm mt-1">Manage how you receive notifications from us</p>
+                    <h2 className="text-2xl font-bold text-gray-900">{t('settings.notifications')}</h2>
+                    <p className="text-gray-500 text-sm mt-1">{t('settings.smsNotificationsDesc')}</p>
                 </div>
 
                 <div className="divide-y divide-gray-50">
                     <div className="py-5 flex items-center justify-between">
                         <div className="space-y-0.5">
-                            <p className="text-base font-bold text-gray-900">New Job Alerts</p>
-                            <p className="text-sm text-gray-500">Get notified about jobs that matches your skills.</p>
+                            <p className="text-base font-bold text-gray-900">{t('settings.newJobAlerts')}</p>
+                            <p className="text-sm text-gray-500">{t('settings.jobAlertsDetail')}</p>
                         </div>
                         <Switch
                             checked={formData.notifications.jobAlerts}
@@ -193,8 +193,8 @@ export default function Settings() {
                     </div>
                     <div className="py-5 flex items-center justify-between">
                         <div className="space-y-0.5">
-                            <p className="text-base font-bold text-gray-900">Application Updates</p>
-                            <p className="text-sm text-gray-500">Receive updates on your job applications.</p>
+                            <p className="text-base font-bold text-gray-900">{t('settings.applicationUpdates')}</p>
+                            <p className="text-sm text-gray-500">{t('settings.appUpdatesDetail')}</p>
                         </div>
                         <Switch
                             checked={formData.notifications.appUpdates}
@@ -207,8 +207,8 @@ export default function Settings() {
                     </div>
                     <div className="py-5 flex items-center justify-between">
                         <div className="space-y-0.5">
-                            <p className="text-base font-bold text-gray-900">Weekly Summary</p>
-                            <p className="text-sm text-gray-500">A weekly digest of your activity and opportunities.</p>
+                            <p className="text-base font-bold text-gray-900">{t('settings.weeklySummary')}</p>
+                            <p className="text-sm text-gray-500">{t('settings.weeklySummaryDetail')}</p>
                         </div>
                         <Switch
                             checked={formData.notifications.weeklySummary}
@@ -225,20 +225,20 @@ export default function Settings() {
             {/* 3. Language & Region Section */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
                 <div className="mb-8">
-                    <h2 className="text-2xl font-bold text-gray-900">Language & Region</h2>
-                    <p className="text-gray-500 text-sm mt-1">Choose your preferred language for the application.</p>
+                    <h2 className="text-2xl font-bold text-gray-900">{t('settings.languageRegion')}</h2>
+                    <p className="text-gray-500 text-sm mt-1">{t('settings.languageRegionDesc')}</p>
                 </div>
 
                 <div className="max-w-md space-y-2">
-                    <Label className="text-sm font-bold text-gray-700">Language</Label>
-                    <Select defaultValue="en">
+                    <Label className="text-sm font-bold text-gray-700">{t('settings.language')}</Label>
+                    <Select defaultValue={i18n.language} onValueChange={(value) => i18n.changeLanguage(value)}>
                         <SelectTrigger className="h-12 border-gray-100 focus:ring-blue-500">
-                            <SelectValue placeholder="Select Language" />
+                            <SelectValue placeholder={t('settings.selectLanguage')} />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="en">English (UK)</SelectItem>
-                            <SelectItem value="si">Sinhala</SelectItem>
-                            <SelectItem value="ta">Tamil</SelectItem>
+                            <SelectItem value="en">{t('languages.english')}</SelectItem>
+                            <SelectItem value="si">{t('languages.sinhala')}</SelectItem>
+                            <SelectItem value="ta">{t('languages.tamil')}</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>

@@ -1,10 +1,10 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { DollarSign, Clock } from 'lucide-react';
+import { DollarSign, Clock, ArrowLeft, Building, Briefcase } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-export default function JobDetails({ job, onBack, onApply }) {
+export default function JobDetails({ job, onBack, onApply, isApplied }) {
     const { t, i18n } = useTranslation();
     if (!job) return null;
 
@@ -22,12 +22,12 @@ export default function JobDetails({ job, onBack, onApply }) {
 
                 <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-8">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t(`mock.jobs.${job.title}`, job.title)}</h1>
+                        <h1 className="text-3xl font-bold text-gray-900 mb-2">{job.title}</h1>
                         <div className="flex items-center gap-2 text-lg text-gray-600 mb-4">
                             <Building className="w-5 h-5" />
-                            <span className="font-medium">{t(`mock.companies.${job.company}`, job.company)}</span>
+                            <span className="font-medium">{job.company}</span>
                             <span>•</span>
-                            <span className="text-gray-500">{t(`mock.locations.${job.location}`, job.location)}</span>
+                            <span className="text-gray-500">{job.location}</span>
                         </div>
 
                         <div className="flex flex-wrap gap-2 mb-4">
@@ -47,10 +47,11 @@ export default function JobDetails({ job, onBack, onApply }) {
 
                     <Button
                         size="lg"
-                        className="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white shadow-md hover:shadow-lg transition-all"
-                        onClick={() => onApply(job)}
+                        className={`w-full md:w-auto text-white shadow-md hover:shadow-lg transition-all ${isApplied ? 'bg-green-600 hover:bg-green-700 cursor-not-allowed opacity-90' : 'bg-indigo-600 hover:bg-indigo-700'}`}
+                        onClick={() => !isApplied && onApply(job)}
+                        disabled={isApplied}
                     >
-                        {t('jobs.applyNow')}
+                        {isApplied ? t('jobs.appliedStatus') : t('jobs.applyNow')}
                     </Button>
                 </div>
 
@@ -59,14 +60,14 @@ export default function JobDetails({ job, onBack, onApply }) {
                         <section>
                             <h2 className="text-xl font-bold text-gray-900 mb-4">{t('jobs.description')}</h2>
                             <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                                {t(`mock.jobDescriptions.${job.description}`, job.description)}
+                                {job.description}
                             </p>
                         </section>
 
                         <section>
                             <h2 className="text-xl font-bold text-gray-900 mb-4">{t('jobs.requirements')}</h2>
                             <div className="bg-gray-50 p-6 rounded-lg border border-gray-100 italic">
-                                {t(`mock.jobRequirements.${job.requirements}`, job.requirements)}
+                                {job.requirements}
                             </div>
                         </section>
 
@@ -75,7 +76,7 @@ export default function JobDetails({ job, onBack, onApply }) {
                             <div className="flex flex-wrap gap-2">
                                 {job.skills_required?.map((skill, index) => (
                                     <Badge key={index} variant="secondary" className="px-3 py-1">
-                                        {t(`mock.skills.${skill}`, skill)}
+                                        {skill}
                                     </Badge>
                                 ))}
                             </div>
@@ -110,8 +111,8 @@ export default function JobDetails({ job, onBack, onApply }) {
                                 <Building className="w-5 h-5" />
                                 {t('jobs.company')}
                             </h3>
-                            <p className="font-semibold text-indigo-700 mb-1">{t(`mock.companies.${job.company}`, job.company)}</p>
-                            <p className="text-sm text-indigo-600">{t(`mock.locations.${job.location}`, job.location)}</p>
+                            <p className="font-semibold text-indigo-700 mb-1">{job.company}</p>
+                            <p className="text-sm text-indigo-600">{job.location}</p>
                         </div>
                     </div>
                 </div>

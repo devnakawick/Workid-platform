@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Briefcase, Plus, Clock, HourglassIcon, CheckCircle2 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
-import { getAllJobsAPI, deleteJobAPI }  from '../../mocks/jobData';
-import { getAllApplicationsAPI }   from '../../mocks/applicationData';
+import { getAllJobsAPI, deleteJobAPI, categories } from '../../mocks/jobData'; // Added categories import
+import { getAllApplicationsAPI } from '../../mocks/applicationData';
 import JobCard from '../../components/employer/ManageJobCard';
 import JobFilters from '../../components/employer/ManageJobFilters';
 import DeleteConfirmModal from '../../components/employer/DeleteConfirmModal';
@@ -13,12 +13,12 @@ import EmptyState from '../../components/employer/EmptyState';
 const ManageJobs = () => {
   const navigate = useNavigate();
 
-  const [jobs,          setJobs]          = useState([]);
-  const [filteredJobs,  setFilteredJobs]  = useState([]);
-  const [loading,       setLoading]       = useState(true);
-  const [locations,     setLocations]     = useState([]);
+  const [jobs, setJobs] = useState([]);
+  const [filteredJobs, setFilteredJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [locations, setLocations] = useState([]);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
-  const [deleting,      setDeleting]      = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   // Filter state - all filters start at default values
   const [filters, setFilters] = useState({
@@ -28,10 +28,10 @@ const ManageJobs = () => {
 
   // Statistics calculated from jobs list
   const statistics = {
-    total:      jobs.length,
-    open:       jobs.filter(j => j.status === 'open').length,
+    total: jobs.length,
+    open: jobs.filter(j => j.status === 'open').length,
     inProgress: jobs.filter(j => j.status === 'in-progress').length,
-    completed:  jobs.filter(j => j.status === 'completed').length,
+    completed: jobs.filter(j => j.status === 'completed').length,
   };
 
   useEffect(() => { fetchJobs(); }, []);
@@ -56,28 +56,48 @@ const ManageJobs = () => {
         })));
       } else toast.error('Failed to fetch jobs');
     } catch { toast.error('An error occurred'); }
-    finally  { setLoading(false); }
+    finally { setLoading(false); }
   };
 
   // Apply all active filters to jobs list
   const filterJobs = () => {
     let f = [...jobs];
-    if (filters.status   !== 'all') f = f.filter(j => j.status   === filters.status);
-    if (filters.category !== 'all') f = f.filter(j => j.category === filters.category);
-    if (filters.location !== 'all') f = f.filter(j => j.location.split(',')[0].trim() === filters.location);
-    if (filters.minSalary !== '')   f = f.filter(j => j.salary >= Number(filters.minSalary));
-    if (filters.maxSalary !== '')   f = f.filter(j => j.salary <= Number(filters.maxSalary));
+
+    // Status Filter
+    if (filters.status !== 'all') {
+      f = f.filter(j => j.status === filters.status);
+    }
+
+    // Category Filter (Updated logic for 'Other')
+    if (filters.category !== 'all') {
+      if (filters.category === 'Other') {
+        
+        const standardCategories = categories.filter(c => c !== 'Other');
+        f = f.filter(j => !standardCategories.includes(j.category));
+      } else {
+        f = f.filter(j => j.category === filters.category);
+      }
+    }
+
+    // Location Filter
+    if (filters.location !== 'all') {
+      f = f.filter(j => j.location.split(',')[0].trim() === filters.location);
+    }
+
+    // Salary Filters
+    if (filters.minSalary !== '') f = f.filter(j => j.salary >= Number(filters.minSalary));
+    if (filters.maxSalary !== '') f = f.filter(j => j.salary <= Number(filters.maxSalary));
 
     // Date range filter
     if (filters.dateFilter && filters.dateFilter !== 'all') {
-      const now = new Date(); now.setHours(0,0,0,0);
+      const now = new Date(); now.setHours(0, 0, 0, 0);
       f = f.filter(j => {
-        const d = new Date(j.postedDate); d.setHours(0,0,0,0);
+        const d = new Date(j.postedDate); d.setHours(0, 0, 0, 0);
         const diff = Math.floor((now - d) / 86400000);
         if (filters.dateFilter === 'today') return diff === 0;
-        if (filters.dateFilter === '7')     return diff >= 0 && diff <= 7;
-        if (filters.dateFilter === '30')    return diff >= 0 && diff <= 30;
-        if (filters.dateFilter === '90')    return diff >= 0 && diff <= 90;
+        if (filters.dateFilter === '7') return diff >= 0 && diff <= 7;
+        if (filters.dateFilter === '30') return diff >= 0 && diff <= 30;
+        if (filters.dateFilter === '90') return diff >= 0 && diff <= 90;
         return true;
       });
     }
@@ -86,7 +106,7 @@ const ManageJobs = () => {
     if (filters.searchQuery.trim()) {
       const q = filters.searchQuery.toLowerCase();
       f = f.filter(j =>
-        j.title.toLowerCase().includes(q)    ||
+        j.title.toLowerCase().includes(q) ||
         j.category.toLowerCase().includes(q) ||
         j.location.toLowerCase().includes(q)
       );
@@ -95,11 +115,11 @@ const ManageJobs = () => {
   };
 
   const handleFilterChange = (name, value) => setFilters(prev => ({ ...prev, [name]: value }));
-  const clearAllFilters    = () => setFilters({ searchQuery: '', status: 'all', category: 'all', location: 'all', minSalary: '', maxSalary: '', dateFilter: 'all' });
-  const hasActiveFilters   = () =>
+  const clearAllFilters = () => setFilters({ searchQuery: '', status: 'all', category: 'all', location: 'all', minSalary: '', maxSalary: '', dateFilter: 'all' });
+  const hasActiveFilters = () =>
     filters.status !== 'all' || filters.category !== 'all' || filters.location !== 'all' ||
-    filters.minSalary !== '' || filters.maxSalary !== ''   ||
-    (filters.dateFilter && filters.dateFilter !== 'all')   ||
+    filters.minSalary !== '' || filters.maxSalary !== '' ||
+    (filters.dateFilter && filters.dateFilter !== 'all') ||
     filters.searchQuery.trim() !== '';
 
   // Delete job after confirmation
@@ -112,7 +132,7 @@ const ManageJobs = () => {
         toast.success(result.message);
       } else toast.error(result.error || 'Failed to delete job');
     } catch { toast.error('An error occurred'); }
-    finally  { setDeleting(false); setDeleteConfirm(null); }
+    finally { setDeleting(false); setDeleteConfirm(null); }
   };
 
   return (
@@ -142,14 +162,14 @@ const ManageJobs = () => {
               {/* Statistics cards — click to filter by status */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 {[
-                  { label: 'Total Jobs',  value: statistics.total,      icon: Briefcase,     color: 'gray',   status: null          },
-                  { label: 'Open Jobs',   value: statistics.open,       icon: Clock,         color: 'green',  status: 'open'        },
+                  { label: 'Total Jobs', value: statistics.total, icon: Briefcase, color: 'gray', status: 'all' }, // Changed null to 'all'
+                  { label: 'Open Jobs', value: statistics.open, icon: Clock, color: 'green', status: 'open' },
                   { label: 'In Progress', value: statistics.inProgress, icon: HourglassIcon, color: 'yellow', status: 'in-progress' },
-                  { label: 'Completed',   value: statistics.completed,  icon: CheckCircle2,  color: 'blue', status: 'completed'   },
+                  { label: 'Completed', value: statistics.completed, icon: CheckCircle2, color: 'blue', status: 'completed' },
                 ].map(({ label, value, icon: Icon, color, status }) => (
                   <div key={label}
-                    onClick={() => status && handleFilterChange('status', status)}
-                    className={`bg-white rounded-xl p-5 shadow-md hover:shadow-lg transition-shadow ${status ? 'cursor-pointer' : ''}`}>
+                    onClick={() => handleFilterChange('status', status)}
+                    className="bg-white rounded-xl p-5 shadow-md hover:shadow-lg transition-shadow cursor-pointer">
                     <div className="flex items-center gap-3">
                       <div className={`w-12 h-12 bg-${color}-100 rounded-lg flex items-center justify-center`}>
                         <Icon className={`w-6 h-6 text-${color}-600`} />

@@ -1,10 +1,52 @@
 {
+    "common": {
+        "welcomeBack": "නැවත සාදරයෙන් පිළිගනිමු, {{name}}",
+        "available": "ලබා ගත හැකිය",
+        "unavailable": "ලබා ගත නොහැකිය",
+        "statusUpdated": "තත්ත්වය {{status}} ලෙස යාවත්කාලීන කරන ලදී",
+        "viewAll": "සියල්ල බලන්න",
+        "saveChanges": "වෙනස්කම් සුරකින්න",
+        "saveChange": "වෙනස්කම් සුරකින්න",
+        "signingIn": "ඇතුල් වෙමින්...",
+        "signingUp": "ගිණුම නිර්මාණය කරමින්...",
+        "or": "හෝ",
+        "note": "සටහන",
+        "experience": "අත්දැකීම්",
+        "yrs": "වසර",
+        "since": "සිට",
+        "photoUploaded": "ඡායාරූපය උඩුගත කරන ලදී! තහවුරු කිරීමට සුරකින්න ක්ලික් කරන්න.",
+        "changesSaved": "වෙනස්කම් සාර්ථකව සුරකින ලදී! ✓",
+        "currency": "LKR",
+        "dailyRate": "දෛනික වැටුප",
+        "perDay": "දිනකට",
+        "home": "මුල් පිටුව",
+        "features": "විශේෂාංග",
+        "units": {
+            "b": "B",
+            "kb": "KB",
+            "mb": "MB"
+        },
+        "any": "ඕනෑම",
+        "under_amount": "{{amount}} ට අඩු",
+        "range": "{{min}} - {{max}}",
+        "plus": "{{amount}}+",
+        "locationPlaceholder": "උදා: කොළඹ, බස්නාහිර පළාත"
+    },
     "nav": {
+        "dashboard": "දළ විශ්ලේෂණය",
+        "postJob": "රැකියාවක් පළ කරන්න",
+        "manageJobs": "රැකියා කළමනාකරණය",
+        "applications": "අයදුම්පත්",
+        "findWorkers": "සේවකයින් සොයන්න",
+        "myJobs": "මගේ සක්‍රීය රැකියා",
         "findJobs": "රැකියා සොයන්න",
-        "myApplications": "මගේ අයදුම්පත්",
+        "profile": "පැතිකඩ",
         "documents": "ලේඛන",
-        "learning": "ඉගෙනීම",
+        "learning": "ඉගෙනීම සහ කුසලතා",
         "badges": "ලාංඡන",
+        "wallet": "පසුම්බිය",
+        "support": "සහාය",
+        "settings": "සැකසුම්",
         "logout": "පිටවන්න"
     },
     "jobs": {
@@ -33,7 +75,9 @@
         "rate": "ගාස්තුව",
         "job_type": "රැකියා වර්ගය",
         "skills": "අවශ්‍ය කුසලතා",
-        "posted": "පළ කරන ලද්දේ {{date}}"
+        "posted": "පළ කරන ලද්දේ {{date}}",
+        "company": "ආයතනය",
+        "appliedStatus": "අයදුම් කර ඇත"
     },
     "applications": {
         "title": "මගේ අයදුම්පත්",
@@ -42,6 +86,7 @@
         "startApplying": "ඒවා මෙහි දැකීමට රැකියා සඳහා අයදුම් කිරීම ආරම්භ කරන්න",
         "withdraw": "ඉල්ලා අස්කර ගන්න",
         "withdraw_success": "අයදුම්පත සාර්ථකව ඉල්ලා අස්කර ගන්නා ලදී",
+        "apply_success": "අයදුම්පත සාර්ථකව ඉදිරිපත් කරන ලදී",
         "appliedDate": "අයදුම් කළ දිනය: {{date}}",
         "coverMessage": "ආවරණ පණිවිඩය:",
         "all": "සියල්ල",
@@ -65,7 +110,10 @@
         "id": "හැඳුනුම්පත",
         "other": "වෙනත්",
         "uploaded": "උඩුගත කළ දිනය: {{date}}",
-        "download": "බාගත කරන්න"
+        "download": "බාගත කරන්න",
+        "dropToUpload": "උඩුගත කිරීමට ගොනු මෙතැනට දමන්න",
+        "upload_success_one": "ලේඛන {{count}} ක් සාර්ථකව උඩුගත කරන ලදී",
+        "upload_success_other": "ලේඛන {{count}} ක් සාර්ථකව උඩුගත කරන ලදී"
     },
     "learning": {
         "title": "ඉගෙනීම සහ සංවර්ධනය",
@@ -142,16 +190,37 @@
         "profileVisibility": "ඔබේ පැතිකඩ දිස්වන්නේ තහවුරු කළ සේවා යෝජකයන්ට පමණි. බෙදාගන්නා තොරතුරු ඔබ පාලනය කරයි.",
         "accountSecurity": "ගිණුම් ආරක්ෂාව",
         "2faRecommendation": "අමතර ආරක්ෂාව සඳහා ද්වි-සාධක සත්‍යාපනය සක්‍රීය කිරීමට අපි නිර්දේශ කරමු.",
-        "languageUpdated": "භාෂා මනාපය යාවත්කාලීන කරන ලදී!"
+        "languageUpdated": "භාෂා මනාපය යාවත්කාලීන කරන ලදී!",
+        "languageRegion": "භාෂාව සහ ප්‍රදේශය",
+        "manageAccountDesc": "ඔබේ පුද්ගලික තොරතුරු සහ පැතිකඩ ඡායාරූපය යාවත්කාලීන කරන්න...",
+        "changePhoto": "ඡායාරූපය වෙනස් කරන්න",
+        "remove": "ඉවත් කරන්න",
+        "newJobAlerts": "නව රැකියා ඇඟවීම්",
+        "jobAlertsDetail": "ඔබේ කුසලතාවන්ට ගැලපෙන රැකියා පිළිබඳව දැනුම් දෙන්න.",
+        "appUpdatesDetail": "ඔබේ රැකියා අයදුම්පත් පිළිබඳ යාවත්කාලීන ලබා ගන්න.",
+        "weeklySummary": "සතිපතා සාරාංශය",
+        "weeklySummaryDetail": "ඔබේ ක්‍රියාකාරකම් සහ අවස්ථා පිළිබඳ සතිපතා සාරාංශයක්.",
+        "languageRegionDesc": "යෙදුම සඳහා ඔබ කැමති භාෂාව තෝරන්න."
     },
     "footer": {
         "description": "තහවුරු කරන ලද ඩිජිටල් අනන්‍යතා සහ රැකියා අවස්ථා සමඟ සේවකයින් සවිබල ගැන්වීම.",
+        "descriptionLong": "ශ්‍රී ලංකාව පුරා සිටින දක්ෂ සේවකයින් අවස්ථාවන් සමඟ සම්බන්ධ කිරීම. රැකියාවෙන් රැකියාවට අනාගතය ගොඩනැගීම.",
         "quickLinks": "ඉක්මන් සබැඳි",
         "support": "සහාය",
         "helpCenter": "උදව් මධ්‍යස්ථානය",
         "privacyPolicy": "පෞද්ගලිකත්ව ප්‍රතිපත්තිය",
         "termsOfService": "සේවා කොන්දේසි",
-        "allRightsReserved": "සියලුම හිමිකම් ඇවිරිණි."
+        "allRightsReserved": "සියලුම හිමිකම් ඇවිරිණි.",
+        "aboutUs": "අපි ගැන",
+        "browseJobs": "රැකියා බලන්න",
+        "findWorkers": "සේවකයින් සොයන්න",
+        "howItWorks": "එය ක්‍රියා කරන ආකාරය",
+        "pricing": "මිල ගණන්",
+        "faq": "නිති අසන පැණ",
+        "contactUs": "අපව සම්බන්ධ කරගන්න",
+        "contactInfo": "සම්බන්ධතා තොරතුරු",
+        "privacy": "පෞද්ගලිකත්වය",
+        "terms": "කොන්දේසි"
     },
     "errors": {
         "pageNotFound": "පිටුව හමු නොවීය",
@@ -165,130 +234,354 @@
         "sinhala": "සිංහල",
         "tamil": "දෙමළ (தமிழ்)"
     },
-    "common": {
-        "remote": "දුරස්ථ",
-        "fullTime": "පූර්ණ කාලීන",
-        "fulltime": "පූර්ණ කාලීන",
-        "partTime": "අර්ධකාලීන",
-        "parttime": "අර්ධකාලීන",
-        "contract": "කොන්ත්‍රාත්",
-        "temporary": "තාවකාලික",
-        "onCall": "ඇමතුම් මත",
-        "oncall": "ඇමතුම් මත",
-        "urgent": "හදිසි",
-        "any": "ඕනෑම",
-        "under": "අඩු",
-        "under_amount": "{{amount}} ට අඩු",
-        "locationPlaceholder": "ස්ථානය ඇතුළත් කරන්න...",
-        "currency": "LKR",
-        "more": "+{{count}} තවත්",
-        "units": {
-            "b": "බයිට්",
-            "kb": "KB",
-            "mb": "MB"
+    "landing": {
+        "heroTitle": "ශ්‍රී ලාංකික සේවකයින් සඳහා තහවුරු කරන ලද ඩිජිටල් අනන්‍යතාවය",
+        "heroSubtitle": "ඔබේ වෘත්තීය කීර්තිය ගොඩනැගීමට, රැකියා සෙවීමට සහ තහවුරු කළ කුසලතා ලාංඡන සමඟ ඔබේ වෘත්තිය වර්ධනය කර ගැනීමට වඩාත්ම විශ්වාසදායක වේදිකාව.",
+        "getStarted": "ආරම්භ කරන්න",
+        "learnMore": "වැඩිදුර දැනගන්න",
+        "howItWorksTitle": "එය ක්‍රියා කරන ආකාරය",
+        "whyChooseTitle": "WorkID තෝරා ගන්නේ ඇයි?",
+        "features": {
+            "verifiedIdentity": "තහවුරු කළ අනන්‍යතාවය",
+            "verifiedIdentityDesc": "ඕනෑම සේවා යෝජකයෙකුට ඔබ කවුදැයි ඔප්පු කරන ආරක්ෂිත ඩිජිටල් හැඳුනුම්පත.",
+            "smartJobMatching": "බුද්ධිමත් ගැලපීම",
+            "smartJobMatchingDesc": "ඔබේ කුසලතා, ස්ථානය සහ අපේක්ෂිත වැටුපට හොඳින් ගැලපෙන රැකියා සමඟ සම්බන්ධ වන්න.",
+            "skillBadges": "කුසලතා ලාංඡන",
+            "skillBadgesDesc": "තහවුරු කරන ලද කාර්යයන් හරහා ඔබේ තාක්ෂණික සහ මෘදු කුසලතා සඳහා ඩිජිටල් ලාංඡන ලබා ගන්න.",
+            "digitalIdentity": "ඩිජිටල් අනන්‍යතාවය",
+            "digitalIdentityDesc": "ඔබේ වෘත්තීය පැතිකඩ තහවුරු කර ඇති අතර සැමවිටම ප්‍රවේශ විය හැකිය.",
+            "reputationScore": "කීර්තිමත් ලකුණු",
+            "reputationScoreDesc": "ඔබේ වැඩ ඉතිහාසය මත පදනම් වූ විනිවිද පෙනෙන ලකුණු සංඛ්‍යාවක් සමඟ විශ්වාසය ගොඩනඟා ගන්න.",
+            "jobMatching": "රැකියා ගැලපීම",
+            "jobMatchingDesc": "ඔබේ නිශ්චිත කුසලතාවන්ට ගැලපෙන දේශීය අවස්ථා සොයා ගන්න.",
+            "learningTasks": "ඉගෙනුම් කාර්යයන්",
+            "learningTasksDesc": "අපගේ ව්‍යුහගත ඉගෙනුම් මොඩියුල හරහා ඔබේ කුසලතා වැඩි දියුණු කරන්න.",
+            "wageTransparency": "වැටුප් විනිවිදභාවය",
+            "wageTransparencyDesc": "අයදුම් කිරීමට පෙර ගෙවීම දැන ගන්න. සැඟවුණු ගාස්තු හෝ පුදුම කිරීම් නොමැත.",
+            "profileBadges": "පැතිකඩ ලාංඡන",
+            "profileBadgesDesc": "ඔබේ ජයග්‍රහණ සහ සහතික කිරීම් ඔබේ පැතිකඩෙහි ආඩම්බරයෙන් ප්‍රදර්ශනය කරන්න."
         },
-        "cancel": "අවලංගු කරන්න",
-        "range": "{{min}} - {{max}}",
-        "plus": "{{amount}}+"
+        "challengesTitle": "අභියෝග",
+        "challenges": {
+            "noIdentity": "තහවුරු කළ හැකි වෘත්තීය අනන්‍යතාවයක් නොමැතිකම",
+            "lowTrust": "සේවකයින් සහ සේවා යෝජකයින් අතර අඩු විශ්වාසය",
+            "difficultyFinding": "විශ්වාසදායක රැකියා අවස්ථා සොයා ගැනීමේ අපහසුව"
+        },
+        "solutionsTitle": "අපගේ විසඳුම්",
+        "solutions": {
+            "secureProfiles": "ආරක්ෂිත, තහවුරු කළ වෘත්තීය පැතිකඩ",
+            "reputationScores": "විනිවිද පෙනෙන කීර්තිනාම සහ ශ්‍රේණිගත කිරීමේ පද්ධති",
+            "directAccess": "තහවුරු කරන ලද සේවා යෝජක අවස්ථා සඳහා සෘජු ප්‍රවේශය"
+        },
+        "steps": {
+            "createProfile": "පැතිකඩක් සාදන්න",
+            "getVerified": "තහවුරු කර ගන්න",
+            "applyJobs": "රැකියා සඳහා අයදුම් කරන්න",
+            "trackWork": "වැඩ නිරීක්ෂණය කරන්න",
+            "buildReputation": "කීර්තිය ගොඩනඟන්න"
+        },
+        "ctaTitle": "ඔබේ වෘත්තීය අනාගතය ගොඩනැගීමට සූදානම්ද?",
+        "getStartedNow": "දැන්ම ආරම්භ කරන්න",
+        "getStartedDialogTitle": "WorkID වේදිකාවට සම්බන්ධ වන්න",
+        "getStartedDialogDesc": "ඔබ වේදිකාව භාවිතා කිරීමට කැමති ආකාරය තෝරන්න. ඔබට පවතින ගිණුමට ඇතුළු වීමට හෝ නව ගිණුමක් සෑදිය හැක.",
+        "createAccountTitle": "නව ගිණුමක් සාදන්න",
+        "signupAsDesc": "ඔබ රැකියාවක් සොයන්නේද නැතිනම් දක්ෂ සේවකයින් බඳවා ගැනීමට සොයන්නේද යන්න තෝරන්න."
     },
-    "mock": {
-        "jobs": {
-            "Cleaning": "පිරිසිදු කිරීම්",
-            "Construction": "ඉදිකිරීම්",
-            "Plumbing": "නල පද්ධති වැඩ",
-            "Electrical": "විදුලි වැඩ",
-            "Gardening": "ගෙවතු වගාව",
-            "Cooking": "ඉවුම් පිහුම්",
-            "Delivery": "බෙදා හැරීමේ සේවා",
-            "Carpentry": "වඩු වැඩ",
-            "Painting": "පින්තාරු කිරීම",
-            "Driving": "රිය පැදවීම",
-            "HVAC": "වායු සමීකරණ",
-            "Other": "වෙනත්"
+    "employerDashboard": {
+        "manageJobsSubtitle": "ඔබේ රැකියා වෙන් කිරීම් සහ අයදුම්කරුවන් කළමනාකරණය කරන්න.",
+        "stats": {
+            "postedJobs": "පළ කළ රැකියා",
+            "postedJobsChange": "මේ සතියේ +2",
+            "applications": "අයදුම්පත්",
+            "applicationsChange": "මේ සතියේ +3",
+            "moneySpent": "වියදම් කළ මුදල",
+            "moneySpentChange": "සම්පූර්ණ ප්‍රමාණයෙන් 47%",
+            "hired": "බඳවා ගත් අය",
+            "hiredChange": "මේ සතියේ +1"
         },
-        "courses": {
-            "Carpentry": "වඩු වැඩ",
-            "Carpentry_desc": "රාමු සෑදීම සහ සියුම් වඩු වැඩ කුසලතා ඉගෙන ගන්න",
-            "Job Site Communication": "රැකියා ස්ථානයේ සන්නිවේදනය",
-            "Job Site Communication_desc": "ඉදිකිරීම් බිම්වල වෘත්තීය සන්නිවේදන කලාව ප්‍රගුණ කරන්න",
-            "Workplace Safety Fundamentals": "වැඩබිම් ආරක්ෂාව පිළිබඳ මූලික කරුණු",
-            "Workplace Safety Fundamentals_desc": "ඉදිකිරීම් බිම් සඳහා අත්‍යවශ්‍ය ආරක්ෂක පිළිවෙත්",
-            "Business Spanish": "ව්‍යාපාරික ස්පාඤ්ඤ භාෂාව",
-            "Business Spanish_desc": "වෘත්තීය සැකසුම් සඳහා ස්පාඤ්ඤ භාෂාව ඉගෙන ගන්න",
-            "Blueprint Reading & Estimation": "සැලසුම් කියවීම සහ තක්සේරු කිරීම",
-            "Blueprint Reading & Estimation_desc": "සවිස්තරාත්මක සැලසුම් කියවීමට සහ ද්‍රව්‍ය පිරිවැය නිවැරදිව ඇස්තමේන්තු කිරීමට ඉගෙන ගන්න",
-            "Personal Finance Management": "පෞද්ගලික මූල්‍ය කළමනාකරණය",
-            "Personal Finance Management_desc": "අයවැය සකස් කිරීම, ආයෝජනය කිරීම සහ මූල්‍ය සැලසුම්කරණය"
+        "recentlyPosted": "මෑතකදී පළ කරන ලද",
+        "recentNotifications": "මෑත දැනුම්දීම්",
+        "recentApplications": "මෑත අයදුම්පත්",
+        "viewAll": "සියල්ල බලන්න",
+        "viewAllApplications": "සියලුම අයදුම්පත් බලන්න",
+        "filter": "පෙරහන්",
+        "table": {
+            "applicant": "අයදුම්කරු",
+            "jobPosting": "රැකියා පළ කිරීම",
+            "experience": "අත්දැකීම්",
+            "appliedDate": "අයදුම් කළ දිනය",
+            "status": "තත්ත්වය",
+            "actions": "ක්‍රියාමාර්ග"
+        }
+    },
+    "auth": {
+        "signInTitle": "ඔබේ ගිණුමට ඇතුල් වන්න",
+        "signUpTitle": "{{role}} ලෙස ලියාපදිංචි වන්න",
+        "signIn": "ඇතුල් වන්න",
+        "signUp": "ලියාපදිංචි වන්න",
+        "emailAddress": "විද්‍යුත් තැපෑල",
+        "phoneNumber": "දුරකථන අංකය",
+        "password": "මුරපදය",
+        "confirmPassword": "මුරපදය තහවුරු කරන්න",
+        "fullName": "සම්පූර්ණ නම",
+        "createPassword": "මුරපදයක් නිර්මාණය කරන්න",
+        "worker": "සේවකයා",
+        "employer": "සේවා යෝජකයා",
+        "noAccount": "ගිණුමක් නොමැතිද?",
+        "alreadyHaveAccount": "දැනටමත් ගිණුමක් තිබේද?",
+        "forgotPassword": "මුරපදය අමතක වූවාද?",
+        "termsPolicy": "ඇතුල් වීමෙන්, ඔබ අපගේ සේවා කොන්දේසි සහ පෞද්ගලිකත්ව ප්‍රතිපත්තියට එකඟ වේ",
+        "createAccount": "ගිණුම නිර්මාණය කරන්න",
+        "phonePlaceholder": "07X XXX XXXX",
+        "emailPlaceholder": "ඔබේ විද්‍යුත් තැපෑල",
+        "namePlaceholder": "ජෝන් ඩෝ",
+        "passwordPlaceholder": "••••••••",
+        "forgotPasswordToast": "මුරපදය යළි පිහිටුවීමේ විශේෂාංගය ළඟදීම පැමිණේ!"
+    },
+    "workerDashboard": {
+        "completeProfile": "ඔබේ පැතිකඩ සම්පූර්ණ කරන්න",
+        "profileCompletionDesc": "ඔබ බොහෝ දුරට අවසන්! වැඩි රැකියා අවස්ථා ලබා ගැනීමට ඔබේ පැතිකඩ සම්පූර්ණ කරන්න",
+        "completeNow": "දැන් සම්පූර්ණ කරන්න",
+        "profilePhoto": "පැතිකඩ ඡායාරූපය",
+        "skillsAdded": "කුසලතා එක් කරන ලදී",
+        "bioWritten": "චරිතාපදානය ලියන ලදී",
+        "profileVerified": "පැතිකඩ තහවුරු කරන ලදී",
+        "stats": {
+            "activeJobs": "ක්‍රියාකාරී රැකියා",
+            "completedJobs": "සම්පූර්ණ කළ රැකියා",
+            "rating": "ශ්‍රේණිගත කිරීම",
+            "thisMonth": "මේ මාසයේ"
         },
-        "durations": {
-            "12 weeks": "සති 12",
-            "4 weeks": "සති 4",
-            "2 weeks": "සති 2",
-            "8 weeks": "සති 8",
-            "6 weeks": "සති 6"
+        "reputation": "කීර්තිය",
+        "upcomingJobs": "ඉදිරි රැකියා",
+        "thisWeek": "මේ සතියේ",
+        "nextWeek": "ලබන සතියේ",
+        "thisMonthTab": "මේ මාසයේ"
+    },
+    "postJob": {
+        "title": "නව රැකියාවක් පළ කරන්න",
+        "subtitle": "ඔබේ රැකියාව පළ කිරීමට සහ නිවැරදි සේවකයින් සොයා ගැනීමට විස්තර පුරවන්න",
+        "back": "ආපසු",
+        "confirmCancel": "ඔබට විශ්වාසද? ඇතුළත් කළ සියලුම දත්ත නැති වනු ඇත.",
+        "postButton": "රැකියාව පළ කරන්න",
+        "posting": "රැකියාව පළ කරමින්...",
+        "updating": "යාවත්කාලීන කරමින්...",
+        "cancel": "අවලංගු කරන්න",
+        "tip": {
+            "label": "ඉඟිය:",
+            "text": "නිවැරදි සේවකයින් ආකර්ෂණය කර ගැනීම සඳහා ඔබේ රැකියා විස්තරයේ නිශ්චිත හා සවිස්තරාත්මක වන්න. වැඩ කරන වේලාවන්, ආරක්ෂක අවශ්‍යතා සහ ඕනෑම විශේෂ කොන්දේසි ඇතුළත් කරන්න."
         },
-        "badges": {
-            "Safety Champion": "ආරක්ෂක ශූරයා",
-            "Safety Champion_desc": "සියලුම ආරක්ෂක පුහුණු පාඨමාලා සම්පූර්ණ කරන ලදී",
-            "Skilled Worker": "දක්ෂ සේවකයා",
-            "Skilled Worker_desc": "වෘත්තීය නිපුණතා පාඨමාලා 5ක් සම්පූර්ණ කරන ලදී",
-            "Team Player": "කණ්ඩායම් ක්‍රීඩකයා",
-            "Team Player_desc": "විශිෂ්ඨ සහයෝගීතාවය සහ සන්නිවේදනය",
-            "Excellence Award": "විශිෂ්ටතා සම්මානය",
-            "Excellence Award_desc": "සියලුම අංශවල කැපී පෙනෙන දස්කම්",
-            "Quick Learner": "ඉක්මනින් ඉගෙන ගන්නා",
-            "Quick Learner_desc": "දින 30ක් ඇතුළත පාඨමාලා 3ක් සම්පූර්ණ කරන ලදී"
+        "basics": {
+            "title": "ප්‍රධාන විස්තර",
+            "subtitle": "රැකියාව කුමක්ද?",
+            "jobTitle": "රැකියා මාතෘකාව *",
+            "jobTitleLabel": "රැකියා මාතෘකාව *",
+            "jobTitlePlaceholder": "උදා: නිවාස ඉදිකිරීම සඳහා පළපුරුදු පෙදරේරුවෙකු අවශ්‍යයි",
+            "category": "වර්ගය *",
+            "categoryLabel": "වර්ගය *",
+            "selectCategory": "වර්ගයක් තෝරන්න",
+            "customCategory": "අභිරුචි වර්ගය *",
+            "customCategoryPlaceholder": "ඔබේ අභිරුචි වර්ගය ඇතුළත් කරන්න",
+            "description": "රැකියා විස්තරය *",
+            "descriptionPlaceholder": "රැකියා අවශ්‍යතා, වගකීම් සහ ඔබ සොයන දේ සවිස්තරාත්මකව විස්තර කරන්න...",
+            "charCount": "අක්ෂර {{count}} / 1000",
+            "categories": {
+                "Construction": "ඉදිකිරීම්",
+                "Electrical": "විදුලි",
+                "Plumbing": "නල පද්ධති (ජලනල)",
+                "Carpentry": "වඩු වැඩ",
+                "Painting": "පින්තාරු කිරීම",
+                "Cleaning": "පිරිසිදු කිරීම",
+                "Gardening": "ගෙවතු වගාව",
+                "Delivery": "බෙදා හැරීම",
+                "Masonry": "පෙදරේරු",
+                "Welding": "වෑල්ඩින් (පෑස්සුම්)",
+                "Other": "වෙනත්"
+            }
         },
-        "locations": {
-            "Colombo, Western Province": "කොළඹ, බස්නාහිර පළාත",
-            "Badulla, Uva Province": "බදුල්ල, ඌව පළාත",
-            "Kandy, Central Province": "මහනුවර, මධ්‍යම පළාත",
-            "Galle, Southern Province": "ගාල්ල, දකුණු පළාත",
-            "Jaffna, Northern Province": "යාපනය, උතුරු පළාත"
+        "locationPay": {
+            "title": "ස්ථානය සහ ගෙවීම",
+            "subtitle": "කොහේද සහ කොපමණද?",
+            "location": "ස්ථානය *",
+            "locationPlaceholder": "උදා: කොළඹ, ශ්‍රී ලංකාව",
+            "paymentRate": "ගෙවුම් අනුපාතය *",
+            "paymentHint": "මුදල ඇතුළත් කර ගෙවීමේ කාල සීමාව තෝරන්න",
+            "duration": "කාල සීමාව *",
+            "durationPlaceholder": "උදා: මාස 2, සති 3, දින 10",
+            "periods": {
+                "hourly": "පැය",
+                "daily": "දවස",
+                "weekly": "සතිය",
+                "monthly": "මාසය",
+                "fixed": "ස්ථාවර"
+            }
         },
-        "companies": {
-            "Elite Woodworks": "එලයිට් වුඩ්වර්ක්ස්",
-            "PowerBright Systems": "පවර්බ්‍රයිට් සිස්ටම්ස්",
-            "BuildIt Construction": "බිල්ඩ්ඉට් කන්ස්ට්‍රක්ෂන්",
-            "Climate Control Pros": "ක්ලයිමේට් කොන්ට්‍රෝල් ප්‍රෝස්",
-            "FlowMasters Plumbing": "ෆ්ලෝමාස්ටර්ස් ප්ලම්බින්"
+        "workforce": {
+            "title": "සේවක පිරිස",
+            "subtitle": "ඔබට කී දෙනෙක් අවශ්‍යද?",
+            "workersNeeded": "අවශ්‍ය සේවක සංඛ්‍යාව *",
+            "workersPlaceholder": "සේවකයින් සංඛ්‍යාව",
+            "workersHint": "මෙම රැකියාව සඳහා ඔබට සේවකයින් කී දෙනෙකු අවශ්‍යද?"
         },
-        "jobDescriptions": {
-            "We are seeking a carpenter to lead custom framing and finish work for high-end residential projects.": "අපි උසස් නේවාසික ව්‍යාපෘති සඳහා රාමු සෑදීම සහ නිම කිරීමේ වැඩ මෙහෙයවීම සඳහා වඩු කාර්මිකයෙකු සොයමු.",
-            "Experienced electrician needed for large-scale commercial installations and system upgrades.": "මහා පරිමාණ වාණිජ ස්ථාපනයන් සහ පද්ධති වැඩිදියුණු කිරීම සඳහා පළපුරුදු විදුලි කාර්මිකයෙකු අවශ්‍ය වේ.",
-            "Lead construction projects from planning to completion.": "සැලසුම් කිරීමේ සිට අවසානය දක්වා ඉදිකිරීම් ව්‍යාපෘති මෙහෙයවීම.",
-            "Install, maintain, and repair heating, ventilation, and air conditioning systems.": "තාපනය, වාතාශ්‍රය සහ වායු සමීකරණ පද්ධති ස්ථාපනය කිරීම, නඩත්තු කිරීම සහ අලුත්වැඩියා කිරීම.",
-            "Residential and commercial plumbing repairs and installations.": "නේවාසික සහ වාණිජ නල පද්ධති අලුත්වැඩියා කිරීම් සහ ස්ථාපනය කිරීම්."
+        "requirements": {
+            "title": "අතිරේක අවශ්‍යතා",
+            "optional": "අත්‍යවශ්‍ය නොවේ",
+            "subtitle": "වෙනත් විශේෂ කොන්දේසි තිබේද?",
+            "noRequirements": "තවමත් අතිරේක අවශ්‍යතා එක් කර නැත",
+            "placeholder": "උදා: වලංගු රියදුරු බලපත්‍රයක් තිබිය යුතුය, වසර 5+ අත්දැකීම්",
+            "addButton": "එක් කරන්න",
+            "remove": "අවශ්‍යතාවය ඉවත් කරන්න"
         },
-        "jobRequirements": {
-            "Experience with custom framing and finish work": "රාමු සෑදීම සහ නිම කිරීමේ වැඩ පිළිබඳ පළපුරුද්ද",
-            "Electrician License, commercial experience": "විදුලි කාර්මික බලපත්‍රය, වාණිජ අත්දැකීම්",
-            "PMP certification, 7+ years of construction management": "PMP සහතිකය, ඉදිකිරීම් කළමනාකරණය පිළිබඳ වසර 7+ පළපුරුද්ද",
-            "HVAC Certification, 3+ years field experience, valid driver's license": "HVAC සහතිකය, වසර 3+ ක්ෂේත්‍ර පළපුරුද්ද, වලංගු රියදුරු බලපත්‍රය",
-            "Journeyman License, 4+ years experience, own tools": "Journeyman බලපත්‍රය, වසර 4+ පළපුරුද්ද, තමන්ගේම මෙවලම්"
+        "validation": {
+            "fixErrors": "කරුණාකර පහත දෝෂ නිවැරදි කරන්න",
+            "titleRequired": "රැකියා මාතෘකාව අවශ්‍ය වේ",
+            "titleMin": "රැකියා මාතෘකාව අවම වශයෙන් අක්ෂර 5ක් විය යුතුය",
+            "descRequired": "රැකියා විස්තරය අවශ්‍ය වේ",
+            "categoryRequired": "කරුණාකර වර්ගයක් තෝරන්න",
+            "customCategoryRequired": "කරුණාකර ඔබේ අභිරුචි වර්ගය දක්වන්න",
+            "customCategoryMin": "අභිරුචි වර්ගය අවම වශයෙන් අක්ෂර 3ක් විය යුතුය",
+            "locationRequired": "ස්ථානය අවශ්‍ය වේ",
+            "salaryRequired": "වැටුප අවශ්‍ය වේ",
+            "salaryMin": "වැටුප 0 ට වඩා වැඩි විය යුතුය",
+            "salaryMinAmount": "වැටුප අවම වශයෙන් LKR 100 ක් විය යුතුය",
+            "durationRequired": "රැකියා කාලය අවශ්‍ය වේ",
+            "workersRequired": "අවම වශයෙන් 1 සේවකයෙකු අවශ්‍ය වේ",
+            "reqMin": "අවශ්‍යතාවය අවම වශයෙන් අක්ෂර 3ක් විය යුතුය",
+            "reqEmpty": "කරුණාකර අවශ්‍යතාවයක් ඇතුළත් කරන්න",
+            "reqExists": "මෙම අවශ්‍යතාවය දැනටමත් එක් කර ඇත"
         },
-        "documents": {
-            "Resume - Updated 2024": "සාරාංශය - යාවත්කාලීන කළ 2024",
-            "Certification - Safety Training": "සහතික කිරීම - ආරක්ෂක පුහුණුව",
-            "Portfolio 2024": "කෘති එකතුව 2024",
-            "Driver License": "රියදුරු බලපත්‍රය"
+        "success": {
+            "posted": "රැකියාව සාර්ථකව පළ කරන ලදී",
+            "reqAdded": "අවශ්‍යතාවය එක් කරන ලදී",
+            "reqRemoved": "අවශ්‍යතාවය ඉවත් කරන ලදී"
+        }
+    },
+    "reviewApps": {
+        "title": "අයදුම්පත් සමාලෝචනය",
+        "subtitle": "ඔබේ රැකියා සඳහා සේවක අයදුම්පත් සමාලෝචනය සහ කළමනාකරණය කරන්න",
+        "back": "අයදුම්කරුවන් වෙත ආපසු",
+        "selectToView": "අයදුම්කරුවෙකුගේ පැතිකඩ බැලීමට තෝරන්න",
+        "tabs": {
+            "overview": "දළ විශ්ලේෂණය",
+            "rating": "ශ්‍රේණිගත කිරීම",
+            "progress": "රැකියා ප්‍රගතිය"
         },
-        "coverMessages": {
-            "I am excited to apply for this position...": "මම මෙම තනතුර සඳහා අයදුම් කිරීමට උනන්දු වෙමි...",
-            "My experience in HVAC systems makes me a great fit...": "HVAC පද්ධති පිළිබඳ මගේ අත්දැකීම් මාව මෙයට හොඳින් ගැලපේ...",
-            "I have a strong track record of electrical installations...": "මට විදුලි ස්ථාපනයන් පිළිබඳ ශක්තිමත් වාර්තාවක් ඇත..."
+        "filters": {
+            "searchPlaceholder": "සේවක නමෙන් සොයන්න...",
+            "button": "පෙරහන්",
+            "statusLabel": "තත්ත්වය",
+            "allStatus": "සියලුම තත්වයන්",
+            "jobLabel": "රැකියාව",
+            "allJobs": "සියලුම රැකියා",
+            "pending": "පවතින",
+            "accepted": "පිළිගත්",
+            "rejected": "ප්‍රතික්ෂේප කළ",
+            "active": "සක්‍රිය:",
+            "clear": "සියලුම පෙරහන් මකන්න",
+            "summary": "අයදුම්පත් <2>{{total}}</2> කින් <1>{{filtered}}</1> ක් පෙන්වයි"
         },
-        "skills": {
-            "custom framing": "අභිරුචි රාමු සෑදීම",
-            "finish work": "නිම කිරීමේ වැඩ",
-            "Electrician License": "විදුලි කාර්මික බලපත්‍රය",
-            "commercial experience": "වාණිජ අත්දැකීම්",
-            "PMP certification": "PMP සහතිකය",
-            "construction management": "ඉදිකිරීම් කළමනාකරණය",
-            "HVAC Certification": "HVAC සහතිකය",
-            "valid driver's license": "වලංගු රියදුරු බලපත්‍රය",
-            "Journeyman License": "Journeyman බලපත්‍රය",
-            "own tools": "තමන්ගේම මෙවලම්"
+        "list": {
+            "title": "අයදුම්කරුවන්",
+            "summary": "අයදුම්පත් <2>{{total}}</2> කින් <1>{{filtered}}</1> ක් පෙන්වයි",
+            "empty": "අයදුම්පත් හමු නොවීය"
+        },
+        "detail": {
+            "about": "විස්තරය",
+            "skills": "කුසලතා",
+            "completionRate": "රැකියා සම්පූර්ණ කිරීමේ අනුපාතය",
+            "appliedFor": "අයදුම් කළ රැකියාව",
+            "perDay": "දිනකට",
+            "hireButton": "මෙම භූමිකාව සඳහා බඳවා ගන්න",
+            "workerProgress": "සේවක ප්‍රගතිය",
+            "liveLocation": "සජීවී සේවක ස්ථානය",
+            "acceptedLocation": "පිළිගන්නා අවස්ථාවේ සේවක ස්ථානය",
+            "updateInterval": "සෑම තත්පර 10 කට වරක් ස්වයංක්‍රීයව යාවත්කාලීන වේ",
+            "locationSnapshot": "ස්ථාන ඡායාරූපය",
+            "noTracking": "රැකියා ලුහුබැඳීමේ දත්ත නොමැත",
+            "verified": "තහවුරු කරන ලද"
+        },
+        "hire": {
+            "hired": "සේවකයා බඳවා ගන්නා ලදී",
+            "declined": "අයදුම්පත ප්‍රතික්ෂේප කරන ලදී",
+            "reject": "ප්‍රතික්ෂේප කරන්න",
+            "hireNow": "දැන් බඳවා ගන්න"
+        }
+    },
+    "searchWorkers": {
+        "title": "සේවකයින් සොයන්න",
+        "subtitle": "ඔබේ ප්‍රදේශයේ සිටින දක්ෂ සේවකයින් සොයා ඔවුන් සමඟ සම්බන්ධ වන්න.",
+        "stats": {
+            "total": "මුළු සේවකයින්",
+            "available": "දැන් ලබා ගත හැකිය",
+            "verified": "තහවුරු කරන ලද සේවකයින්",
+            "topRated": "ඉහළම ශ්‍රේණිගත (4.5+)"
+        },
+        "errors": {
+            "fetchFailed": "සේවකයින් පූරණය කිරීමට අපොහොසත් විය",
+            "generic": "දෝෂයක් සිදු විය"
+        },
+        "loading": "සේවකයින් පූරණය වෙමින් පවතී...",
+        "empty": {
+            "title": "සේවකයින් කිසිවෙකු හමු නොවීය",
+            "subtitle": "ඔබේ සෙවුම හෝ පෙරහන් සීරුමාරු කිරීමට උත්සාහ කරන්න",
+            "clearButton": "සියලුම පෙරහන් මකන්න"
+        },
+        "filters": {
+            "searchPlaceholder": "නම, කුසලතා, ස්ථානය සොයන්න...",
+            "button": "පෙරහන්",
+            "categoryLabel": "වැඩ වර්ගය",
+            "allCategories": "සියලුම වර්ග",
+            "locationLabel": "ස්ථානය",
+            "allLocations": "සියලුම ස්ථාන",
+            "ratingLabel": "අවම ශ්‍රේණිගත කිරීම",
+            "allRatings": "ඕනෑම ශ්‍රේණිගත කිරීමක්",
+            "stars": "තරු",
+            "verifiedLabel": "තහවුරු කිරීමේ තත්ත්වය",
+            "allVerified": "සියලුම සේවකයින්",
+            "verifiedOnly": "තහවුරු කරන ලද අය පමණක්",
+            "notVerified": "තහවුරු නොකළ",
+            "availabilityLabel": "ලබා ගත හැකි බව",
+            "allAvailability": "සියලුම තත්වයන්",
+            "available": "දැන් ලබා ගත හැකිය",
+            "busy": "කාර්යබහුල/වැඩ කරමින්",
+            "active": "සක්‍රිය පෙරහන්:",
+            "clear": "සියල්ල මකන්න"
+        }
+    },
+    "workerProfile": {
+        "title": "සේවක පැතිකඩ",
+        "close": "වසා දමන්න",
+        "verified": "තහවුරු කරන ලද වෘත්තිකයා",
+        "notVerified": "හඳුනාගැනීම තහවුරු කර නැත",
+        "contact": "සේවකයා අමතන්න",
+        "available": "බඳවා ගැනීමට තිබේ",
+        "busy": "දැනට කාර්යබහුලයි",
+        "memberSince": "සාමාජිකත්වය ලැබුවේ",
+        "about": "සේවකයා ගැන",
+        "skills": "වෘත්තීය කුසලතා",
+        "reviews": "සේවක සමාලෝචන",
+        "noReviews": "තවම සමාලෝචන නැත",
+        "hire": "මෙම සේවකයා බඳවා ගන්න",
+        "notAvailable": "සේවකයා ලබා ගත නොහැක",
+        "location": "ප්‍රධාන ස්ථානය",
+        "experience": "අත්දැකීම් මට්ටම",
+        "completed": "සම්පූර්ණ කරන ලද රැකියා",
+        "stats": {
+            "jobsDone": "රැකියා නිම කළා",
+            "completion": "සම්පූර්ණ කිරීම",
+            "response": "ප්‍රතිචාරය"
+        },
+        "tabs": {
+            "overview": "දළ විශ්ලේෂණය",
+            "reviews": "සමාලෝචන"
+        },
+        "reviewsSection": {
+            "title": "මෑත සමාලෝචන",
+            "count": "සමාලෝචන {{count}}"
+        },
+        "actions": {
+            "close": "වසා දමන්න",
+            "message": "පණිවිඩය"
         }
     }
 }

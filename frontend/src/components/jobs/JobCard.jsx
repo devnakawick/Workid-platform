@@ -29,7 +29,7 @@ const urgencyColors = {
     urgent: "border-red-500 shadow-md shadow-red-100"
 };
 
-export default function JobCard({ job, onApply }) {
+export default function JobCard({ job, onApply, isApplied }) {
     const { t } = useTranslation();
     const {
         id, title, description, urgency, category,
@@ -51,9 +51,9 @@ export default function JobCard({ job, onApply }) {
                     <div className="flex justify-between items-start gap-4">
                         <div className="flex-1">
                             <Link to={jobUrl} className="hover:text-indigo-600 transition-colors">
-                                <h3 className="text-lg font-bold text-gray-900 mb-2">{t(`mock.jobs.${title}`, title)}</h3>
+                                <h3 className="text-lg font-bold text-gray-900 mb-2">{title}</h3>
                             </Link>
-                            <p className="text-sm text-gray-600 line-clamp-2">{t(`mock.jobDescriptions.${description}`, description)}</p>
+                            <p className="text-sm text-gray-600 line-clamp-2">{description}</p>
                         </div>
                         {urgency === 'urgent' && (
                             <Badge className="bg-red-500 text-white flex items-center gap-1">
@@ -67,7 +67,7 @@ export default function JobCard({ job, onApply }) {
                 <CardContent className="space-y-4">
                     <div className="flex flex-wrap gap-2">
                         <Badge className={categoryColors[category] || categoryColors.other}>
-                            {t(`mock.jobs.${category}`, category.replace('_', ' '))}
+                            {category.replace('_', ' ')}
                         </Badge>
 
                         <Badge variant="secondary">
@@ -76,7 +76,7 @@ export default function JobCard({ job, onApply }) {
 
                         {skills_required.slice(0, 2).map((skill, idx) => (
                             <Badge key={idx} variant="outline" className="text-xs">
-                                {t(`mock.skills.${skill}`, skill)}
+                                {skill}
                             </Badge>
                         ))}
 
@@ -90,11 +90,11 @@ export default function JobCard({ job, onApply }) {
                     <div className="grid grid-cols-2 gap-3 text-sm text-gray-600">
                         <div className="flex items-center gap-2">
                             <MapPin className="w-4 h-4" />
-                            <span>{t(`mock.locations.${location}`, location)}</span>
+                            <span>{location}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Clock className="w-4 h-4" />
-                            <span>{t(`mock.durations.${duration}`, duration)}</span>
+                            <span>{duration}</span>
                         </div>
                         <div className="flex items-center gap-2 text-green-600 font-semibold">
                             <DollarSign className="w-4 h-4" />
@@ -108,10 +108,11 @@ export default function JobCard({ job, onApply }) {
 
                     <div className="flex gap-2 pt-2">
                         <Button
-                            onClick={() => onApply(job)}
-                            className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+                            onClick={() => !isApplied && onApply(job)}
+                            disabled={isApplied}
+                            className={`flex-1 ${isApplied ? 'bg-green-600 hover:bg-green-700 text-white opacity-100 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 text-white'}`}
                         >
-                            {t('jobs.quickApply')}
+                            {isApplied ? t('jobs.appliedStatus') : t('jobs.quickApply')}
                         </Button>
                         <Button asChild variant="outline">
                             <Link to={jobUrl}>{t('jobs.details')}</Link>

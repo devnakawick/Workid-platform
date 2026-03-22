@@ -1,4 +1,6 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
 	Users,
 	FileText,
@@ -22,10 +24,10 @@ import { Badge } from '@/components/ui/badge';
 
 const mock = {
 	stats: [
-		{ label: 'Posted Jobs', value: '2', change: '+2 this week', icon: Briefcase, color: 'blue', changeColor: 'text-green-500' },
-		{ label: 'Applications', value: '10', change: '+3 this week', icon: Users, color: 'green', changeColor: 'text-green-500' },
-		{ label: 'Money Spent', value: '7,250', change: '47% of total', icon: DollarSign, color: 'orange', changeColor: 'text-orange-500', isDown: true },
-		{ label: 'Hired', value: '2', change: '+1 this week', icon: Handshake, color: 'purple', changeColor: 'text-green-500' },
+		{ id: 'postedJobs', titleKey: 'employerDashboard.stats.postedJobs', value: '2', changeKey: 'employerDashboard.stats.postedJobsChange', icon: Briefcase, color: 'blue', changeColor: 'text-green-500' },
+		{ id: 'applications', titleKey: 'employerDashboard.stats.applications', value: '10', changeKey: 'employerDashboard.stats.applicationsChange', icon: Users, color: 'green', changeColor: 'text-green-500' },
+		{ id: 'moneySpent', titleKey: 'employerDashboard.stats.moneySpent', value: '7,250', changeKey: 'employerDashboard.stats.moneySpentChange', icon: DollarSign, color: 'orange', changeColor: 'text-orange-500', isDown: true },
+		{ id: 'hired', titleKey: 'employerDashboard.stats.hired', value: '2', changeKey: 'employerDashboard.stats.hiredChange', icon: Handshake, color: 'purple', changeColor: 'text-green-500' },
 	],
 	recentlyPosted: [
 		{
@@ -67,25 +69,28 @@ const mock = {
 };
 
 const EmployerDashboard = () => {
+	const { t } = useTranslation();
+	const navigate = useNavigate();
+
 	return (
 		<div className="max-w-7xl mx-auto space-y-6 pb-12">
 
 			{/* 1. Stats Grid */}
 			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 				{mock.stats.map((stat) => (
-					<div key={stat.label} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group">
+					<div key={stat.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group">
 						<div className="space-y-1">
-							<p className="text-gray-500 text-sm font-medium">{stat.label}</p>
+							<p className="text-gray-500 text-sm font-medium">{t(stat.titleKey)}</p>
 							<h3 className="text-3xl font-extrabold text-gray-900">{stat.value}</h3>
 							<div className={`flex items-center gap-1 text-xs font-bold ${stat.changeColor}`}>
 								{stat.isDown ? <TrendingUp size={12} className="rotate-180" /> : <TrendingUp size={12} />}
-								{stat.change}
+								{t(stat.changeKey)}
 							</div>
 						</div>
 						<div className={`p-4 rounded-xl flex items-center justify-center transition-all group-hover:scale-110 ${stat.color === 'blue' ? 'bg-blue-50 text-blue-500' :
-								stat.color === 'green' ? 'bg-green-50 text-green-500' :
-									stat.color === 'orange' ? 'bg-orange-50 text-orange-500' :
-										'bg-purple-50 text-purple-500'
+							stat.color === 'green' ? 'bg-green-50 text-green-500' :
+								stat.color === 'orange' ? 'bg-orange-50 text-orange-500' :
+									'bg-purple-50 text-purple-500'
 							}`}>
 							<stat.icon size={28} />
 						</div>
@@ -98,8 +103,8 @@ const EmployerDashboard = () => {
 				{/* Recently Posted */}
 				<div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
 					<div className="flex items-center justify-between mb-6">
-						<h3 className="text-xl font-bold text-gray-900">Recently Posted</h3>
-						<button className="text-blue-600 text-sm font-bold hover:underline">View all</button>
+						<h3 className="text-xl font-bold text-gray-900">{t('employerDashboard.recentlyPosted')}</h3>
+						<button onClick={() => navigate('/employer/jobs')} className="text-blue-600 text-sm font-bold hover:underline">{t('employerDashboard.viewAll')}</button>
 					</div>
 
 					<div className="space-y-4">
@@ -133,19 +138,19 @@ const EmployerDashboard = () => {
 				{/* Recent Notifications */}
 				<div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
 					<div className="flex items-center justify-between mb-6">
-						<h3 className="text-xl font-bold text-gray-900">Recent Notifications</h3>
-						<button className="text-blue-600 text-sm font-bold hover:underline">View all</button>
+						<h3 className="text-xl font-bold text-gray-900">{t('employerDashboard.recentNotifications')}</h3>
+						<button onClick={() => navigate('/Notifications')} className="text-blue-600 text-sm font-bold hover:underline">{t('employerDashboard.viewAll')}</button>
 					</div>
 
 					<div className="space-y-4">
 						{mock.notifications.map(notif => (
 							<div key={notif.id} className={`p-4 rounded-2xl flex items-start gap-4 ${notif.color === 'blue' ? 'bg-blue-50/50' :
-									notif.color === 'green' ? 'bg-green-50/50' :
-										'bg-purple-50/50'
+								notif.color === 'green' ? 'bg-green-50/50' :
+									'bg-purple-50/50'
 								}`}>
 								<div className={`p-2 rounded-full flex-shrink-0 ${notif.color === 'blue' ? 'bg-blue-500 text-white' :
-										notif.color === 'green' ? 'bg-green-500 text-white' :
-											'bg-purple-500 text-white'
+									notif.color === 'green' ? 'bg-green-500 text-white' :
+										'bg-purple-500 text-white'
 									}`}>
 									<notif.icon size={16} />
 								</div>
@@ -163,12 +168,12 @@ const EmployerDashboard = () => {
 			{/* 3. Bottom Table: Recent Applications */}
 			<div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden p-6">
 				<div className="flex items-center justify-between mb-8">
-					<h3 className="text-xl font-bold text-gray-900">Recent Applications</h3>
+					<h3 className="text-xl font-bold text-gray-900">{t('employerDashboard.recentApplications')}</h3>
 					<div className="flex items-center gap-4">
-						<Button variant="outline" className="flex items-center gap-2 font-bold text-gray-500">
-							<Filter size={16} /> Filter
+						<Button variant="outline" className="flex items-center gap-2 font-bold text-gray-500" onClick={() => navigate('/employer/applications')}>
+							<Filter size={16} /> {t('employerDashboard.filter')}
 						</Button>
-						<button className="text-blue-600 text-sm font-bold hover:underline">View All Applications</button>
+						<button onClick={() => navigate('/employer/applications')} className="text-blue-600 text-sm font-bold hover:underline">{t('employerDashboard.viewAllApplications')}</button>
 					</div>
 				</div>
 
@@ -176,12 +181,12 @@ const EmployerDashboard = () => {
 					<table className="w-full text-left">
 						<thead>
 							<tr className="border-b border-gray-50">
-								<th className="pb-4 text-[11px] font-black text-gray-400 uppercase tracking-widest pl-2">Applicant</th>
-								<th className="pb-4 text-[11px] font-black text-gray-400 uppercase tracking-widest">Job Posting</th>
-								<th className="pb-4 text-[11px] font-black text-gray-400 uppercase tracking-widest">Experience</th>
-								<th className="pb-4 text-[11px] font-black text-gray-400 uppercase tracking-widest">Applied Date</th>
-								<th className="pb-4 text-[11px] font-black text-gray-400 uppercase tracking-widest">Status</th>
-								<th className="pb-4 text-[11px] font-black text-gray-400 uppercase tracking-widest pr-2 text-right">Actions</th>
+								<th className="pb-4 text-[11px] font-black text-gray-400 uppercase tracking-widest pl-2">{t('employerDashboard.table.applicant')}</th>
+								<th className="pb-4 text-[11px] font-black text-gray-400 uppercase tracking-widest">{t('employerDashboard.table.jobPosting')}</th>
+								<th className="pb-4 text-[11px] font-black text-gray-400 uppercase tracking-widest">{t('employerDashboard.table.experience')}</th>
+								<th className="pb-4 text-[11px] font-black text-gray-400 uppercase tracking-widest">{t('employerDashboard.table.appliedDate')}</th>
+								<th className="pb-4 text-[11px] font-black text-gray-400 uppercase tracking-widest">{t('employerDashboard.table.status')}</th>
+								<th className="pb-4 text-[11px] font-black text-gray-400 uppercase tracking-widest pr-2 text-right">{t('employerDashboard.table.actions')}</th>
 							</tr>
 						</thead>
 						<tbody className="divide-y divide-gray-50">

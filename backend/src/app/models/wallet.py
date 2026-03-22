@@ -1,8 +1,6 @@
-from sqlalchemy import Column, DateTime, Numeric, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, DateTime, Numeric, ForeignKey, Integer
 from sqlalchemy.orm import relationship
 from datetime import datetime
-import uuid
 
 from app.database import Base
 
@@ -11,10 +9,10 @@ class Wallet(Base):
     __tablename__ = "wallets"
 
     # Primary key
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    id = Column(Integer, primary_key=True, index=True)
 
     # Link to user
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, unique=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, unique=True)
 
     # Wallet balance
     balance = Column(Numeric(10, 2), default=0.00, nullable=False)

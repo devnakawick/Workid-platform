@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { Wallet } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
-import WorkerWalletCard      from '../../components/wallet/WorkerWalletCard';
-import WorkerEarningsChart   from '../../components/wallet/WorkerEarningsChart';
+import WorkerWalletCard from '../../components/wallet/WorkerWalletCard';
+import WorkerEarningsChart from '../../components/wallet/WorkerEarningsChart';
 import WorkerTransactionList from '../../components/wallet/WorkerTransactionList';
-import WithdrawForm          from '../../components/wallet/WithdrawForm';
+import WithdrawForm from '../../components/wallet/WithdrawForm';
 
 import {
   getWorkerWalletAPI,
@@ -16,13 +16,13 @@ import {
 const WorkerWallet = () => {
 
   // Page state
-  const [wallet,            setWallet]            = useState(null);
-  const [transactions,      setTransactions]      = useState([]);
-  const [filteredTxns,      setFilteredTxns]      = useState([]);
-  const [loading,           setLoading]           = useState(true);
-  const [withdrawLoading,   setWithdrawLoading]   = useState(false);
+  const [wallet, setWallet] = useState(null);
+  const [transactions, setTransactions] = useState([]);
+  const [filteredTxns, setFilteredTxns] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [withdrawLoading, setWithdrawLoading] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
-  const [filters,           setFilters]           = useState({ type: 'all' });
+  const [filters, setFilters] = useState({ type: 'all' });
 
   // Load data on mount
   useEffect(() => { fetchData(); }, []);
@@ -39,7 +39,7 @@ const WorkerWallet = () => {
         getWorkerTransactionsAPI(),
       ]);
       if (walletRes.success) setWallet(walletRes.data);
-      if (txnRes.success)    setTransactions(txnRes.data);
+      if (txnRes.success) setTransactions(txnRes.data);
     } catch {
       toast.error('Failed to load wallet data');
     } finally {

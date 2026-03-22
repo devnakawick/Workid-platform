@@ -3,10 +3,12 @@ from typing import List, Optional
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
+from uuid import UUID
 
 
 class JobStatus(str, Enum):
     open = "open"
+    in_progress = "in_progress"
     assigned = "assigned"
     completed = "completed"
     cancelled = "cancelled"
@@ -201,8 +203,8 @@ class JobStatusUpdate(BaseModel):
 class EmployerBasicInfo(BaseModel):
     """Basic employer info to embed in job response"""
     id: int
-    full_name: str
-    city: str
+    full_name: Optional[str]
+    city: Optional[str]
     rating: float
     is_verified: bool
     total_jobs_posted: int
@@ -248,7 +250,6 @@ class JobResponse(BaseModel):
     employer: Optional[EmployerBasicInfo] = None
 
     class Config:
-        extra = "forbid"
         from_attributes = True 
 
 class JobListResponse(BaseModel):
@@ -269,7 +270,6 @@ class JobListResponse(BaseModel):
     expires_at: Optional[datetime]
 
     class Config:
-        extra = "forbid"
         from_attributes = True 
 
 class JobSearchResponse(BaseModel):

@@ -28,6 +28,7 @@ export default function Jobs() {
     const [applications, setApplications] = useState(mockApplications);
 
     const detailedJob = jobId ? mockJobs.find(j => j.id === jobId) : null;
+    const appliedJobIds = applications.map(app => app.job_id);
 
     useEffect(() => {
         if (jobId && !detailedJob) {
@@ -56,7 +57,7 @@ export default function Jobs() {
         setApplications([...applications, newApplication]);
         setShowApplicationForm(false);
         setSelectedJob(null);
-        toast.success(t('applications.withdraw_success')); // Or generic success
+        toast.success(t('applications.apply_success'));
     };
 
     const handleResetFilters = () => {
@@ -96,6 +97,7 @@ export default function Jobs() {
                         job={detailedJob}
                         onBack={handleBackToList}
                         onApply={handleApply}
+                        isApplied={appliedJobIds.includes(detailedJob.id)}
                     />
 
                     {/* Application Form Modal reused */}
@@ -164,6 +166,7 @@ export default function Jobs() {
                                     key={job.id}
                                     job={job}
                                     onApply={handleApply}
+                                    isApplied={appliedJobIds.includes(job.id)}
                                 />
                             ))}
                         </AnimatePresence>

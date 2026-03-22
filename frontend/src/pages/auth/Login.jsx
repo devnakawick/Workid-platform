@@ -1,34 +1,32 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
 import logo from '@/images/logo.jpeg';
-import { Mail, Lock } from 'lucide-react';
+import { Mail, Lock, Phone } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function Login() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('worker');
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
-  // Simple email validation
-  const validateEmail = (emailValue) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(emailValue);
-  };
+
 
   const handleSignIn = async (e) => {
     e.preventDefault();
     const newErrors = {};
 
     // Validation
-    if (!email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!validateEmail(email)) {
-      newErrors.email = 'Please enter a valid email address';
+    if (!phone.trim()) {
+      newErrors.phone = 'Phone number is required';
+    } else if (phone.length < 10) {
+      newErrors.phone = 'Please enter a valid phone number';
     }
 
     if (!password.trim()) {
@@ -47,13 +45,13 @@ export default function Login() {
     setIsLoading(true);
     try {
       // Standalone mode: Mocking authentication
-      console.log('Login attempt with:', { email, password, role });
+      console.log('Login attempt with:', { phone, password, role });
 
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Navigate to OTP verification instead of dashboard
-      navigate('/verify-otp', { state: { email, role } });
+      navigate('/verify-otp', { state: { phone, role } });
     } catch (error) {
       setErrors({ general: 'An error occurred. Please try again.' });
     } finally {
@@ -62,15 +60,16 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8 px-4">
-          <div className="inline-flex items-center justify-center w-14 h-14 mb-4">
-            <img src={logo} alt="WorkID" className="w-14 h-14 rounded-xl object-cover shadow-md" />
+          <div className="inline-flex items-center justify-center mb-4">
+            <button onClick={() => navigate('/')} className="cursor-pointer">
+              <img src={logo} alt="WorkID" className="w-32 md:w-44 h-auto" />
+            </button>
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">WorkID</h1>
-          <p className="text-gray-500 text-sm md:text-base font-medium">Sign in to your account</p>
+          <p className="text-gray-500 text-sm md:text-base font-medium">{t('auth.signInTitle')}</p>
         </div>
 
         {/* Login Form Card */}
@@ -84,7 +83,7 @@ export default function Login() {
                 : 'text-gray-500 hover:text-gray-700'
                 }`}
             >
-              Worker
+              {t('auth.worker')}
             </button>
             <button
               onClick={() => setRole('employer')}
@@ -93,7 +92,7 @@ export default function Login() {
                 : 'text-gray-500 hover:text-gray-700'
                 }`}
             >
-              Employer
+              {t('auth.employer')}
             </button>
           </div>
 
@@ -105,27 +104,30 @@ export default function Login() {
           )}
 
           <form onSubmit={handleSignIn} className="space-y-4">
-            {/* Email Input */}
+            {/* Phone Input */}
             <Input
-              label="Email Address"
-              type="email"
-              placeholder="you@example.com"
-              value={email}
+              label={t('auth.phoneNumber')}
+              type="tel"
+              placeholder={t('auth.phonePlaceholder')}
+              value={phone}
               onChange={(e) => {
-                setEmail(e.target.value);
-                if (errors.email) {
-                  setErrors({ ...errors, email: '' });
+                let val = e.target.value;
+                val = val.replace(/\D/g, '').slice(0, 10);
+                setPhone(val);
+                if (errors.phone) {
+                  setErrors({ ...errors, phone: '' });
                 }
               }}
-              error={errors.email}
-              icon={<Mail size={18} />}
+              maxLength={10}
+              error={errors.phone}
+              icon={<Phone size={18} />}
             />
 
             {/* Password Input */}
             <Input
-              label="Password"
+              label={t('auth.password')}
               type="password"
-              placeholder="••••••••"
+              placeholder={t('auth.passwordPlaceholder')}
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
@@ -143,26 +145,26 @@ export default function Login() {
               onClick={handleSignIn}
               disabled={isLoading}
             >
-              {isLoading ? 'Signing in...' : 'Sign In'}
+              {isLoading ? t('common.signingIn') : t('auth.signIn')}
             </Button>
           </form>
 
           {/* Divider */}
           <div className="relative flex items-center">
             <div className="flex-grow border-t border-gray-200"></div>
-            <span className="px-3 text-sm text-gray-500">or</span>
+            <span className="px-3 text-sm text-gray-500">{t('common.or')}</span>
             <div className="flex-grow border-t border-gray-200"></div>
           </div>
 
           {/* Sign Up Link */}
           <div className="text-center">
             <p className="text-gray-600 text-sm">
-              Don't have an account?{' '}
+              {t('auth.noAccount')}{' '}
               <button
-                onClick={() => navigate('/landing')}
+                onClick={() => navigate('/signup')}
                 className="text-indigo-600 hover:text-indigo-700 font-semibold transition-colors"
               >
-                Sign Up
+                {t('auth.signUp')}
               </button>
             </p>
           </div>
@@ -170,17 +172,17 @@ export default function Login() {
           {/* Forgot Password Link */}
           <div className="text-center">
             <button
-              onClick={() => toast.info('Password reset feature coming soon!')}
+              onClick={() => toast.info(t('auth.forgotPasswordToast'))}
               className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
             >
-              Forgot your password?
+              {t('auth.forgotPassword')}
             </button>
           </div>
         </div>
 
         {/* Footer Note */}
         <p className="text-center text-xs text-gray-500 mt-6">
-          By signing in, you agree to our Terms of Service and Privacy Policy
+          {t('auth.termsPolicy')}
         </p>
       </div>
     </div>

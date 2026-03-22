@@ -9,8 +9,8 @@ const ChatWidget = ({ onClose }) => {
 
   // Seed with initial bot greeting
   const [messages, setMessages] = useState([INITIAL_BOT_MESSAGE]);
-  const [input,    setInput]    = useState('');
-  const [typing,   setTyping]   = useState(false);
+  const [input, setInput] = useState('');
+  const [typing, setTyping] = useState(false);
   const bottomRef = useRef(null);
 
   // Auto-scroll to latest message whenever messages or typing changes
@@ -73,11 +73,10 @@ const ChatWidget = ({ onClose }) => {
             >
               {/* User messages — blue right, bot messages — white left */}
               <div
-                className={`max-w-[75%] px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed ${
-                  msg.from === 'user'
+                className={`max-w-[75%] px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed ${msg.from === 'user'
                     ? 'bg-blue-600 text-white rounded-br-sm'
                     : 'bg-white text-gray-700 border border-gray-200 rounded-bl-sm shadow-sm'
-                }`}
+                  }`}
               >
                 {msg.text}
               </div>
@@ -89,7 +88,7 @@ const ChatWidget = ({ onClose }) => {
             <div className="flex justify-start">
               <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm">
                 <div className="flex gap-1 items-center">
-                  <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms'   }} />
+                  <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                   <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                   <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                 </div>
@@ -145,7 +144,7 @@ const SupportChat = () => {
         <button
           onClick={() => setIsOpen(true)}
           title="Open live chat"
-          className="fixed bottom-24 lg:bottom-6 right-6 z-40 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-xl flex items-center justify-center transition-all hover:scale-105 active:scale-95"
+          className="fixed bottom-24 xl:bottom-6 right-6 z-40 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-xl flex items-center justify-center transition-all hover:scale-105 active:scale-95"
         >
           <MessageCircle className="w-6 h-6" />
           {/* Pulsing ring to draw attention */}

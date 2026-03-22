@@ -94,8 +94,8 @@ export default function Applications() {
                                             <CardHeader>
                                                 <div className="flex items-start justify-between">
                                                     <div>
-                                                        <h3 className="text-xl font-bold text-gray-900">{t(`mock.jobs.${app.job_title}`, app.job_title)}</h3>
-                                                        <p className="text-sm text-gray-600 mt-1">{t(`mock.companies.${app.company}`, app.company)}</p>
+                                                        <h3 className="text-xl font-bold text-gray-900">{app.job_title}</h3>
+                                                        <p className="text-sm text-gray-600 mt-1">{app.company}</p>
                                                     </div>
                                                     <Badge className={STATUS_COLORS[app.status]} variant="outline">
                                                         {t(`applications.${app.status}`)}
@@ -109,7 +109,7 @@ export default function Applications() {
                                                 {app.cover_message && (
                                                     <div className="mt-3">
                                                         <p className="text-sm font-medium text-gray-700 mb-1">{t('applications.coverMessage')}</p>
-                                                        <p className="text-sm text-gray-600 line-clamp-2">{t(`mock.coverMessages.${app.cover_message}`, app.cover_message)}</p>
+                                                        <p className="text-sm text-gray-600 line-clamp-2">{app.cover_message}</p>
                                                     </div>
                                                 )}
                                             </CardContent>

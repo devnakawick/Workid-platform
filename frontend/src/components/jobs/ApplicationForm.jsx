@@ -23,8 +23,8 @@ export default function ApplicationForm({ job, isOpen, onClose, onSubmit, isLoad
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-xl">
                 <DialogHeader>
-                    <DialogTitle className="text-xl">{t('jobs.applyNow')} - {t(`mock.jobs.${job.title}`, job.title)}</DialogTitle>
-                    <p className="text-sm text-gray-600 mt-1">{t(`mock.companies.${job.company}`, job.company)} • {t(`mock.locations.${job.location}`, job.location)}</p>
+                    <DialogTitle className="text-xl">{t('jobs.applyNow')} - {job.title}</DialogTitle>
+                    <p className="text-sm text-gray-600 mt-1">{job.company} • {job.location}</p>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-5 mt-4">

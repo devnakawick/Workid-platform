@@ -59,7 +59,7 @@ class EmployerProfileResponse(BaseModel):
     Schema for employer profile response
     """
     id: int
-    user_id: UUID
+    user_id: int
 
     full_name: str
     email: str
@@ -76,7 +76,7 @@ class EmployerProfileResponse(BaseModel):
 
     created_at: datetime
     updated_at: datetime
-    last_active: datetime
+    last_active: Optional[datetime] = None
 
     class Config:
         from_attributes = True

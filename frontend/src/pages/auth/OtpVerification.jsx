@@ -18,7 +18,7 @@ export default function OtpVerification() {
 
     // Extract the role from location state to know where to redirect after verification
     const role = location.state?.role || 'worker';
-    const email = location.state?.email || 'johndoe@gmail.com';
+    const emailStr = location.state?.email || location.state?.phone || '+1 234 567 8900';
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -105,7 +105,7 @@ export default function OtpVerification() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-white flex items-center justify-center p-4">
             <div className="w-full max-w-md">
                 {/* Back Button */}
                 <button
@@ -118,12 +118,12 @@ export default function OtpVerification() {
 
                 {/* Header */}
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 mb-4">
-                        <img src={logo} alt="WorkID" className="w-16 h-16 rounded-2xl object-cover shadow-lg border-2 border-white" />
+                    <div className="inline-flex items-center justify-center mb-4">
+                        <img src={logo} alt="WorkID" className="w-36 md:w-52 h-auto" />
                     </div>
                     <h1 className="text-3xl font-black text-gray-900 mb-2 tracking-tight">Verify Code</h1>
                     <p className="text-gray-500 leading-relaxed font-medium">
-                        We've sent a 6-digit verification code to <span className="text-gray-900 font-bold">{email}</span>
+                        We've sent a 6-digit verification code to <span className="text-gray-900 font-bold">{emailStr}</span>
                     </p>
                 </div>
 

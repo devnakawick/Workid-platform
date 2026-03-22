@@ -41,7 +41,7 @@
 
 .sidebar .brand-wrap .bg-indigo-600 {
 	background: rgba(255, 255, 255, 0.1);
-	padding: 8px;
+	padding: 12px;
 	border-radius: 10px;
 }
 
@@ -54,8 +54,8 @@
 }
 
 .sidebar-logo {
-	width: 48px;
-	height: 48px;
+	width: 64px;
+	height: 64px;
 	object-fit: cover;
 	border-radius: 8px;
 	border: 2px solid rgba(255, 255, 255, 0.08);
@@ -153,6 +153,17 @@
 	padding: 6px 4px;
 	box-shadow: 0 -6px 18px rgba(15, 23, 42, 0.1);
 	padding-bottom: env(safe-area-inset-bottom, 8px);
+	overflow-x: auto;
+	/* Enable horizontal scrolling */
+	-webkit-overflow-scrolling: touch;
+	/* Smooth scrolling on iOS */
+	scrollbar-width: none;
+	/* Hide scrollbar for Firefox */
+}
+
+.mobile-bottom-nav::-webkit-scrollbar {
+	display: none;
+	/* Hide scrollbar for Chrome/Safari */
 }
 
 @media (min-width: 1280px) {
@@ -166,24 +177,49 @@
 	align-items: center;
 	justify-content: space-around;
 	width: 100%;
+	padding: 0 2px;
+}
+
+/* On very small phones where 8 items can't fit, allow horizontal scroll */
+@media (max-width: 479px) {
+	.mobile-nav-inner {
+		justify-content: flex-start;
+		min-width: 100%;
+		width: max-content;
+	}
 }
 
 .mobile-link {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	padding: 6px 2px;
-	min-width: 50px;
+	padding: 4px 2px;
+	min-width: 52px;
+	flex: 1;
 	text-decoration: none;
 	color: #9ca3af;
-	flex: 1;
+}
+
+@media (max-width: 479px) {
+	.mobile-link {
+		flex: 0 0 auto;
+		min-width: 60px;
+		padding: 4px 6px;
+	}
 }
 
 .mobile-link .mobile-label {
 	font-size: 8px;
 	font-weight: 700;
 	text-transform: uppercase;
-	margin-top: 4px;
+	margin-top: 3px;
+	white-space: nowrap;
+}
+
+@media (min-width: 480px) {
+	.mobile-link .mobile-label {
+		font-size: 9px;
+	}
 }
 
 @media (min-width: 640px) {

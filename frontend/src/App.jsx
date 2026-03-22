@@ -12,6 +12,9 @@ import LandingPage from './pages/land/LandingPage';
 import Login from './pages/auth/Login';
 import SignupEmployer from './pages/auth/SignupEmployer';
 import SignupWorker from './pages/auth/SignupWorker';
+import SignupSelection from './pages/auth/SignupSelection';
+import TermsOfService from './pages/TermsOfService';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 import Applications from './pages/Application';
 import Badges from './pages/Badges';
 import Documents from './pages/Documents';
@@ -25,7 +28,7 @@ import OtpVerification from './pages/auth/OtpVerification';
 // New employer pages from feature branch
 import PostJob from './pages/employer/PostJob';
 import ManageJobs from './pages/employer/ManageJobs';
-import EditJob  from './pages/employer/EditJob';
+import EditJob from './pages/employer/EditJob';
 import EmployerWallet from './pages/employer/EmployerWallet';
 import ReviewApplications from './pages/employer/ReviewApplications';
 import SearchWorkers from './pages/employer/SearchWorkers';
@@ -33,6 +36,10 @@ import HelpSupport from './pages/employer/HelpSupport';
 
 // New worker pages from feature branch
 import WorkerWallet from './pages/worker/WorkerWallet';
+import WorkerHelpSupport from './pages/worker/WorkerHelpSupport';
+import LanguageSwitcher from './components/common/LanguageSwitcher';
+import WorkerCurrentJobsPage from './pages/worker/WorkerCurrentJobsPage';
+import WorkerJobDetailsPage from './pages/worker/WorkerJobDetailsPage';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings } = useAuth();
@@ -51,6 +58,8 @@ const AuthenticatedApp = () => {
     <Routes>
       {/* Original routes */}
       <Route path="/" element={<LandingPage />} />
+      <Route path="/terms" element={<TermsOfService />} />
+      <Route path="/privacy" element={<PrivacyPolicy />} />
       <Route path="/Applications" element={
         <Layout currentPageName="Applications">
           <Applications />
@@ -108,6 +117,7 @@ const AuthenticatedApp = () => {
       } />
       <Route path="/landing" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<SignupSelection />} />
       <Route path="/signup-employer" element={<SignupEmployer />} />
       <Route path="/signup-worker" element={<SignupWorker />} />
       <Route path="/verify-otp" element={<OtpVerification />} />
@@ -155,6 +165,22 @@ const AuthenticatedApp = () => {
           <WorkerWallet />
         </Layout>
       } />
+      <Route path="/worker/current-jobs" element={
+        <Layout currentPageName="Current Jobs">
+          <WorkerCurrentJobsPage />
+        </Layout>
+      } />
+      <Route path="/worker/job-details/:jobId" element={
+        <Layout currentPageName="Job Progress">
+          <WorkerJobDetailsPage />
+        </Layout>
+      } />
+
+      <Route path="/worker/support" element={
+        <Layout currentPageName="Help & Support">
+          <WorkerHelpSupport />
+        </Layout>
+      } />
 
       <Route path="*" element={<PageNotFound />} />
     </Routes>
@@ -168,6 +194,7 @@ function App() {
         <AuthenticatedApp />
       </Router>
       <Toaster position="top-center" richColors closeButton />
+      <LanguageSwitcher />
     </AuthProvider>
   )
 }

@@ -1,8 +1,6 @@
-from sqlalchemy import Column, String, Text, Float, DateTime, ForeignKey, Enum as SQLEnum
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, String, Text, Float, DateTime, ForeignKey, Enum as SQLEnum, Integer
 from sqlalchemy.orm import relationship
 from datetime import datetime
-import uuid
 import enum
 from app.database import Base
 
@@ -18,28 +16,32 @@ class Application(Base):
     __tablename__ = "applications"
     
     # Primary Key
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    id = Column(Integer, primary_key=True, index=True)
     
     # Foreign Keys
-    job_id = Column(UUID(as_uuid=True), ForeignKey("jobs.id"), nullable=False)
-    worker_id = Column(UUID(as_uuid=True), ForeignKey("workers.id"), nullable=False)
+    job_id = Column(Integer, ForeignKey("jobs.id"), nullable=False)
+    worker_id = Column(Integer, ForeignKey("workers.id"), nullable=False)
     
     # Application Details
     cover_letter = Column(Text, nullable=True)
+    message = Column(Text, nullable=True)  # Alias for cover_letter used by API
     proposed_rate = Column(Float, nullable=True)
     proposed_duration = Column(String(50), nullable=True)
     availability = Column(Text, nullable=True)
+    available_from = Column(DateTime, nullable=True)
     
     # Status
     status = Column(SQLEnum(ApplicationStatus), default=ApplicationStatus.PENDING)
     
     # Employer Feedback
     employer_notes = Column(Text, nullable=True)
+    rejection_reason = Column(Text, nullable=True)
     
     # Timestamps
     applied_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     responded_at = Column(DateTime, nullable=True)
+    reviewed_at = Column(DateTime, nullable=True)
     
     # Relationships
     job = relationship("Job", back_populates="applications")

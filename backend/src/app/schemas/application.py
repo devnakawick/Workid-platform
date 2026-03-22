@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
 from decimal import Decimal
+from uuid import UUID
 from app.models.application import ApplicationStatus
 
 # ======= Application Create =======
@@ -40,8 +41,8 @@ class ApplicationCreate(BaseModel):
 class WorkerBasicInfo(BaseModel):
     """Basic worker info to embed in application response"""
     id: int
-    full_name: str
-    city: str
+    full_name: Optional[str]
+    city: Optional[str]
     primary_skill: str
     experience_years: int
     daily_rate: Optional[Decimal]
@@ -57,8 +58,8 @@ class JobBasicInfo(BaseModel):
     id: int
     title: str
     category: str
-    city: str
-    budget: Decimal
+    city: Optional[str]
+    budget: Optional[Decimal]
     status: str
 
     class Config:

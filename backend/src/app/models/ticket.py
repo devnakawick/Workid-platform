@@ -1,7 +1,5 @@
-from sqlalchemy import Column, DateTime, ForeignKey, String
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, DateTime, ForeignKey, String, Integer
 from datetime import datetime
-import uuid
 
 from app.database import Base
 
@@ -10,10 +8,10 @@ class SupportTicket(Base):
     __tablename__ = "support_tickets"
 
     # Primary key
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    id = Column(Integer, primary_key=True, index=True)
 
     # Who created the ticket
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
     # Ticket content
     subject = Column(String(255), nullable=False)

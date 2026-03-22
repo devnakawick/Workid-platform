@@ -45,11 +45,10 @@ const WorkerWalletCard = ({ wallet, onWithdraw }) => {
           <button
             onClick={onWithdraw}
             disabled={!hasBalance}
-            className={`w-full flex items-center justify-center gap-2 py-2.5 sm:py-3 rounded-xl font-bold text-sm transition-all shadow-lg ${
-              hasBalance
+            className={`w-full flex items-center justify-center gap-2 py-2.5 sm:py-3 rounded-xl font-bold text-sm transition-all shadow-lg ${hasBalance
                 ? 'bg-white text-blue-600 hover:bg-blue-50'
                 : 'bg-white/30 text-white/50 cursor-not-allowed'
-            }`}
+              }`}
           >
             <Banknote className="w-4 h-4" />
             {hasBalance ? 'Withdraw Money' : 'No Balance to Withdraw'}

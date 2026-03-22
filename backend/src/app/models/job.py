@@ -1,8 +1,6 @@
 from sqlalchemy import Column, String, Text, Float, Integer, DateTime, ForeignKey, Enum as SQLEnum
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from datetime import datetime
-import uuid
 import enum
 from app.database import Base
 
@@ -25,10 +23,10 @@ class Job(Base):
     __tablename__ = "jobs"
     
     # Primary Key
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    id = Column(Integer, primary_key=True, index=True)
     
     # Foreign Key
-    employer_id = Column(UUID(as_uuid=True), ForeignKey("employers.id"), nullable=False)
+    employer_id = Column(Integer, ForeignKey("employers.id"), nullable=False)
     
     # Job Details
     title = Column(String(200), nullable=False)
@@ -37,21 +35,26 @@ class Job(Base):
     skills_required = Column(Text, nullable=True)  # JSON string of required skills
     
     # Location
+    city = Column(String(50), nullable=True)
+    district = Column(String(50), nullable=True)
     location = Column(String(100), nullable=True)
     is_remote = Column(String(10), default="no")  # yes, no, hybrid
     
     # Compensation
+    budget = Column(Float, nullable=True)
     budget_min = Column(Float, nullable=True)
     budget_max = Column(Float, nullable=True)
     payment_type = Column(String(20), default="fixed")  # fixed, hourly
     
     # Duration
     duration = Column(String(50), nullable=True)  # e.g., "2 weeks", "1 month"
+    estimated_duration_hours = Column(Integer, nullable=True)
     start_date = Column(DateTime, nullable=True)
     end_date = Column(DateTime, nullable=True)
     
     # Status
     status = Column(SQLEnum(JobStatus), default=JobStatus.OPEN)
+    urgency = Column(SQLEnum(UrgencyLevel), default=UrgencyLevel.MEDIUM)
     
     # Visibility
     is_featured = Column(String(10), default="no")  # yes, no
@@ -60,6 +63,15 @@ class Job(Base):
     # Application Settings
     max_applications = Column(Integer, nullable=True)
     application_deadline = Column(DateTime, nullable=True)
+    expires_at = Column(DateTime, nullable=True)
+    
+    # Counters
+    views_count = Column(Integer, default=0)
+    applications_count = Column(Integer, default=0)
+    
+    # Location Coordinates
+    latitude = Column(Float, nullable=True)
+    longitude = Column(Float, nullable=True)
     
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
@@ -68,6 +80,9 @@ class Job(Base):
     # Relationships
     employer = relationship("Employer", back_populates="jobs")
     applications = relationship("Application", back_populates="job")
+    progress = relationship("JobProgress", back_populates="job", uselist=False)
+    ratings = relationship("Rating", back_populates="job")
+    escrow = relationship("Escrow", back_populates="job", uselist=False)
     
     def __repr__(self):
         return f"<Job {self.title}>"

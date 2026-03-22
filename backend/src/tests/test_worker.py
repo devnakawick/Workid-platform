@@ -41,7 +41,7 @@ class TestCreateWorkerProfile:
         data = response.json()
         assert data["full_name"] == "John Doe"
         assert data["city"] == "Mount Lavinia"
-        assert data["primary_skill"] == "plumbing"
+        assert data["primary_skill"] == SkillCategory.PLUMBING.value
         assert data["daily_rate"] == 2500.00
         assert data["is_verified"] == False  
         assert data["rating"] == 0.0  
@@ -129,7 +129,7 @@ class TestGetWorkerProfile:
         data = response.json()
         assert data["full_name"] == "John Doe"
         assert data["city"] == "Dehiwala"
-        assert data["primary_skill"] == "plumbing"
+        assert data["primary_skill"] == SkillCategory.PLUMBING.value
 
         print("Get profile: Pass")
 
@@ -232,13 +232,13 @@ class TestDocumentUpload:
         response = client.post(
             "/api/worker/document/upload",
             files={"file": ("nic_front.jpg", image, "image/jpeg")},
-            data={"document_type": "nic"}
+            data={"document_type": "national_id"}
         )
 
         assert response.status_code == 201
 
         data = response.json()
-        assert data["document_type"] == "nic"
+        assert data["document_type"] == "national_id"
         assert data["status"] == "pending"  # Starts as pending
         assert data["file_name"] == "nic_front.jpg"
 
@@ -274,7 +274,7 @@ class TestDocumentUpload:
         client.post(
             "/api/worker/document/upload",
             files={"file": ("nic.jpg", image, "image/jpeg")},
-            data={"document_type": "nic"}
+            data={"document_type": "national_id"}
         )
 
         # Get documents
@@ -282,7 +282,7 @@ class TestDocumentUpload:
 
         assert response.status_code == 200
         assert len(response.json()) == 1
-        assert response.json()[0]["document_type"] == "nic"
+        assert response.json()[0]["document_type"] == "national_id"
 
         print("Get documents: Pass")
 
@@ -297,7 +297,7 @@ class TestDocumentUpload:
         upload_response = client.post(
             "/api/worker/document/upload",
             files={"file": ("nic.jpg", fake_image, "image/jpeg")},
-            data={"document_type": "nic"}
+            data={"document_type": "national_id"}
         )
         document_id = upload_response.json()["id"]
 

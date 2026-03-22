@@ -26,6 +26,25 @@ from app.schemas.application import (
     ApplicationResponse,
     ApplicationListResponse
 )
+from app.schemas.ai import (
+    NLPSearchRequest,
+    NLPSearchResponse,
+    NLPSearchExecuteResponse,
+    ParsedQuery,
+    APIParameters,
+    SearchSuggestions,
+    SkillExtractionRequest,
+    SkillExtractionResponse,
+    CategoryValidationRequest,
+    CategoryValidationResponse,
+    SpamCheckRequest,
+    SpamCheckResponse,
+    FraudCheckResponse,
+    WageAnomalyRequest,
+    WageAnomalyResponse,
+    ContentModerationRequest,
+    ContentModerationResponse
+)
 
 __all__ = [
     # Worker
@@ -51,5 +70,23 @@ __all__ = [
     # Application
     "ApplicationCreate",
     "ApplicationResponse",
-    "ApplicationListResponse"
+    "ApplicationListResponse",
+    # AI
+    "NLPSearchRequest",
+    "NLPSearchResponse",
+    "NLPSearchExecuteResponse",
+    "ParsedQuery",
+    "APIParameters",
+    "SearchSuggestions",
+    "SkillExtractionRequest",
+    "SkillExtractionResponse",
+    "CategoryValidationRequest",
+    "CategoryValidationResponse",
+    "SpamCheckRequest",
+    "SpamCheckResponse",
+    "FraudCheckResponse",
+    "WageAnomalyRequest",
+    "WageAnomalyResponse",
+    "ContentModerationRequest",
+    "ContentModerationResponse"    
 ]

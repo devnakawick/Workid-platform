@@ -1,7 +1,5 @@
-from sqlalchemy import Column, DateTime, Numeric, ForeignKey, String
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, DateTime, Numeric, ForeignKey, String, Integer
 from datetime import datetime
-import uuid
 
 from app.database import Base
 
@@ -10,11 +8,11 @@ class Transaction(Base):
     __tablename__ = "transactions"
 
     # Primary key
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    id = Column(Integer, primary_key=True, index=True)
 
     # Who paid and who received
-    from_user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
-    to_user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    from_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    to_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 
     # Money
     amount = Column(Numeric(10, 2), nullable=False)

@@ -1,11 +1,22 @@
-from sqlalchemy import JSON, Column, String, Text, Float, Integer, DateTime, ForeignKey, Enum as SQLEnum
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, String, Text, Float, Integer, DateTime, ForeignKey, Enum as SQLEnum, JSON, Boolean
 from sqlalchemy.orm import relationship
 from datetime import datetime
-import uuid
 import enum
 from app.database import Base
 from backend.src.app.schemas.worker import SkillCategory
+
+class SkillCategory(str, enum.Enum):
+    """Skill category enumeration"""
+    PLUMBING = "plumbing"
+    ELECTRICAL = "electrical"
+    CARPENTRY = "carpentry"
+    MASONRY = "masonry"
+    PAINTING = "painting"
+    GARDENING = "gardening"
+    CLEANING = "cleaning"
+    DRIVING = "driving"
+    GENERAL_LABOR = "general_labor"
+    OTHER = "other"
 
 class DocumentType(str, enum.Enum):
     """Document type enumeration"""
@@ -28,37 +39,28 @@ class Worker(Base):
     __tablename__ = "workers"
     
     # Primary Key
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    id = Column(Integer, primary_key=True, index=True)
     
     # Foreign Key
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, unique=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, unique=True)
     
     # Personal Information
     full_name = Column(String(100), nullable=True)
     email = Column(String(100), nullable=True)
+    nic_number = Column(String, unique=True, nullable=False)
+    date_of_birth = Column(DateTime)
+    phone_number = Column(String, nullable=False)  
+    
+    # Contact & Location
+    address = Column(Text)
     city = Column(String(50), nullable=True)
+    district = Column(String, nullable=False, index=True)
+    postal_code = Column(String)
+    
     bio = Column(Text, nullable=True)
     skills = Column(Text, nullable=True)  # JSON string of skills
     
     # Professional Information
-
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), unique=True, nullable=False)
-
-    # Basic Info
-    full_name = Column(String, nullable=False)
-    nic_number = Column(String, unique=True, nullable=False)
-    date_of_birth = Column(DateTime)
-    email = Column(String, nullable=False)
-    phone_number = Column(String, nullable=False)
-
-    # Contact & Location
-    address = Column(Text)
-    city = Column(String, nullable=False, index=True)
-    district = Column(String, nullable=False, index=True)
-    postal_code = Column(String)
-
-    # Work Details
     primary_skill = Column(SQLEnum(SkillCategory, name="skill_category"), nullable=False)
     other_skills = Column(JSON, default=list)  
     experience_years = Column(Integer, default=0)
@@ -66,18 +68,23 @@ class Worker(Base):
     # Payment
     daily_rate = Column(Float)
     hourly_rate = Column(Float, nullable=True)
-    experience_years = Column(Integer, nullable=True)
     education = Column(Text, nullable=True)
     
     # Rating
     rating = Column(Float, default=0.0)
     total_reviews = Column(Integer, default=0)
+    total_jobs_completed = Column(Integer, default=0)
     
     # Profile Image
     profile_image_url = Column(String(255), nullable=True)
     
     # Status
-    is_available = Column(String(10), default="yes")  # yes, no, busy
+    is_available = Column(Boolean, default=True)  # True, False
+    is_verified = Column(Boolean, default=False)  # True, False
+    last_active = Column(DateTime, nullable=True)
+    
+    # Additional fields for schema compatibility
+    profile_photo = Column(String(255), nullable=True)
     
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
@@ -87,6 +94,7 @@ class Worker(Base):
     user = relationship("User", back_populates="worker_profile")
     applications = relationship("Application", back_populates="worker")
     documents = relationship("WorkerDocument", back_populates="worker", cascade="all, delete-orphan")
+    active_jobs = relationship("JobProgress", back_populates="worker")
     
     def __repr__(self):
         return f"<Worker {self.full_name or self.user_id}>"
@@ -117,10 +125,10 @@ class WorkerDocument(Base):
     __tablename__ = "worker_documents"
     
     # Primary Key
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    id = Column(Integer, primary_key=True, index=True)
     
     # Foreign Keys
-    worker_id = Column(UUID(as_uuid=True), ForeignKey("workers.id"), nullable=False)
+    worker_id = Column(Integer, ForeignKey("workers.id"), nullable=False)
     
     # Document Information
     document_type = Column(SQLEnum(DocumentType), nullable=False)
@@ -137,7 +145,7 @@ class WorkerDocument(Base):
     # Status
     status = Column(SQLEnum(DocumentStatus), default=DocumentStatus.PENDING)
     rejection_reason = Column(Text, nullable=True)
-    verified_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    verified_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     verified_at = Column(DateTime, nullable=True)
     
     # Timestamps
