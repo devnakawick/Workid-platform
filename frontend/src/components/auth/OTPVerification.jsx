@@ -1,6 +1,7 @@
 import React from 'react';
 import Button from '../common/Button';
 
+
 const OTPVerification = ({ onVerify, onBack }) => (
     <div className="space-y-6 w-full max-w-md bg-white p-8 rounded-2xl border shadow-sm text-center">
         <h2 className="text-2xl font-bold">Verify Phone</h2>
