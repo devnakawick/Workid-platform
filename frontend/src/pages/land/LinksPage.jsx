@@ -18,6 +18,8 @@ import {
   ArrowRight,
   TrendingUp,
   ShieldCheck,
+  Rocket,
+  ThumbsUp,
 } from "lucide-react";
 
 function Counter({ to, suffix = "" }) {
@@ -44,6 +46,7 @@ function Counter({ to, suffix = "" }) {
 
 export default function LinksPage() {
   const navigate = useNavigate();
+  const [showComingSoon, setShowComingSoon] = useState(false);
 
   const mainLinks = [
     {
@@ -80,19 +83,19 @@ export default function LinksPage() {
   const socials = [
     {
       name: "Facebook",
-      url: "https://facebook.com/workid",
+      url: "https://www.facebook.com/share/1BAEQTcgnw/?mibextid=wwXIfr",
       icon: Facebook,
       color: "#1877F2",
     },
     {
       name: "Instagram",
-      url: "https://instagram.com/workid",
+      url: "https://www.instagram.com/workid_jobs/",
       icon: Instagram,
       color: "#E4405F",
     },
     {
       name: "LinkedIn",
-      url: "https://linkedin.com/company/workid",
+      url: "https://www.linkedin.com/company/workid-jobs/",
       icon: Linkedin,
       color: "#0A66C2",
     },
@@ -375,6 +378,69 @@ export default function LinksPage() {
         .email-row a { font-size: 14px; font-weight: 600; color: #94A3B8; text-decoration: none; transition: color 0.2s; }
         .email-row a:hover { color: #7C3AED; }
         .footer { font-size: 12px; color: #CBD5E1; }
+        /* ── Coming Soon Modal ── */
+        .modal-backdrop {
+          position: fixed; inset: 0;
+          background: rgba(0,0,0,0.45);
+          backdrop-filter: blur(6px);
+          z-index: 1000;
+          display: flex; align-items: center; justify-content: center;
+          padding: 20px;
+        }
+        .modal {
+          background: #fff;
+          border-radius: 28px;
+          padding: 44px 36px 36px;
+          max-width: 360px; width: 100%;
+          text-align: center;
+          box-shadow: 0 32px 80px rgba(0,0,0,0.18), 0 0 0 1px rgba(124,58,237,0.08);
+          position: relative;
+        }
+        .modal-icon {
+          font-size: 56px;
+          margin-bottom: 16px;
+          display: block;
+        }
+        .modal-title {
+          font-size: 24px; font-weight: 900;
+          color: #0A0720; letter-spacing: -0.8px;
+          margin-bottom: 10px;
+        }
+        .modal-desc {
+          font-size: 14px; font-weight: 500;
+          color: #64748B; line-height: 1.7;
+          margin-bottom: 28px;
+        }
+        .modal-badge {
+          display: inline-flex; align-items: center; gap: 6px;
+          background: #F3F0FF;
+          border-radius: 100px;
+          padding: 6px 16px;
+          font-size: 12px; font-weight: 700;
+          color: #6D28D9;
+          margin-bottom: 28px;
+        }
+        .modal-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: #7C3AED; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+        .modal-close {
+          width: 100%; padding: 13px;
+          border-radius: 100px;
+          background: linear-gradient(135deg, #7C3AED, #38BDF8);
+          color: #fff; font-size: 14px; font-weight: 700;
+          border: none; cursor: pointer;
+          box-shadow: 0 8px 20px rgba(124,58,237,0.35);
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .modal-close:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(124,58,237,0.45); }
+        .modal-x {
+          position: absolute; top: 16px; right: 16px;
+          width: 32px; height: 32px; border-radius: 50%;
+          background: #F1F5F9; border: none; cursor: pointer;
+          display: flex; align-items: center; justify-content: center;
+          font-size: 16px; color: #94A3B8;
+          transition: background 0.2s, color 0.2s;
+        }
+        .modal-x:hover { background: #EDE9FE; color: #7C3AED; }
       `}</style>
 
       {/* Blobs */}
@@ -451,22 +517,18 @@ export default function LinksPage() {
 
           {/* CTA buttons — matching marketing page */}
           <motion.div variants={u} className="cta-row">
-            <a
-              href="https://workid-app.vercel.app/signup/worker"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={() => navigate("/signup-worker")}
               className="btn-primary"
             >
               Find Work Now <ArrowRight size={16} />
-            </a>
-            <a
-              href="https://workid-app.vercel.app/signup/employer"
-              target="_blank"
-              rel="noopener noreferrer"
+            </button>
+            <button
+              onClick={() => navigate("/signup-employer")}
               className="btn-outline"
             >
               Hire Workers
-            </a>
+            </button>
           </motion.div>
 
           {/* Stats */}
@@ -554,18 +616,56 @@ export default function LinksPage() {
                   {link.internal ? (
                     inner
                   ) : (
-                    <a
-                      href={`https://workid-app.vercel.app${i === 2 ? "/signup/worker" : i === 3 ? "/signup/employer" : ""}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
+                    <div onClick={() => {
+                      if (i === 1) setShowComingSoon(true);
+                      else if (i === 2) navigate("/signup-worker");
+                      else if (i === 3) navigate("/signup-employer");
+                    }} style={{ cursor: "pointer" }}>
                       {inner}
-                    </a>
+                    </div>
                   )}
                 </motion.div>
               );
             })}
           </div>
+
+          {/* Coming Soon Modal */}
+          {showComingSoon && (
+            <motion.div
+              className="modal-backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              onClick={() => setShowComingSoon(false)}
+            >
+              <motion.div
+                className="modal"
+                initial={{ scale: 0.7, opacity: 0, y: 40 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button className="modal-x" onClick={() => setShowComingSoon(false)}>✕</button>
+                <div className="modal-icon">
+                  <div style={{ width: 72, height: 72, borderRadius: 24, background: "linear-gradient(135deg, #7C3AED, #38BDF8)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", boxShadow: "0 12px 32px rgba(124,58,237,0.35)" }}>
+                    <Rocket size={34} color="#fff" strokeWidth={1.8} />
+                  </div>
+                </div>
+                <div className="modal-title">Coming Soon!</div>
+                <div className="modal-badge">
+                  <span className="modal-badge-dot" />
+                  In Development
+                </div>
+                <div className="modal-desc">
+                  The WorkID mobile app is currently under development.
+                  We're working hard to bring you the best experience.
+                  Stay tuned for the launch!
+                </div>
+                <button className="modal-close" onClick={() => setShowComingSoon(false)} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                  Got it! <ThumbsUp size={16} />
+                </button>
+              </motion.div>
+            </motion.div>
+          )}
 
           {/* Divider */}
           <motion.div

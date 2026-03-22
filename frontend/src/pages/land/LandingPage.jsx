@@ -176,8 +176,8 @@ function MarketingPage() {
                 transition={{ delay: 0.5 }}
                 className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-12"
               >
-                <motion.a
-                  href="https://workid-app.vercel.app/signup/worker"
+                <motion.button
+                  onClick={() => navigate("/signup-worker")}
                   whileHover={{
                     scale: 1.05,
                     boxShadow: "0 20px 40px rgba(59,130,246,0.4)",
@@ -187,16 +187,16 @@ function MarketingPage() {
                 >
                   Find Work Now{" "}
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </motion.a>
-                <motion.a
-                  href="https://workid-app.vercel.app/signup/employer"
+                </motion.button>
+                <motion.button
+                  onClick={() => navigate("/signup-employer")}
                   whileHover={{ scale: 1.02 }}
                   transition={{ duration: 0.2 }}
                   whileTap={{ scale: 0.95 }}
                   className="transform-gpu inline-flex items-center justify-center px-8 py-4 bg-white text-blue-700 font-bold rounded-full border-2 border-blue-500 hover:bg-blue-50 hover:border-blue-600 transition-all shadow-lg"
                 >
                   Hire Workers
-                </motion.a>
+                </motion.button>
               </motion.div>
 
               <motion.div
@@ -677,12 +677,12 @@ function MarketingPage() {
             ))}
           </div>
           <div className="text-center mt-12">
-            <a
-              href="https://workid-app.vercel.app/signup"
+            <button
+              onClick={() => navigate("/signup")}
               className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full hover:shadow-lg hover:scale-105 transition-all"
             >
               Start Your Journey <ArrowRight className="ml-2 w-5 h-5" />
-            </a>
+            </button>
           </div>
         </div>
       </section>
@@ -917,10 +917,16 @@ function MarketingPage() {
                 Empowering Sri Lanka's workforce
               </p>
               <div className="flex gap-3">
-                {[Facebook, Twitter, Instagram, Linkedin].map((Icon, i) => (
+                {[
+                  { Icon: Facebook, url: "https://www.facebook.com/share/1BAEQTcgnw/?mibextid=wwXIfr" },
+                  { Icon: Instagram, url: "https://www.instagram.com/workid_jobs/" },
+                  { Icon: Linkedin, url: "https://www.linkedin.com/company/workid-jobs/" },
+                ].map(({ Icon, url }, i) => (
                   <a
                     key={i}
-                    href="#"
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors"
                   >
                     <Icon className="w-5 h-5" />
@@ -979,13 +985,6 @@ function MarketingPage() {
                 >
                   <Mail className="w-5 h-5" />
                   <span className="text-sm">workidjobs@gmail.com</span>
-                </a>
-                <a
-                  href="tel:+94112345678"
-                  className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
-                >
-                  <Phone className="w-5 h-5" />
-                  <span className="text-sm">+94 11 234 5678</span>
                 </a>
               </div>
             </div>

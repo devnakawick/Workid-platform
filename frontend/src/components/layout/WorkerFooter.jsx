@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Facebook, Linkedin, Instagram, ChevronDown, ChevronUp } from 'lucide-react';
+import { Mail, MapPin, Facebook, Linkedin, Instagram, ChevronDown, ChevronUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -43,13 +43,13 @@ const WorkerFooter = () => {
               {t('footer.descriptionLong')}
             </p>
             <div className="flex gap-3">
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-blue-600 rounded-lg flex items-center justify-center transition-all hover:scale-110 hover:shadow-lg" aria-label="Facebook">
+              <a href="https://www.facebook.com/share/1BAEQTcgnw/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 hover:bg-blue-600 rounded-lg flex items-center justify-center transition-all hover:scale-110 hover:shadow-lg" aria-label="Facebook">
                 <Facebook className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-blue-700 rounded-lg flex items-center justify-center transition-all hover:scale-110 hover:shadow-lg" aria-label="LinkedIn">
+              <a href="https://www.linkedin.com/company/workid-jobs/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 hover:bg-blue-700 rounded-lg flex items-center justify-center transition-all hover:scale-110 hover:shadow-lg" aria-label="LinkedIn">
                 <Linkedin className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-pink-600 rounded-lg flex items-center justify-center transition-all hover:scale-110 hover:shadow-lg" aria-label="Instagram">
+              <a href="https://www.instagram.com/workid_jobs/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 hover:bg-pink-600 rounded-lg flex items-center justify-center transition-all hover:scale-110 hover:shadow-lg" aria-label="Instagram">
                 <Instagram className="w-5 h-5" />
               </a>
             </div>
@@ -108,15 +108,9 @@ const WorkerFooter = () => {
                 </span>
               </li>
               <li className="flex items-center gap-3 group">
-                <Phone className="w-5 h-5 text-green-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                <a href="tel:+94112345678" className="text-sm text-gray-400 hover:text-white transition-colors">
-                  +94 11 234 5678
-                </a>
-              </li>
-              <li className="flex items-center gap-3 group">
                 <Mail className="w-5 h-5 text-red-500 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                <a href="mailto:support@workid.lk" className="text-sm text-gray-400 hover:text-white transition-colors">
-                  support@workid.lk
+                <a href="mailto:workidjobs@gmail.com" className="text-sm text-gray-400 hover:text-white transition-colors">
+                  workidjobs@gmail.com
                 </a>
               </li>
             </ul>
