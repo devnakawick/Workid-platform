@@ -6,6 +6,35 @@ from app.models.wallet import Wallet
 from app.models.transaction import Transaction
 from app.models.user import User
 
+from fastapi import HTTPException
+
+class WalletService:
+
+    @staticmethod
+    def get_wallet(db: Session, user_id):
+        wallet = db.query(Wallet).filter(Wallet.user_id == user_id).first()
+
+        if not wallet:
+            raise HTTPException(status_code=404, detail="Wallet not found")
+
+        return wallet
+
+    @staticmethod
+    def get_transactions(db: Session, user_id):
+        transactions = (
+            db.query(Transaction)
+            .filter(
+                or_(
+                    Transaction.from_user_id == user_id,
+                    Transaction.to_user_id == user_id
+                )
+            )
+            .order_by(Transaction.created_at.desc())
+            .all()
+        )
+
+        return transactions
+
 def get_wallet(db: Session, user_id):
     """
     Retrieve a user's wallet.
@@ -21,6 +50,24 @@ def get_wallet(db: Session, user_id):
        
 
     return wallet
+
+
+    @staticmethod
+    def get_payment_history(db: Session, user_id):
+        transactions = (
+            db.query(Transaction)
+            .filter(
+                or_(
+                    Transaction.from_user_id == user_id,
+                    Transaction.to_user_id == user_id
+                )
+            )
+            .filter(Transaction.transaction_type == "payment")
+            .order_by(Transaction.created_at.desc())
+            .all()
+        )
+
+        return transactions
 
 
 def credit_wallet(db: Session, user_id, amount: Decimal):
@@ -68,3 +115,5 @@ def debit_wallet(db: Session, user_id, amount: Decimal):
     db.add(transaction)
 
     return wallet
+
+    

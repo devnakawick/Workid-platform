@@ -14,7 +14,8 @@ from app.utils.payment_security import verify_signature
 
 from app.utils.payhere import generate_payhere_hash
 import os
-
+from app.services.wallet_service import WalletService
+from app.utils.dependencies import get_current_user
 router = APIRouter(prefix="/payments", tags=["Payments"])
 
 
@@ -111,3 +112,28 @@ async def payhere_notify(request: Request, db: Session = Depends(get_db)):
         confirm_payment(db, order_id, payhere_amount)
 
     return {"message": "Notification processed"}
+
+
+
+@router.get("/history")
+def get_payment_history(
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    transactions = WalletService.get_payment_history(db, current_user.id)
+
+    result = []
+
+    for t in transactions:
+        role = "sent" if t.from_user_id == current_user.id else "received"
+
+        result.append({
+            "id": t.id,
+            "amount": float(t.amount),
+            "type": t.transaction_type,
+            "status": t.status,
+            "role": role,
+            "created_at": t.created_at
+        })
+
+    return result
