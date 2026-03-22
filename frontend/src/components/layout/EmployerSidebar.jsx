@@ -52,7 +52,7 @@ const EmployerSidebar = () => {
 
                 {/* Logo Branding */}
                 <div className="p-6">
-                    <button type="button" onClick={() => navigate('/landing')} className="brand-wrap flex items-center gap-3" aria-label="WorkID">
+                    <button type="button" onClick={() => navigate('/')} className="brand-wrap flex items-center gap-3" aria-label="WorkID">
                         <img src={logo} alt="WorkID" className="sidebar-logo h-12 w-auto rounded-lg" />
                         <div className="text-left">
                             <h2 className="brand-name text-white font-extrabold text-xl m-0 leading-tight">WorkID</h2>

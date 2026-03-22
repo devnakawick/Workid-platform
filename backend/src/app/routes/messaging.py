@@ -1,7 +1,8 @@
 from fastapi import APIRouter, WebSocket, Depends, WebSocketDisconnect, HTTPException
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from datetime import datetime
+from pydantic import BaseModel
 
 from app.database import get_db
 from app.models.user import User
@@ -12,27 +13,51 @@ from app.utils.security import verify_token
 
 router = APIRouter(prefix="/api/messages", tags=["Messaging"])
 
+
+class SendMessageRequest(BaseModel):
+    sender_id: int
+    receiver_id: int
+    content: str
+    conversation_id: Optional[str] = None
+
+
 @router.post("/send")
 def send_message(
-    sender_id: int,
-    receiver_id: int,
-    content: str,
-    conversation_id: str = None,
+    body: SendMessageRequest,
     db: Session = Depends(get_db)
 ):
-    return MessageService.send_message(
-        db, sender_id, receiver_id, content, conversation_id
+    msg = MessageService.send_message(
+        db, body.sender_id, body.receiver_id, body.content, body.conversation_id
     )
+    return {
+        "id": msg.id,
+        "conversation_id": msg.conversation_id,
+        "sender_id": msg.sender_id,
+        "receiver_id": msg.receiver_id,
+        "content": msg.content,
+        "created_at": msg.created_at.isoformat() if msg.created_at else None,
+    }
 
 
 @router.get("/conversations")
 def get_conversations(user_id: int, db: Session = Depends(get_db)):
-    return MessageService.get_user_conversations(db, user_id)
+    return MessageService.get_user_conversations_grouped(db, user_id)
 
 
 @router.get("/{conversation_id}")
 def get_conversation(conversation_id: str, db: Session = Depends(get_db)):
-    return MessageService.get_conversation(db, conversation_id)
+    messages = MessageService.get_conversation(db, conversation_id)
+    return [
+        {
+            "id": m.id,
+            "conversation_id": m.conversation_id,
+            "sender_id": m.sender_id,
+            "receiver_id": m.receiver_id,
+            "content": m.content,
+            "created_at": m.created_at.isoformat() if m.created_at else None,
+        }
+        for m in messages
+    ]
 
 
 # WebSocket chat
@@ -94,7 +119,7 @@ async def websocket_chat(
             saved_message = MessageService.send_message(
                 db,
                 sender_id=current_user.id,
-                receiver_id=...,  # TODO: Get receiver_id from conversation
+                receiver_id=receiver_id,
                 content=text,
                 conversation_id=conversation_id
             )

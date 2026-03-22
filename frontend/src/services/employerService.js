@@ -9,8 +9,14 @@ export const employerService = {
     getEmployerProfile: () => 
         api.get(`${BASE_EMPLOYER}/profile`),
 
+    createEmployerProfile: (data) =>
+        api.post(`${BASE_EMPLOYER}/profile`, data),
+
     updateEmployerProfile: (data) => 
         api.put(`${BASE_EMPLOYER}/profile`, data),
+
+    rateWorker: (jobId, rating, review = null) => 
+        api.post(`${BASE_EMPLOYER}/jobs/${jobId}/rate-worker`, { rating, review }),
 
     // Stats
     getEmployerStats: () => 

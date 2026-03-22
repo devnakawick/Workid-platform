@@ -56,9 +56,10 @@ export default function Settings() {
             setLoading(true);
             let profileData;
             
-            if (user?.role === 'worker') {
+            const userRole = (user?.user_type || user?.role || '').toLowerCase();
+            if (userRole === 'worker') {
                 profileData = await workerService.getWorkerProfile();
-            } else if (user?.role === 'employer') {
+            } else if (userRole === 'employer') {
                 profileData = await employerService.getEmployerProfile();
             }
 
@@ -117,9 +118,10 @@ export default function Settings() {
             };
 
             // Call appropriate service based on user role
-            if (user?.role === 'worker') {
+            const userRole = (user?.user_type || user?.role || '').toLowerCase();
+            if (userRole === 'worker') {
                 await workerService.updateWorkerProfile(updateData);
-            } else if (user?.role === 'employer') {
+            } else if (userRole === 'employer') {
                 await employerService.updateEmployerProfile(updateData);
             }
 

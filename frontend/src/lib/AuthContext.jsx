@@ -44,17 +44,20 @@ export const AuthProvider = ({ children }) => {
                         setIsAuthenticated(true);
                         localStorage.setItem('user', JSON.stringify(backendData));
                     } else {
-                        // Has stored user, merge backend data but preserve localStorage changes
+                        // Has stored user, merge — backend wins for profile fields
                         const storedUserData = JSON.parse(currentStoredUser);
+                        const pick = (...vals) => vals.find(v => v != null && v !== '') ?? null;
                         const mergedData = {
+                            ...storedUserData,
                             ...backendData,
-                            // Preserve frontend-only fields from localStorage
-                            name: storedUserData.name || backendData.full_name || backendData.name,
-                            phone: storedUserData.phone || backendData.phone_number || backendData.phone,
-                            location: storedUserData.location || backendData.city || backendData.location,
-                            experience: storedUserData.experience || backendData.experience_years || storedUserData.experience,
-                            avatar: storedUserData.avatar || backendData.profile_photo || backendData.avatar,
-                            // Preserve notification and language settings
+                            // Backend full_name takes priority over stale localStorage name
+                            name: pick(backendData.full_name, storedUserData.name, backendData.name),
+                            full_name: pick(backendData.full_name, storedUserData.full_name),
+                            phone: pick(backendData.phone_number, storedUserData.phone, backendData.phone),
+                            location: pick(backendData.city, storedUserData.location, backendData.location),
+                            experience: pick(backendData.experience_years, storedUserData.experience),
+                            avatar: pick(backendData.profile_photo, storedUserData.avatar, backendData.avatar),
+                            // Preserve frontend-only settings
                             notifications: storedUserData.notifications || backendData.notifications || {
                                 jobAlerts: true,
                                 appUpdates: true,
@@ -102,17 +105,17 @@ export const AuthProvider = ({ children }) => {
                 const backendData = meRes.data;
                 
                 if (existingUserData) {
-                    // Merge with existing localStorage data to preserve changes
                     const storedUserData = JSON.parse(existingUserData);
+                    const pick = (...vals) => vals.find(v => v != null && v !== '') ?? null;
                     fullUser = {
+                        ...storedUserData,
                         ...backendData,
-                        // Preserve frontend-only fields from localStorage
-                        name: storedUserData.name || backendData.full_name || backendData.name,
-                        phone: storedUserData.phone || backendData.phone_number || backendData.phone,
-                        location: storedUserData.location || backendData.city || backendData.location,
-                        experience: storedUserData.experience || backendData.experience_years || storedUserData.experience,
-                        avatar: storedUserData.avatar || backendData.profile_photo || backendData.avatar,
-                        // Preserve notification and language settings
+                        name: pick(backendData.full_name, storedUserData.name, backendData.name),
+                        full_name: pick(backendData.full_name, storedUserData.full_name),
+                        phone: pick(backendData.phone_number, storedUserData.phone, backendData.phone),
+                        location: pick(backendData.city, storedUserData.location, backendData.location),
+                        experience: pick(backendData.experience_years, storedUserData.experience),
+                        avatar: pick(backendData.profile_photo, storedUserData.avatar, backendData.avatar),
                         notifications: storedUserData.notifications || backendData.notifications || {
                             jobAlerts: true,
                             appUpdates: true,
@@ -121,7 +124,7 @@ export const AuthProvider = ({ children }) => {
                         language: storedUserData.language || backendData.language || 'en',
                     };
                 } else {
-                    fullUser = backendData;
+                    fullUser = { ...backendData, name: backendData.full_name || backendData.name };
                 }
             } catch (_) { 
                 // Fall back to minimal user but check localStorage
@@ -163,17 +166,17 @@ export const AuthProvider = ({ children }) => {
                 const backendData = meRes.data;
                 
                 if (existingUserData) {
-                    // Merge with existing localStorage data to preserve changes
                     const storedUserData = JSON.parse(existingUserData);
+                    const pick = (...vals) => vals.find(v => v != null && v !== '') ?? null;
                     fullUser = {
+                        ...storedUserData,
                         ...backendData,
-                        // Preserve frontend-only fields from localStorage
-                        name: storedUserData.name || backendData.full_name || backendData.name,
-                        phone: storedUserData.phone || backendData.phone_number || backendData.phone,
-                        location: storedUserData.location || backendData.city || backendData.location,
-                        experience: storedUserData.experience || backendData.experience_years || storedUserData.experience,
-                        avatar: storedUserData.avatar || backendData.profile_photo || backendData.avatar,
-                        // Preserve notification and language settings
+                        name: pick(backendData.full_name, storedUserData.name, backendData.name),
+                        full_name: pick(backendData.full_name, storedUserData.full_name),
+                        phone: pick(backendData.phone_number, storedUserData.phone, backendData.phone),
+                        location: pick(backendData.city, storedUserData.location, backendData.location),
+                        experience: pick(backendData.experience_years, storedUserData.experience),
+                        avatar: pick(backendData.profile_photo, storedUserData.avatar, backendData.avatar),
                         notifications: storedUserData.notifications || backendData.notifications || {
                             jobAlerts: true,
                             appUpdates: true,
@@ -182,7 +185,7 @@ export const AuthProvider = ({ children }) => {
                         language: storedUserData.language || backendData.language || 'en',
                     };
                 } else {
-                    fullUser = backendData;
+                    fullUser = { ...backendData, name: backendData.full_name || backendData.name };
                 }
             } catch (_) { 
                 // Fall back to minimal user but check localStorage

@@ -59,12 +59,12 @@ const WorkerFooter = () => {
             <ul className="space-y-2.5">
               {[
                 { label: 'Dashboard', path: '/worker/dashboard' },
-                { label: 'Browse Jobs', path: '/Jobs' },
-                { label: 'My Applications', path: '/Applications' },
+                { label: 'Browse Jobs', path: '/worker/find-jobs' },
+                { label: 'My Applications', path: '/worker/applications' },
                 { label: 'Current Jobs', path: '/worker/current-jobs' },
-                { label: 'Learning Resources', path: '/Learning' },
+                { label: 'Learning Resources', path: '/worker/learning' },
                 { label: 'Worker Wallet', path: '/worker/wallet' },
-                { label: 'Profile', path: '/Profile' }
+                { label: 'Profile', path: '/worker/profile' }
               ].map((item) => (
                 <li key={item.label}>
                   <Link
@@ -82,7 +82,7 @@ const WorkerFooter = () => {
           <FooterAccordionSection title={t('footer.support')} defaultOpen={false}>
             <ul className="space-y-2.5">
               {[
-                { label: 'Help & Support', path: '/worker/support' },
+                { label: 'Help & Support', path: '/worker/help' },
                 { label: 'Terms of Service', path: '/terms' },
                 { label: 'Privacy Policy', path: '/privacy' }
               ].map((item) => (

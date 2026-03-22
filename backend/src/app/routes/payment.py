@@ -16,7 +16,7 @@ from app.utils.payhere import generate_payhere_hash
 import os
 from app.services.wallet_service import WalletService
 from app.utils.dependencies import get_current_user
-router = APIRouter(prefix="/payments", tags=["Payments"])
+router = APIRouter(prefix="/api/payments", tags=["Payments"])
 
 
 @router.post("/create")

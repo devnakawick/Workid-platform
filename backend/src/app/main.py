@@ -11,7 +11,6 @@ from app.routes import employer_wallet, escrow, worker_wallet, payment
 from app.routes import mock_gateway, support, admin, messaging
 from app.config import settings
 from app.database import engine, Base
-from app.routes import payment
 
 load_dotenv()
 
@@ -55,8 +54,6 @@ app.include_router(employer.router)
 app.include_router(support.router)
 app.include_router(admin.router)
 app.include_router(messaging.router)
-app.include_router(worker_wallet.router)
-app.include_router(payment.router)
 
 @app.on_event("startup")
 async def startup_event():

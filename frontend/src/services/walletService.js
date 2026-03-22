@@ -39,10 +39,14 @@ export const walletService = {
 
     // Worker wallet
     getWorkerWallet: () =>
-        api.get('api/worker/wallet'),
+        api.get('api/wallet/'),
 
     getWorkerTransactions: () =>
-        api.get('api/worker/transactions'),
+        api.get('api/wallet/transactions'),
+
+    // Payment history
+    getPaymentHistory: () =>
+        api.get('api/payments/history'),
 };
 
 export default walletService;

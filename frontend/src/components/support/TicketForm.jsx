@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { X, Ticket, CheckCircle2 } from 'lucide-react';
-
-// Submit ticket API from mock data file
-import { submitTicketAPI } from '../../mocks/supportData';
+import { useAuth } from '@/lib/AuthContext';
+import supportService from '@/services/supportService';
 
 const TicketForm = ({ onClose }) => {
+
+  const { user } = useAuth();
 
   // Form field state
   const [form,      setForm]      = useState({ subject: '', category: '', message: '' });
@@ -17,20 +18,22 @@ const TicketForm = ({ onClose }) => {
   const handleChange = (field, value) =>
     setForm(prev => ({ ...prev, [field]: value }));
 
-  // Validate and submit ticket to mock API
+  // Validate and submit ticket to backend API
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.subject.trim() || !form.message.trim()) return;
     setLoading(true);
     setError('');
-    const result = await submitTicketAPI(form);
-    setLoading(false);
-    if (result.success) {
-      // Store ticket ID for success screen
-      setTicketId(result.data.id);
+    try {
+      const subject = form.category ? `[${form.category}] ${form.subject}` : form.subject;
+      const res = await supportService.createTicket(user?.id, subject, form.message);
+      setTicketId(res.data?.id || 'N/A');
       setSubmitted(true);
-    } else {
-      setError(result.error || 'Something went wrong. Please try again.');
+    } catch (err) {
+      console.error('Ticket submit failed:', err);
+      setError(err.response?.data?.detail || 'Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 

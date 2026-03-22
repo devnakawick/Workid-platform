@@ -8,6 +8,8 @@ from app.models.rating import Rating
 from app.models.wallet import Wallet
 from .escrow import Escrow
 from app.models.ticket import SupportTicket
+from app.models.message import Message
+from app.models.transaction import Transaction
 __all__ = [
     "User",
     "Worker",
@@ -18,5 +20,7 @@ __all__ = [
     "Rating",
     "Wallet",
     "Escrow",
-    "SupportTicket"
+    "SupportTicket",
+    "Message",
+    "Transaction"
 ]

@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { X, Ticket, CheckCircle2 } from 'lucide-react';
-
-
-import { submitTicketAPI } from '../../mocks/workerSupportData';
+import { useAuth } from '@/lib/AuthContext';
+import supportService from '@/services/supportService';
 
 const WorkerTicketForm = ({ onClose }) => {
+    const { user } = useAuth();
     const [form, setForm] = useState({ subject: '', category: '', message: '' });
     const [submitted, setSubmitted] = useState(false); // Controls success view
     const [ticketId, setTicketId] = useState('');
@@ -20,15 +20,16 @@ const WorkerTicketForm = ({ onClose }) => {
         setLoading(true);
         setError('');
 
-        // Call Mock API
-        const result = await submitTicketAPI(form);
-        setLoading(false);
-
-        if (result.success) {
-            setTicketId(result.data.id);
+        try {
+            const subject = form.category ? `[${form.category}] ${form.subject}` : form.subject;
+            const res = await supportService.createTicket(user?.id, subject, form.message);
+            setTicketId(res.data?.id || 'N/A');
             setSubmitted(true);
-        } else {
-            setError(result.error || 'Something went wrong.');
+        } catch (err) {
+            console.error('Ticket submit failed:', err);
+            setError(err.response?.data?.detail || 'Something went wrong.');
+        } finally {
+            setLoading(false);
         }
     };
 
