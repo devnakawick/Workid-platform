@@ -3,7 +3,6 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 import enum
 from app.database import Base
-from backend.src.app.schemas.worker import SkillCategory
 
 class SkillCategory(str, enum.Enum):
     """Skill category enumeration"""
