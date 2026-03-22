@@ -10,6 +10,9 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem('access_token');
 
+    // Normalize URL for public paths check
+    const requestUrl = config.url?.startsWith('/') ? config.url : `/${config.url}`;
+
     const publicPaths = [
         '/auth/verify-otp',
         '/auth/resend-otp',
@@ -19,7 +22,7 @@ api.interceptors.request.use((config) => {
         '/api/auth/refresh'
     ];
 
-    const isPublic = publicPaths.some(path => config.url?.startsWith(path));
+    const isPublic = publicPaths.some(path => requestUrl.startsWith(path));
 
     if (token && !isPublic) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -31,15 +34,28 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
     (res) => res,
     (error) => {
-        console.log('API error:', error.response?.status, error.config?.url);
-        if (error.response?.status === 401) {
-            console.log('401 error - clearing tokens and redirecting');
-            localStorage.removeItem('access_token');
+        const { response, config } = error;
+        console.log('API error:', response?.status, config?.url);
 
-            if (!window.location.pathname.includes('/login') &&
-                !window.location.pathname.includes('/otp') &&
-                !window.location.pathname.includes('/register')) {
-                window.location.href = '/login';
+        if (response?.status === 401) {
+            // Check if this is a request that we SHOULD NOT clear tokens for
+            // e.g. if we just got a 401 on /me during signup, maybe don't wipe everything immediately
+            const isAuthFlow = config.url?.includes('/auth/me') || 
+                               config.url?.includes('verify-otp') ||
+                               config.url?.includes('signup');
+
+            if (!isAuthFlow) {
+                console.log('401 error - clearing tokens and redirecting');
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
+
+                if (!window.location.pathname.includes('/login') &&
+                    !window.location.pathname.includes('/otp') &&
+                    !window.location.pathname.includes('/register')) {
+                    window.location.href = '/login';
+                }
+            } else {
+                console.log('401 error during auth flow - not clearing tokens immediately');
             }
         }
         return Promise.reject(error);

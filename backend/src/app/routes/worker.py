@@ -66,8 +66,6 @@ router = APIRouter(
     tags=["Worker"]
 )
 
-router = APIRouter(prefix="/api/worker", tags=["worker"])
-
 # ============================================
 # ACTIVE JOBS
 # ============================================

@@ -65,8 +65,6 @@ router = APIRouter(
     tags=["Employer"]
 )
 
-router = APIRouter(prefix="/api/employer", tags=["employer"])
-
 # ======= APPLICATION MANAGEMENT =======
 
 @router.get("/jobs/{job_id}/applications", response_model=List[ApplicationResponse])
@@ -405,7 +403,7 @@ async def create_job(
     )
 
     # Update employer's total jobs count
-    employer.total_jobs_posted += 0
+    employer.total_jobs_posted += 1
     db.commit()
 
     return job
