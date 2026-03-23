@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { ChevronLeft, UserSearch } from 'lucide-react';
+import { ChevronLeft, UserSearch, Star, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast, Toaster } from 'react-hot-toast';
 
@@ -21,6 +21,11 @@ const ReviewApplications = () => {
   const [selected, setSelected] = useState(null);
   const [showDetail, setShowDetail] = useState(false); // Mobile view toggle
   const [walletBalance, setWalletBalance] = useState(0);
+  const [rateModal, setRateModal] = useState(null); // { jobId, workerName }
+  const [rateValue, setRateValue] = useState(0);
+  const [hoverRate, setHoverRate] = useState(0);
+  const [rateReview, setRateReview] = useState('');
+  const [rateLoading, setRateLoading] = useState(false);
 
   // Filter State
   const [filters, setFilters] = useState({
@@ -170,6 +175,23 @@ const ReviewApplications = () => {
     }
   };
 
+  const handleRateSubmit = async () => {
+    if (!rateModal || rateValue === 0) return;
+    setRateLoading(true);
+    try {
+      await employerService.rateWorker(rateModal.jobId, rateValue, rateReview || null);
+      toast.success(`Rated ${rateModal.workerName} ${rateValue} ⭐`);
+      setRateModal(null);
+      setRateValue(0);
+      setRateReview('');
+    } catch (err) {
+      console.error('Rate failed:', err);
+      toast.error(err.response?.data?.detail || 'Failed to submit rating');
+    } finally {
+      setRateLoading(false);
+    }
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       <div className="flex-1 flex flex-col min-w-0">
@@ -216,13 +238,27 @@ const ReviewApplications = () => {
             </div>
 
             {/* DETAIL VIEW */}
-            <div className={`${showDetail ? 'flex' : 'hidden'} md:flex flex-1 min-w-0`}>
+            <div className={`${showDetail ? 'flex' : 'hidden'} md:flex flex-1 min-w-0 flex-col`}>
               {currentApp ? (
-                <ApplicationDetail
-                  application={currentApp}
-                  onHire={handleHireClick}
-                  onReject={handleRejectClick}
-                />
+                <>
+                  <ApplicationDetail
+                    application={currentApp}
+                    onHire={handleHireClick}
+                    onReject={handleRejectClick}
+                  />
+                  {/* Rate Worker button - only for accepted applications that have a jobId */}
+                  {currentApp.status === 'accepted' && currentApp.jobId && (
+                    <div className="px-6 pb-5 flex-shrink-0">
+                      <button
+                        onClick={() => setRateModal({ jobId: currentApp.jobId, workerName: currentApp.name })}
+                        className="flex items-center gap-2 px-5 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 rounded-xl font-bold text-sm transition-all"
+                      >
+                        <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
+                        Rate Worker
+                      </button>
+                    </div>
+                  )}
+                </>
               ) : (
                 <div className="flex-1 flex items-center justify-center">
                   <div className="flex flex-col items-center text-center">
@@ -235,6 +271,71 @@ const ReviewApplications = () => {
           </div>
         </main>
       </div>
+
+      {/* Rate Worker Modal */}
+      {rateModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl p-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-gray-900">Rate {rateModal.workerName}</h2>
+              <button onClick={() => { setRateModal(null); setRateValue(0); setRateReview(''); }} className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Star Picker */}
+            <div className="flex items-center justify-center gap-2 mb-6">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  onClick={() => setRateValue(star)}
+                  onMouseEnter={() => setHoverRate(star)}
+                  onMouseLeave={() => setHoverRate(0)}
+                  className="transition-transform hover:scale-110"
+                >
+                  <Star
+                    className={`w-10 h-10 transition-colors ${
+                      star <= (hoverRate || rateValue)
+                        ? 'fill-amber-400 text-amber-400'
+                        : 'fill-gray-100 text-gray-300'
+                    }`}
+                  />
+                </button>
+              ))}
+            </div>
+            <p className="text-center text-sm text-gray-500 mb-5">
+              {rateValue === 0 ? 'Select a rating' : `${rateValue} star${rateValue > 1 ? 's' : ''}`}
+            </p>
+
+            {/* Optional review message */}
+            <textarea
+              value={rateReview}
+              onChange={(e) => setRateReview(e.target.value)}
+              placeholder="Leave an optional review message..."
+              rows={3}
+              className="w-full border border-gray-200 rounded-xl p-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-300 resize-none mb-6"
+            />
+
+            {/* Action Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => { setRateModal(null); setRateValue(0); setRateReview(''); }}
+                className="flex-1 py-3 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleRateSubmit}
+                disabled={rateValue === 0 || rateLoading}
+                className="flex-1 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+              >
+                <Star className="w-4 h-4 fill-white text-white" />
+                {rateLoading ? 'Submitting...' : 'Submit Rating'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

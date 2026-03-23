@@ -159,6 +159,18 @@ const ManageJobs = () => {
     }
   };
 
+  // Update job status via real API
+  const handleUpdateJobStatus = async (jobId, newStatus) => {
+    try {
+      await employerService.updateJobStatus(jobId, newStatus);
+      setJobs(prev => prev.map(j => j.id === jobId ? { ...j, status: newStatus } : j));
+      toast.success('Job status updated!');
+    } catch (err) {
+      console.error('Status update failed:', err);
+      toast.error(err.response?.data?.detail || 'Failed to update status');
+    }
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       <div className="flex-1 flex flex-col">
@@ -238,6 +250,7 @@ const ManageJobs = () => {
                     onDelete={setDeleteConfirm}
                     onViewApplications={(id) => navigate(`/employer/applications?jobId=${id}`)}
                     onRecommendWorkers={(id) => navigate(`/employer/find-workers?jobId=${id}`)}
+                    onUpdateStatus={handleUpdateJobStatus}
                   />
                 ))
               )}

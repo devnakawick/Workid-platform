@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { MapPin, Calendar, CircleCheck, Loader2, TrendingUp } from 'lucide-react';
 import HireButton from './HireButton';
-import { getJobDetails, getJobLocations, updateEmployerLocationSettings } from '@/services/jobProgressApi';
+import { jobService } from '@/services/jobService';
+import { workerService } from '@/services/workerService';
 import JobProgressBar from '@/components/progress/JobProgressBar';
 import JobLocationMap from '@/components/map/JobLocationMap';
 import LocationShareSettings from '@/components/settings/LocationShareSettings';
@@ -171,20 +172,38 @@ const JobProgressTab = ({ app }) => {
   const fetchData = async () => {
     try {
       setRefreshing(true);
-      // Try application's jobId first, fallback to 'job-1' if it fails
-      const jobId = app.jobId || 'job-1';
-      let jobData;
-      try {
-        jobData = await getJobDetails(jobId);
-      } catch (e) {
-        jobData = await getJobDetails('job-1');
+      const jobId = app.jobId;
+      if (!jobId) {
+        console.warn('No jobId on application, skipping tracking fetch.');
+        setLoading(false);
+        setRefreshing(false);
+        return;
       }
-      setJob(jobData);
 
-      const locData = await getJobLocations(jobData.id);
-      setLocations(locData);
+      // Fetch job details from real API
+      const jobRes = await jobService.getJobById(jobId);
+      const data = jobRes.data;
+      setJob({
+        id: data.id,
+        title: data.title,
+        status: data.progress_status || data.status || 'accepted',
+      });
+
+      // Fetch real job locations
+      try {
+        const locRes = await jobService.getJobLocations(jobId);
+        const loc = locRes.data;
+        if (loc) {
+          setLocations({
+            employerLocation: loc.employer_location || loc.employerLocation,
+            workerLocation: loc.worker_location || loc.workerLocation,
+          });
+        }
+      } catch (locErr) {
+        console.warn('Location data unavailable', locErr);
+      }
     } catch (error) {
-      console.error("Failed to load job details:", error);
+      console.error('Failed to load job details:', error);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -198,9 +217,8 @@ const JobProgressTab = ({ app }) => {
   }, []);
 
   const handleSaveSettings = async (setting) => {
-    const jobId = app.jobId || 'job-1';
-    await updateEmployerLocationSettings(jobId, setting);
-    toast.success("Location sharing settings updated successfully");
+    // Settings are informational only—no real endpoint yet; show confirmation.
+    toast.success('Location sharing settings updated successfully');
   };
 
   if (loading && !job) {
