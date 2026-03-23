@@ -46,7 +46,7 @@ class Worker(Base):
     # Personal Information
     full_name = Column(String(100), nullable=True)
     email = Column(String(100), nullable=True)
-    nic_number = Column(String, unique=True, nullable=True)
+    nic_number = Column(String, nullable=True)
     date_of_birth = Column(DateTime)
     phone_number = Column(String, nullable=False)  
     
