@@ -11,7 +11,7 @@ from app.models.transaction import Transaction
 from app.schemas.escrow import FundEscrowRequest
 from app.services.wallet_service import debit_wallet
 from app.services.wallet_service import credit_wallet
-router = APIRouter(prefix="/escrow", tags=["Escrow"])
+router = APIRouter(prefix="/api/escrow", tags=["Escrow"])
 
 
 @router.post("/fund")

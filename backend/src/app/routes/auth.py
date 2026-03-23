@@ -1,13 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, HTTPException, status, Body
+from sqlalchemy.orm import Session, joinedload
 import logging
 
 from app.database import get_db
-from app.schemas.auth import (SendOTPRequest, VerifyOTPRequest, WorkerSignupRequest, EmployerSignupRequest, TokenResponse, UserResponse)
+from app.schemas.auth import (SendOTPRequest, VerifyOTPRequest, WorkerSignupRequest, EmployerSignupRequest, TokenResponse, UserResponse, LoginRequest)
 
 from app.services.auth_service import AuthService
 from app.utils.dependencies import get_current_user
 from app.models.user import User
+from app.utils.security import verify_token, create_access_token
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -26,8 +27,23 @@ async def verify_otp(request: VerifyOTPRequest, db: Session = Depends(get_db)):
     """
     Verify OTP and get authentication tokens
     """
+    logger.info(f"Verify OTP request for phone: {request.phone_number}")
     auth_service = AuthService(db)
-    return auth_service.verify_otp(request)
+    try:
+        result = auth_service.verify_otp(request)
+        logger.info(f"Verify OTP successful for phone: {request.phone_number}")
+        return result
+    except HTTPException as e:
+        logger.error(f"Verify OTP failed for phone {request.phone_number}: {e.detail}")
+        raise
+
+@router.post("/login", response_model=TokenResponse, status_code=status.HTTP_200_OK)
+async def login(request: LoginRequest, db: Session = Depends(get_db)):
+    """
+    Login with phone number and password
+    """
+    auth_service = AuthService(db)
+    return auth_service.login_with_password(request.phone_number, request.password)
 
 @router.post("/worker/signup", status_code=status.HTTP_201_CREATED)
 async def worker_signup(request: WorkerSignupRequest,current_user: User = Depends(get_current_user),db: Session = Depends(get_db)):
@@ -55,7 +71,7 @@ async def employer_signup(
 
 @router.post("/refresh", response_model=TokenResponse)
 async def refresh_token(
-    refresh_token: str,
+    refresh_token: str = Body(..., embed=True),
     db: Session = Depends(get_db)
 ):
     """
@@ -63,18 +79,89 @@ async def refresh_token(
     
     -refresh_token: Valid refresh token
     """
-    
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Refresh token endpoint not yet implemented"
-    )
+    try:
+        # Verify refresh token
+        payload = verify_token(refresh_token)
+        if not payload:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid refresh token"
+            )
+        
+        # Check if it's a refresh token
+        if payload.get("type") != "refresh":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Not a refresh token"
+            )
+        
+        # Get user from payload
+        user_id = payload.get("sub")
+        if not user_id:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token payload"
+            )
+        
+        # Verify user still exists and is active
+        user = db.query(User).filter(User.id == int(user_id)).first()
+        if not user or not user.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User not found or inactive"
+            )
+        
+        # Generate new access token
+        new_access_token = create_access_token(data={"sub": str(user.id)})
+        
+        return {
+            "access_token": new_access_token,
+            "refresh_token": refresh_token,  # Return same refresh token
+            "token_type": "bearer",
+            "user_id": str(user.id),
+            "user_type": user.user_type.value,
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Refresh token error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Failed to refresh token"
+        )
 
 @router.get("/me", response_model=UserResponse)
 async def get_current_user_info(
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
-    """Get current authenticated user information"""
-    return current_user
+    """Get current authenticated user information with profile details"""
+    # Reload user with profile data using joinedload
+    user = db.query(User).options(
+        joinedload(User.worker_profile),
+        joinedload(User.employer_profile)
+    ).filter(User.id == current_user.id).first()
+    
+    # Get full_name from worker or employer profile
+    full_name = None
+    if user.user_type.value == "worker" and user.worker_profile:
+        full_name = user.worker_profile.full_name
+    elif user.user_type.value == "employer" and user.employer_profile:
+        full_name = user.employer_profile.full_name
+    
+    # Build response with full_name
+    user_data = {
+        "id": str(user.id),
+        "phone_number": user.phone_number,
+        "user_type": user.user_type.value,
+        "is_verified": user.is_verified,
+        "is_active": user.is_active,
+        "created_at": user.created_at,
+        "full_name": full_name
+    }
+    
+    return user_data
 
 @router.post("/logout")
 async def logout(current_user: User = Depends(get_current_user)):

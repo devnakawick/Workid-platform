@@ -11,7 +11,7 @@ class Message(Base):
     id = Column(Integer, primary_key=True, index=True)
 
     # Conversation identifier
-    conversation_id = Column(Integer, nullable=False, index=True)
+    conversation_id = Column(String, nullable=False, index=True)
 
     # Sender and receiver
     sender_id = Column(Integer, ForeignKey("users.id"), nullable=False)

@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, User, DollarSign, FileText } from 'lucide-react';
+import { MapPin, User, DollarSign, FileText, Star } from 'lucide-react';
 
 const ActiveJobDetails = ({ job, isEmployer = false }) => {
     return (
@@ -14,7 +14,14 @@ const ActiveJobDetails = ({ job, isEmployer = false }) => {
                         </div>
                         <div>
                             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{isEmployer ? "Worker" : "Employer"}</p>
-                            <p className="font-bold text-gray-900 text-xl tracking-tight">{job.employerName}</p>
+                            <div className="flex items-center gap-2">
+                                <p className="font-bold text-gray-900 text-xl tracking-tight">{job.employerName}</p>
+                                {job.employerTrustScore && (
+                                    <span className="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-[10px] font-bold px-1.5 py-0.5 rounded-sm">
+                                        <Star size={10} className="fill-blue-600 outline-none" /> AI Trust: {job.employerTrustScore}
+                                    </span>
+                                )}
+                            </div>
                         </div>
                     </div>
 

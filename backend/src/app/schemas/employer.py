@@ -1,7 +1,6 @@
 from pydantic import BaseModel, Field, EmailStr
 from typing import Optional
 from datetime import datetime
-from uuid import UUID
 
 # ======= Employer Profile Schemas =======
 

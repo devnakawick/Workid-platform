@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -21,63 +21,80 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { employerService } from '../../services/employerService';
 
-const mock = {
-	stats: [
-		{ id: 'postedJobs', titleKey: 'employerDashboard.stats.postedJobs', value: '2', changeKey: 'employerDashboard.stats.postedJobsChange', icon: Briefcase, color: 'blue', changeColor: 'text-green-500' },
-		{ id: 'applications', titleKey: 'employerDashboard.stats.applications', value: '10', changeKey: 'employerDashboard.stats.applicationsChange', icon: Users, color: 'green', changeColor: 'text-green-500' },
-		{ id: 'moneySpent', titleKey: 'employerDashboard.stats.moneySpent', value: '7,250', changeKey: 'employerDashboard.stats.moneySpentChange', icon: DollarSign, color: 'orange', changeColor: 'text-orange-500', isDown: true },
-		{ id: 'hired', titleKey: 'employerDashboard.stats.hired', value: '2', changeKey: 'employerDashboard.stats.hiredChange', icon: Handshake, color: 'purple', changeColor: 'text-green-500' },
-	],
-	recentlyPosted: [
-		{
-			id: 1,
-			title: 'Construction Worker',
-			description: 'Experienced construction worker skilled in building, repairing, and maintaining residential and commercial structures with precision and safety.',
-			location: 'Dehiwala',
-			date: '2 days ago',
-			type: 'Full-time',
-			price: 'Rs. 2,500/day'
-		},
-		{
-			id: 2,
-			title: 'House Cleaner',
-			description: 'Reliable house cleaner with experience in deep cleaning, organizing, and maintaining spotless, welcoming homes.',
-			location: 'Nugegoda',
-			date: '3 days ago',
-			type: 'Part-time',
-			price: 'Rs. 750/hour'
-		}
-	],
-	notifications: [
-		{ id: 1, type: 'application', title: 'New Application', desc: 'Jane applied for your recent job', time: '2 minutes ago', color: 'blue', icon: Users },
-		{ id: 2, type: 'completion', title: 'Job Completed', desc: 'House cleaning job finished', time: '1 hour ago', color: 'green', icon: CheckCircle2 },
-		{ id: 3, type: 'message', title: 'New Message', desc: 'David sent you a new message', time: '2 hour ago', color: 'purple', icon: MessageSquare },
-	],
-	applications: [
-		{
-			id: 'ap1',
-			name: 'Jane Smith',
-			email: 'jane.s@gmail.com',
-			job: 'House Cleaning',
-			experience: '5 years',
-			date: 'Nov 22, 2025',
-			status: 'Under Review',
-			avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jane'
-		}
-	]
-};
+// Notifications stay as inline data (no backend for this yet)
+const staticNotifications = [
+	{ id: 1, type: 'application', title: 'New Application', desc: 'Check your applications tab', time: 'Recently', color: 'blue', icon: Users },
+	{ id: 2, type: 'completion', title: 'Job Completed', desc: 'Check completed jobs', time: 'Recently', color: 'green', icon: CheckCircle2 },
+	{ id: 3, type: 'message', title: 'New Message', desc: 'Check your messages', time: 'Recently', color: 'purple', icon: MessageSquare },
+];
 
 const EmployerDashboard = () => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
+	const [stats, setStats] = useState([]);
+	const [recentJobs, setRecentJobs] = useState([]);
+	const [recentApps, setRecentApps] = useState([]);
+
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				// Fetch stats
+				const statsRes = await employerService.getEmployerStats();
+				const s = statsRes.data || {};
+				setStats([
+					{ id: 'postedJobs', titleKey: 'employerDashboard.stats.postedJobs', value: String(s.total_jobs || 0), changeKey: 'employerDashboard.stats.postedJobsChange', icon: Briefcase, color: 'blue', changeColor: 'text-green-500' },
+					{ id: 'applications', titleKey: 'employerDashboard.stats.applications', value: String(s.total_applications || 0), changeKey: 'employerDashboard.stats.applicationsChange', icon: Users, color: 'green', changeColor: 'text-green-500' },
+					{ id: 'moneySpent', titleKey: 'employerDashboard.stats.moneySpent', value: String(s.total_spent || 0), changeKey: 'employerDashboard.stats.moneySpentChange', icon: DollarSign, color: 'orange', changeColor: 'text-orange-500', isDown: true },
+					{ id: 'hired', titleKey: 'employerDashboard.stats.hired', value: String(s.total_hired || 0), changeKey: 'employerDashboard.stats.hiredChange', icon: Handshake, color: 'purple', changeColor: 'text-green-500' },
+				]);
+			} catch (err) {
+				console.error('Stats fetch failed:', err);
+				// fallback empty stats
+				setStats([
+					{ id: 'postedJobs', titleKey: 'employerDashboard.stats.postedJobs', value: '0', changeKey: 'employerDashboard.stats.postedJobsChange', icon: Briefcase, color: 'blue', changeColor: 'text-green-500' },
+					{ id: 'applications', titleKey: 'employerDashboard.stats.applications', value: '0', changeKey: 'employerDashboard.stats.applicationsChange', icon: Users, color: 'green', changeColor: 'text-green-500' },
+					{ id: 'moneySpent', titleKey: 'employerDashboard.stats.moneySpent', value: '0', changeKey: 'employerDashboard.stats.moneySpentChange', icon: DollarSign, color: 'orange', changeColor: 'text-orange-500', isDown: true },
+					{ id: 'hired', titleKey: 'employerDashboard.stats.hired', value: '0', changeKey: 'employerDashboard.stats.hiredChange', icon: Handshake, color: 'purple', changeColor: 'text-green-500' },
+				]);
+			}
+
+			try {
+				// Fetch recent jobs
+				const jobsRes = await employerService.getMyJobs();
+				const jobs = (jobsRes.data || []).slice(0, 3).map(j => ({
+					id: j.id,
+					title: j.title,
+					description: j.description || '',
+					location: j.city || '',
+					date: j.created_at ? getTimeAgo(j.created_at) : '',
+					type: j.payment_type || 'fixed',
+					price: `Rs. ${Number(j.budget || 0).toLocaleString()}`,
+				}));
+				setRecentJobs(jobs);
+			} catch (err) {
+				console.error('Recent jobs fetch failed:', err);
+			}
+		};
+		fetchData();
+	}, []);
+
+	function getTimeAgo(dateStr) {
+		const diff = Date.now() - new Date(dateStr).getTime();
+		const mins = Math.floor(diff / 60000);
+		if (mins < 60) return `${mins}m ago`;
+		const hrs = Math.floor(mins / 60);
+		if (hrs < 24) return `${hrs}h ago`;
+		return `${Math.floor(hrs / 24)}d ago`;
+	}
 
 	return (
 		<div className="max-w-7xl mx-auto space-y-6 pb-12">
 
 			{/* 1. Stats Grid */}
 			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-				{mock.stats.map((stat) => (
+				{stats.map((stat) => (
 					<div key={stat.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group">
 						<div className="space-y-1">
 							<p className="text-gray-500 text-sm font-medium">{t(stat.titleKey)}</p>
@@ -108,7 +125,7 @@ const EmployerDashboard = () => {
 					</div>
 
 					<div className="space-y-4">
-						{mock.recentlyPosted.map(job => (
+						{recentJobs.map(job => (
 							<div key={job.id} className="p-5 rounded-2xl border border-gray-100 hover:border-blue-100 transition-all group">
 								<div className="flex justify-between items-start">
 									<div className="space-y-2 flex-1">
@@ -143,7 +160,7 @@ const EmployerDashboard = () => {
 					</div>
 
 					<div className="space-y-4">
-						{mock.notifications.map(notif => (
+						{staticNotifications.map(notif => (
 							<div key={notif.id} className={`p-4 rounded-2xl flex items-start gap-4 ${notif.color === 'blue' ? 'bg-blue-50/50' :
 								notif.color === 'green' ? 'bg-green-50/50' :
 									'bg-purple-50/50'
@@ -190,7 +207,7 @@ const EmployerDashboard = () => {
 							</tr>
 						</thead>
 						<tbody className="divide-y divide-gray-50">
-							{mock.applications.map((app) => (
+							{recentApps.map((app) => (
 								<tr key={app.id} className="group hover:bg-slate-50/50 transition-colors">
 									<td className="py-5 pl-2">
 										<div className="flex items-center gap-3">

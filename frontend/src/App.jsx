@@ -1,21 +1,34 @@
-import { Toaster } from "sonner"
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import PageNotFound from './lib/PageNotFound';
-import { AuthProvider, useAuth } from '@/lib/AuthContext';
-import Layout from './Layout';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
-// Original imports
-import WorkerProfile from './pages/worker/WorkerProfile';
-import WorkerDashboard from './pages/worker/WorkerDashboard';
-import EmployerDashboard from './pages/employer/EmployerDashboard';
+// Providers
+import { AuthProvider, useAuth } from './lib/AuthContext';
+import { SocketProvider } from './lib/SocketContext';
+import { LanguageProvider } from './lib/LanguageContext';
+import Layout from './Layout.jsx';
+
+// Landing
 import LandingPage from './pages/land/LandingPage';
 import LinksPage from './pages/land/LinksPage';
-import Login from './pages/auth/Login';
-import SignupEmployer from './pages/auth/SignupEmployer';
-import SignupWorker from './pages/auth/SignupWorker';
-import SignupSelection from './pages/auth/SignupSelection';
+
+// Legal
 import TermsOfService from './pages/TermsOfService';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+
+// Auth
+import Login from './pages/auth/Login';
+import SignupSelection from './pages/auth/SignupSelection';
+import OTPVerification from './components/auth/OTPVerification';
+import OtpVerification from './pages/auth/OtpVerification';
+import SignupWorker from './pages/auth/SignupWorker';
+import SignupEmployer from './pages/auth/SignupEmployer';
+
+// Worker pages 
+import WorkerDashboard from './pages/worker/WorkerDashboard';
+import WorkerProfile from './pages/worker/WorkerProfile';
+import WorkerWallet from './pages/worker/WorkerWallet';
+import WorkerCurrentJobsPage from './pages/worker/WorkerCurrentJobsPage';
+import WorkerHelpSupport from './pages/worker/WorkerHelpSupport';
+import WorkerJobDetailsPage from './pages/worker/WorkerJobDetailsPage';
 import Applications from './pages/Application';
 import Badges from './pages/Badges';
 import Documents from './pages/Documents';
@@ -24,181 +37,98 @@ import Learning from './pages/Learning';
 import Settings from './pages/Settings';
 import Notifications from './pages/Notifications';
 import Messages from './pages/Messages';
-import OtpVerification from './pages/auth/OtpVerification';
 
-// New employer pages from feature branch
-import PostJob from './pages/employer/PostJob';
-import ManageJobs from './pages/employer/ManageJobs';
-import EditJob from './pages/employer/EditJob';
+// Employer pages 
+import EmployerDashboard from './pages/employer/EmployerDashboard';
+import EmployerProfile from './pages/employer/EmployerProfile';
 import EmployerWallet from './pages/employer/EmployerWallet';
+import PostJob from './pages/employer/PostJob';
+import EditJob from './pages/employer/EditJob';
+import ManageJobs from './pages/employer/ManageJobs';
 import ReviewApplications from './pages/employer/ReviewApplications';
 import SearchWorkers from './pages/employer/SearchWorkers';
 import HelpSupport from './pages/employer/HelpSupport';
 
-// New worker pages from feature branch
-import WorkerWallet from './pages/worker/WorkerWallet';
-import WorkerHelpSupport from './pages/worker/WorkerHelpSupport';
-import LanguageSwitcher from './components/common/LanguageSwitcher';
-import WorkerCurrentJobsPage from './pages/worker/WorkerCurrentJobsPage';
-import WorkerJobDetailsPage from './pages/worker/WorkerJobDetailsPage';
+function PrivateRoute({ children }) {
+  const { user, isLoading } = useAuth();
 
-const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings } = useAuth();
+  console.log('PrivateRoute check - isLoading:', isLoading, 'user:', user);
 
-  // Show loading spinner while checking app public settings or auth
-  if (isLoadingPublicSettings || isLoadingAuth) {
+  if (isLoading) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
+      <div className="flex h-screen items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
-  // Render the main app
-  return (
-    <Routes>
-      {/* Original routes */}
-      <Route path="/" element={<LinksPage />} />
-      <Route path="/website" element={<LandingPage />} />
-      <Route path="/terms" element={<TermsOfService />} />
-      <Route path="/privacy" element={<PrivacyPolicy />} />
-      <Route path="/Applications" element={
-        <Layout currentPageName="Applications">
-          <Applications />
-        </Layout>
-      } />
-      <Route path="/Badges" element={
-        <Layout currentPageName="Badges">
-          <Badges />
-        </Layout>
-      } />
-      <Route path="/Documents" element={
-        <Layout currentPageName="Documents">
-          <Documents />
-        </Layout>
-      } />
-      <Route path="/Jobs" element={
-        <Layout currentPageName="Jobs">
-          <Jobs />
-        </Layout>
-      } />
-      <Route path="/worker/dashboard" element={
-        <Layout currentPageName="Dashboard">
-          <WorkerDashboard />
-        </Layout>
-      } />
-      <Route path="/employer/dashboard" element={
-        <Layout currentPageName="Dashboard">
-          <EmployerDashboard />
-        </Layout>
-      } />
-      <Route path="/Learning" element={
-        <Layout currentPageName="Learning">
-          <Learning />
-        </Layout>
-      } />
-      <Route path="/Profile" element={
-        <Layout currentPageName="Profile">
-          <WorkerProfile />
-        </Layout>
-      } />
-      <Route path="/Settings" element={
-        <Layout currentPageName="Settings">
-          <Settings />
-        </Layout>
-      } />
-      <Route path="/Notifications" element={
-        <Layout currentPageName="Notifications">
-          <Notifications />
-        </Layout>
-      } />
-      <Route path="/Messages" element={
-        <Layout currentPageName="Messages">
-          <Messages />
-        </Layout>
-      } />
-      <Route path="/landing" element={<LandingPage />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<SignupSelection />} />
-      <Route path="/signup-employer" element={<SignupEmployer />} />
-      <Route path="/signup-worker" element={<SignupWorker />} />
-      <Route path="/verify-otp" element={<OtpVerification />} />
-
-      {/* New employer routes from feature branch */}
-      <Route path="/employer/jobs" element={
-        <Layout currentPageName="Manage Jobs">
-          <ManageJobs />
-        </Layout>
-      } />
-      <Route path="/employer/jobs/new" element={
-        <Layout currentPageName="Post Job">
-          <PostJob />
-        </Layout>
-      } />
-      <Route path="/employer/jobs/edit/:jobId" element={
-        <Layout currentPageName="Edit Job">
-          <EditJob />
-        </Layout>
-      } />
-      <Route path="/employer/applications" element={
-        <Layout currentPageName="Review Applications">
-          <ReviewApplications />
-        </Layout>
-      } />
-      <Route path="/employer/wallet" element={
-        <Layout currentPageName="Employer Wallet">
-          <EmployerWallet />
-        </Layout>
-      } />
-      <Route path="/employer/workers" element={
-        <Layout currentPageName="Search Workers">
-          <SearchWorkers />
-        </Layout>
-      } />
-      <Route path="/employer/help" element={
-        <Layout currentPageName="Help Support">
-          <HelpSupport />
-        </Layout>
-      } />
-
-      {/* New worker routes from feature branch */}
-      <Route path="/worker/wallet" element={
-        <Layout currentPageName="Worker Wallet">
-          <WorkerWallet />
-        </Layout>
-      } />
-      <Route path="/worker/current-jobs" element={
-        <Layout currentPageName="Current Jobs">
-          <WorkerCurrentJobsPage />
-        </Layout>
-      } />
-      <Route path="/worker/job-details/:jobId" element={
-        <Layout currentPageName="Job Progress">
-          <WorkerJobDetailsPage />
-        </Layout>
-      } />
-
-      <Route path="/worker/support" element={
-        <Layout currentPageName="Help & Support">
-          <WorkerHelpSupport />
-        </Layout>
-      } />
-
-      <Route path="*" element={<PageNotFound />} />
-    </Routes>
-  );
-};
-
-function App() {
-  return (
-    <AuthProvider>
-      <Router>
-        <AuthenticatedApp />
-      </Router>
-      <Toaster position="top-center" richColors closeButton />
-      <LanguageSwitcher />
-    </AuthProvider>
-  )
+  return user ? children : <Navigate to="/login" replace />;
 }
 
-export default App
+function AppRoutes() {
+  return (
+    <Routes>
+      {/* Public Routes */}
+
+      <Route path="/" element={<LinksPage />} />
+      <Route path="/website" element={<LandingPage />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<SignupSelection />} />
+      <Route path="/signup" element={<SignupSelection />} />
+      <Route path="/verify-otp" element={<OtpVerification />} />
+      <Route path="/signup-worker" element={<SignupWorker />} />
+      <Route path="/signup-employer" element={<SignupEmployer />} />
+      <Route path="/terms" element={<TermsOfService />} />
+      <Route path="/privacy" element={<PrivacyPolicy />} />
+
+      {/* Worker Routes */}
+      <Route path="/worker/dashboard" element={<PrivateRoute><Layout><WorkerDashboard /></Layout></PrivateRoute>} />
+      <Route path="/worker/profile" element={<PrivateRoute><Layout><WorkerProfile /></Layout></PrivateRoute>} />
+      <Route path="/worker/wallet" element={<PrivateRoute><Layout><WorkerWallet /></Layout></PrivateRoute>} />
+      <Route path="/worker/current-jobs" element={<PrivateRoute><Layout><WorkerCurrentJobsPage /></Layout></PrivateRoute>} />
+      <Route path="/worker/help" element={<PrivateRoute><Layout><WorkerHelpSupport /></Layout></PrivateRoute>} />
+      <Route path="/worker/jobs/:id" element={<PrivateRoute><Layout><WorkerJobDetailsPage /></Layout></PrivateRoute>} />
+      <Route path="/worker/find-jobs" element={<PrivateRoute><Layout><Jobs /></Layout></PrivateRoute>} />
+      <Route path="/worker/applications" element={<PrivateRoute><Layout><Applications /></Layout></PrivateRoute>} />
+      <Route path="/worker/active-jobs" element={<PrivateRoute><Layout><WorkerCurrentJobsPage /></Layout></PrivateRoute>} />
+      <Route path="/worker/earnings" element={<PrivateRoute><Layout><WorkerWallet /></Layout></PrivateRoute>} />
+      <Route path="/worker/messages" element={<PrivateRoute><Layout><Messages /></Layout></PrivateRoute>} />
+      <Route path="/worker/settings" element={<PrivateRoute><Layout><Settings /></Layout></PrivateRoute>} />
+      <Route path="/worker/learning" element={<PrivateRoute><Layout><Learning /></Layout></PrivateRoute>} />
+      <Route path="/worker/badges" element={<PrivateRoute><Layout><Badges /></Layout></PrivateRoute>} />
+      <Route path="/worker/documents" element={<PrivateRoute><Layout><Documents /></Layout></PrivateRoute>} />
+      <Route path="/worker/notifications" element={<PrivateRoute><Layout><Notifications /></Layout></PrivateRoute>} />
+
+      {/* Employer Routes */}
+      <Route path="/employer/dashboard" element={<PrivateRoute><Layout><EmployerDashboard /></Layout></PrivateRoute>} />
+      <Route path="/employer/profile" element={<PrivateRoute><Layout><EmployerProfile /></Layout></PrivateRoute>} />
+      <Route path="/employer/wallet" element={<PrivateRoute><Layout><EmployerWallet /></Layout></PrivateRoute>} />
+      <Route path="/employer/post-job" element={<PrivateRoute><Layout><PostJob /></Layout></PrivateRoute>} />
+      <Route path="/employer/edit-job/:id" element={<PrivateRoute><Layout><EditJob /></Layout></PrivateRoute>} />
+      <Route path="/employer/jobs" element={<PrivateRoute><Layout><ManageJobs /></Layout></PrivateRoute>} />
+      <Route path="/employer/applications" element={<PrivateRoute><Layout><ReviewApplications /></Layout></PrivateRoute>} />
+      <Route path="/employer/find-workers" element={<PrivateRoute><Layout><SearchWorkers /></Layout></PrivateRoute>} />
+      <Route path="/employer/workers/:id" element={<PrivateRoute><Layout><SearchWorkers /></Layout></PrivateRoute>} />
+      <Route path="/employer/messages" element={<PrivateRoute><Layout><Messages /></Layout></PrivateRoute>} />
+      <Route path="/employer/settings" element={<PrivateRoute><Layout><Settings /></Layout></PrivateRoute>} />
+      <Route path="/employer/help" element={<PrivateRoute><Layout><HelpSupport /></Layout></PrivateRoute>} />
+
+      {/* Fallback */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
+    </Routes>
+  );
+}
+
+export default function App() {
+  return (
+    <LanguageProvider>
+      <AuthProvider>
+        {/* <SocketProvider> */}
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        {/* </SocketProvider> */}
+      </AuthProvider>
+    </LanguageProvider>
+  );
+}

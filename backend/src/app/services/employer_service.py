@@ -5,7 +5,6 @@ from app.models.employer import Employer
 from app.models.job import Job, JobStatus
 from app.models.application import Application, ApplicationStatus
 from typing import List, Optional, Dict
-from uuid import UUID
 from datetime import datetime, timezone
 
 ALLOWED_EMPLOYER_UPDATE_FIELDS = {
@@ -24,7 +23,7 @@ class EmployerService:
     """
     
     @staticmethod
-    def get_employer_by_user(db: Session, user_id: UUID) -> Optional[Employer]:
+    def get_employer_by_user(db: Session, user_id: int) -> Optional[Employer]:
         return db.query(Employer).filter(Employer.user_id == user_id).first()
     
     @staticmethod
@@ -32,7 +31,7 @@ class EmployerService:
         return db.query(Employer).filter(Employer.id == employer_id).first()
     
     @staticmethod
-    def create_employer_profile(db: Session, user_id: UUID, profile_data: dict) -> Employer:
+    def create_employer_profile(db: Session, user_id: int, profile_data: dict) -> Employer:
         """
         Create employer profile
         """

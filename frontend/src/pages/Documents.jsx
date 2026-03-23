@@ -1,12 +1,12 @@
-import React, { useState, useRef } from 'react';
-import { FileText, Upload, Download, Trash2 } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { FileText, Upload, Download, Trash2, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
-import { mockDocuments } from '@/lib/mockData';
+import workerService from '@/services/workerService';
 
 const DOCUMENT_TYPES = {
     resume: { label: 'documents.resume', color: 'bg-blue-100 text-blue-700' },
@@ -18,35 +18,71 @@ const DOCUMENT_TYPES = {
 
 export default function Documents() {
     const { t, i18n } = useTranslation();
-    const [documents, setDocuments] = useState(mockDocuments);
+    const [documents, setDocuments] = useState([]);
     const [isDragging, setIsDragging] = useState(false);
+    const [loading, setLoading] = useState(true);
     const fileInputRef = useRef(null);
 
-    const handleDelete = (id) => {
-        setDocuments(documents.filter(doc => doc.id !== id));
-        toast.success(t('documents.delete_success') || 'Document deleted successfully');
+    useEffect(() => {
+        fetchDocuments();
+    }, []);
+
+    const fetchDocuments = async () => {
+        try {
+            setLoading(true);
+            const res = await workerService.getDocuments();
+            const docs = (res.data || []).map(doc => ({
+                id: doc.id,
+                name: doc.file_name || doc.document_type || 'Document',
+                type: mapDocType(doc.document_type),
+                file_type: doc.file_name ? doc.file_name.split('.').pop().toLowerCase() : 'pdf',
+                size: doc.file_size || 0,
+                uploaded_date: doc.uploaded_at || doc.created_at || new Date().toISOString(),
+                url: doc.file_url || '#',
+                status: doc.status || 'pending',
+            }));
+            setDocuments(docs);
+        } catch (err) {
+            console.error('Failed to fetch documents:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const mapDocType = (backendType) => {
+        const map = { national_id: 'id', passport: 'id', driving_license: 'id', professional_certificate: 'certification', education_certificate: 'certification', other: 'other' };
+        return map[backendType] || 'other';
+    };
+
+    const handleDelete = async (id) => {
+        try {
+            await workerService.deleteDocument(id);
+            setDocuments(documents.filter(doc => doc.id !== id));
+            toast.success(t('documents.delete_success') || 'Document deleted successfully');
+        } catch (err) {
+            console.error('Delete failed:', err);
+            toast.error('Failed to delete document');
+        }
     };
 
     const handleUploadClick = () => {
         fileInputRef.current?.click();
     };
 
-    const processFiles = (files) => {
+    const processFiles = async (files) => {
         const fileList = Array.from(files);
         if (fileList.length === 0) return;
 
-        const newDocs = fileList.map(file => ({
-            id: Math.random().toString(36).substr(2, 9),
-            name: file.name,
-            type: 'other',
-            file_type: file.name.split('.').pop().toLowerCase(),
-            size: file.size,
-            uploaded_date: new Date().toISOString(),
-            url: '#'
-        }));
-
-        setDocuments(prev => [...newDocs, ...prev]);
+        for (const file of fileList) {
+            try {
+                await workerService.uploadDocuments(file, 'other');
+            } catch (err) {
+                console.error('Upload failed:', err);
+                toast.error(`Failed to upload ${file.name}`);
+            }
+        }
         toast.success(t('documents.upload_success', { count: fileList.length }) || `Successfully uploaded ${fileList.length} document(s)`);
+        fetchDocuments();
     };
 
     const handleFileChange = (e) => {

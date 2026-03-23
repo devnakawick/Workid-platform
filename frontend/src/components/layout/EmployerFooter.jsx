@@ -59,10 +59,10 @@ const EmployerFooter = () => {
             <ul className="space-y-2.5">
               {[
                 { label: 'Dashboard', path: '/employer/dashboard' },
-                { label: 'Post Job', path: '/employer/jobs/new' },
+                { label: 'Post Job', path: '/employer/post-job' },
                 { label: 'Manage Jobs', path: '/employer/jobs' },
                 { label: 'Review Applications', path: '/employer/applications' },
-                { label: 'Search Workers', path: '/employer/workers' },
+                { label: 'Search Workers', path: '/employer/find-workers' },
                 { label: 'Employer Wallet', path: '/employer/wallet' }
               ].map((item) => (
                 <li key={item.label}>

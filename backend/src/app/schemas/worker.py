@@ -1,7 +1,6 @@
 from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional
 from datetime import date, datetime
-from uuid import UUID
 from app.models.worker import Worker, DocumentType, DocumentStatus
 from enum import Enum
 
@@ -207,19 +206,19 @@ class WorkerSearchResponse(BaseModel):
     Schemas for worker search results (for employer)
     """
     id: int
-    full_name: str
-    district: str
-    primary_skill: SkillCategory
-    other_skills: List[str]
-    experience_years: int
-    daily_rate: Optional[float]
-    hourly_rate: Optional[float]
-    rating: float
-    total_jobs_completed: int
-    is_verified: bool
-    is_available: bool
-    city: str
-    bio: Optional[str]
+    full_name: Optional[str] = None
+    district: Optional[str] = None
+    primary_skill: Optional[SkillCategory] = None
+    other_skills: Optional[List[str]] = []
+    experience_years: Optional[int] = 0
+    daily_rate: Optional[float] = None
+    hourly_rate: Optional[float] = None
+    rating: Optional[float] = 0.0
+    total_jobs_completed: Optional[int] = 0
+    is_verified: Optional[bool] = False
+    is_available: Optional[bool] = True
+    city: Optional[str] = None
+    bio: Optional[str] = None
 
     class Config:
         from_attributes = True

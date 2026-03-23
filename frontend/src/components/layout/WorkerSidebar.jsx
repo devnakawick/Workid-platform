@@ -23,13 +23,13 @@ import { useTranslation } from 'react-i18next';
 const workerMenuItems = [
     { path: '/worker/dashboard', icon: Grid, labelKey: 'nav.dashboard', fallback: 'Dashboard', mobileLabel: 'Home' },
     { path: '/worker/current-jobs', icon: Briefcase, labelKey: 'nav.myJobs', fallback: 'My Active Jobs', mobileLabel: 'My Jobs' },
-    { path: '/Jobs', icon: Briefcase, labelKey: 'nav.findJobs', fallback: 'Find Jobs', mobileLabel: 'Find Jobs' },
-    { path: '/Profile', icon: User, labelKey: 'nav.profile', fallback: 'Profile', mobileLabel: 'Profile' },
-    { path: '/Documents', icon: FolderOpen, labelKey: 'nav.documents', fallback: 'Documents', mobileLabel: 'Docs' },
-    { path: '/Learning', icon: Award, labelKey: 'nav.learning', fallback: 'Learning & Skills', mobileLabel: 'Learning' },
+    { path: '/worker/find-jobs', icon: Briefcase, labelKey: 'nav.findJobs', fallback: 'Find Jobs', mobileLabel: 'Find Jobs' },
+    { path: '/worker/profile', icon: User, labelKey: 'nav.profile', fallback: 'Profile', mobileLabel: 'Profile' },
+    { path: '/worker/documents', icon: FolderOpen, labelKey: 'nav.documents', fallback: 'Documents', mobileLabel: 'Docs' },
+    { path: '/worker/learning', icon: Award, labelKey: 'nav.learning', fallback: 'Learning & Skills', mobileLabel: 'Learning' },
     { path: '/worker/wallet', icon: Wallet, labelKey: 'nav.wallet', fallback: 'Wallet', mobileLabel: 'Wallet' },
-    { path: '/worker/support', icon: HelpCircle, labelKey: 'nav.support', fallback: 'Support', mobileLabel: 'Support' },
-    { path: '/Settings', icon: Settings, labelKey: 'nav.settings', fallback: 'Settings', mobileLabel: 'Settings' },
+    { path: '/worker/help', icon: HelpCircle, labelKey: 'nav.support', fallback: 'Support', mobileLabel: 'Support' },
+    { path: '/worker/settings', icon: Settings, labelKey: 'nav.settings', fallback: 'Settings', mobileLabel: 'Settings' },
 ];
 
 const NavLink = ({ path, icon: Icon, label, active }) => {
@@ -71,9 +71,9 @@ const WorkerSidebar = () => {
                 <nav className="sidebar-nav">
                     <div className="space-y-1">
                         {workerMenuItems.map(({ path, icon, labelKey, fallback }) => {
-                            const isJobs = path === '/Jobs';
-                            const active = isJobs
-                                ? location.pathname === '/Jobs' || location.pathname === '/'
+                            const isFindJobs = path === '/worker/find-jobs';
+                            const active = isFindJobs
+                                ? location.pathname === '/worker/find-jobs' || location.pathname === '/worker/jobs'
                                 : location.pathname === path;
                             return (
                                 <NavLink
@@ -93,9 +93,9 @@ const WorkerSidebar = () => {
             <nav className="mobile-bottom-nav">
                 <div className="mobile-nav-inner">
                     {workerMenuItems.map(({ path, icon: Icon, labelKey, fallback, mobileLabel }) => {
-                        const isJobs = path === '/Jobs';
-                        const active = isJobs
-                            ? location.pathname === '/Jobs' || location.pathname === '/'
+                        const isFindJobs = path === '/worker/find-jobs';
+                        const active = isFindJobs
+                            ? location.pathname === '/worker/find-jobs' || location.pathname === '/worker/jobs'
                             : location.pathname === path;
 
                         return (

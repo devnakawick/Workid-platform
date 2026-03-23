@@ -3,8 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Input from '@/components/common/Input';
 import Button from '@/components/common/Button';
+import Modal from '@/components/common/Modal';
+import TermsOfService from '../TermsOfService';
+import PrivacyPolicy from '../PrivacyPolicy';
 import logo from '@/images/logo.jpeg';
 import { Mail, Lock, User, Phone } from 'lucide-react';
+import { sendOTP } from '@/services/authService';
+import { toast } from 'sonner';
 
 export default function SignupEmployer() {
   const { t } = useTranslation();
@@ -19,6 +24,8 @@ export default function SignupEmployer() {
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
 
   const validateEmail = (emailValue) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -93,20 +100,23 @@ export default function SignupEmployer() {
       return;
     }
 
-    setIsLoading(true);
     try {
-      console.log('Employer signup attempt with:', {
-        fullName: formData.fullName,
-        email: formData.email,
-        phone: formData.phone
+      await sendOTP(formData.phone);
+      toast.success(t('auth.otpSent') || 'OTP sent successfully!');
+
+      // Navigate to OTP verification passing formData
+      navigate('/verify-otp', { 
+        state: { 
+          phone: formData.phone, 
+          role: 'employer',
+          formData,
+          isSignup: true
+        } 
       });
-
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Navigate to OTP verification instead of dashboard
-      navigate('/verify-otp', { state: { email: formData.phone, role: 'employer' } });
     } catch (error) {
-      setErrors({ general: 'An error occurred. Please try again.' });
+      const msg = error.response?.data?.detail || 'An error occurred. Please try again.';
+      setErrors({ general: msg });
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
@@ -208,13 +218,13 @@ export default function SignupEmployer() {
               />
               <label htmlFor="agreeTerms" className="text-sm font-medium text-gray-700 cursor-pointer leading-snug">
                 I Agree to the{' '}
-                <a href="/terms?from=employer" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                <button type="button" onClick={() => setShowTerms(true)} className="text-blue-600 hover:underline">
                   Terms
-                </a>
+                </button>
                 {' '}and{' '}
-                <a href="/privacy?from=employer" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                <button type="button" onClick={() => setShowPrivacy(true)} className="text-blue-600 hover:underline">
                   Privacy Policy
-                </a>.
+                </button>.
               </label>
             </div>
             {errors.agreeTerms && (
@@ -265,6 +275,15 @@ export default function SignupEmployer() {
           {t('auth.termsPolicy')}
         </p>
       </div>
+
+      {/* Legal Modals */}
+      <Modal isOpen={showTerms} onClose={() => setShowTerms(false)}>
+        <TermsOfService isModal={true} />
+      </Modal>
+
+      <Modal isOpen={showPrivacy} onClose={() => setShowPrivacy(false)}>
+        <PrivacyPolicy isModal={true} />
+      </Modal>
     </div>
   );
 }

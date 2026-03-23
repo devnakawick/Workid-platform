@@ -1,4 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '@/lib/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { Button } from "@/components/ui/button";
+import { Star, MapPin, Phone, Briefcase, Calendar, Edit3, MessageCircle, Share2 } from 'lucide-react';
+import employerService from '@/services/employerService';
+import { aiService } from '@/services/aiService';
+import { toast } from 'sonner';
 
 const mock = {
   name: 'Samantha Perera',
@@ -16,67 +23,156 @@ const mock = {
   rating: 4.6
 };
 
-const page = { background: '#f8fafc', minHeight: '100vh', padding: 24 };
-const wrap = { maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 420px', gap: 20 };
-const card = { background: '#fff', borderRadius: 12, padding: 18, boxShadow: '0 6px 18px rgba(2,6,23,0.06)' };
-const avatar = { width: 84, height: 84, borderRadius: '50%', background: '#e6e8ee', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, color: '#0f172a' };
-const progressBar = (pct) => ({ height: 10, background: '#eef2ff', borderRadius: 999, overflow: 'hidden', marginTop: 8, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6)', position: 'relative' });
-const progressFill = (pct) => ({ width: `${pct}%`, height: '100%', background: 'linear-gradient(90deg,#22c55e,#06b6d4)' });
-
 export default function EmployerProfile() {
+  const { user, updateUser } = useAuth();
+  const navigate = useNavigate();
+  const [profileData, setProfileData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchProfileData();
+  }, []);
+
+  const fetchProfileData = async () => {
+    try {
+      setLoading(true);
+      const profileRes = await employerService.getEmployerProfile(true);
+      const statsRes = await employerService.getEmployerStats();
+      const jobsRes = await employerService.getMyJobs();
+      
+      let reputationData = null;
+      try {
+        const repRes = await aiService.getMyReputation();
+        reputationData = repRes.data;
+      } catch (err) {
+        console.warn('AI Reputation not available yet', err);
+      }
+      
+      const profileInfo = {
+        ...profileRes.data,
+        stats: statsRes.data,
+        jobs: jobsRes.data,
+        aiReputation: reputationData
+      };
+      
+      setProfileData(profileInfo);
+      
+      // Update AuthContext with profile data to sync with navbar
+      const updatedUserData = {
+        name: profileInfo.full_name || profileInfo.name || user?.name,
+        full_name: profileInfo.full_name || user?.full_name,
+        phone: profileInfo.phone_number || profileInfo.phone || user?.phone,
+        location: profileInfo.city || profileInfo.location || user?.location,
+        email: profileInfo.email || user?.email,
+        avatar: profileInfo.profile_photo || user?.avatar,
+        role: profileInfo.role || user?.role
+      };
+      
+      updateUser(updatedUserData);
+    } catch (error) {
+      console.error('Failed to fetch profile data:', error);
+      toast.error('Failed to load profile data');
+      // Fallback to mock data if backend fails
+      setProfileData(mock);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const data = profileData || mock;
+  const name = user?.name || data.name || 'Samantha Perera';
+  const role = data.role || 'Homeowner';
+  const location = user?.location || data.location || 'Colombo 05';
+  const contact = user?.phone || data.contact || '077-9876543';
+  const rating = data.stats?.rating || data.rating || 4.6;
+  const trustScore = data.aiReputation?.trust_score || data.aiReputation?.trust || null;
+  const ongoingJobs = data.ongoing || data.jobs?.filter(job => job.status === 'active' || job.status === 'in_progress') || mock.ongoing;
+  const pastJobs = data.history || data.jobs?.filter(job => job.status === 'completed') || mock.history;
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
   return (
-    <div style={page}>
-      <div style={wrap}>
+    <div className="bg-gray-50 min-h-screen p-6">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left: main profile & ongoing jobs */}
-        <div>
-          <div style={card}>
-            <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-              <div style={avatar}>S</div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 18, fontWeight: 700 }}>{mock.name}</div>
-                <div style={{ color: '#475569', marginTop: 4 }}>{mock.role} • {mock.location}</div>
-                <div style={{ marginTop: 8, color: '#334155' }}>Contact: {mock.contact}</div>
+        <div className="lg:col-span-2 space-y-6">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
+            <div className="flex items-center gap-6">
+              <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center text-2xl font-bold text-gray-600">
+                {name.charAt(0)}
               </div>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: 14, color: '#64748b' }}>Rating</div>
-                <div style={{ fontWeight: 700, fontSize: 18, color: '#0f172a' }}>{mock.rating} ★</div>
+              <div className="flex-1">
+                <div className="text-2xl font-bold text-gray-900">{name}</div>
+                <div className="text-gray-500 mt-1">{role} • {location}</div>
+                <div className="text-gray-600 mt-2">Contact: {contact}</div>
+              </div>
+              <div className="flex gap-6">
+                <div className="text-center">
+                  <div className="text-sm text-gray-500 mb-1">Rating</div>
+                  <div className="flex items-center gap-1 justify-center">
+                    <span className="text-2xl font-bold text-gray-900">{rating}</span>
+                    <Star className="w-6 h-6 fill-yellow-400 text-yellow-400" />
+                  </div>
+                </div>
+                {trustScore && (
+                  <div className="text-center relative">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-100 text-blue-600 text-[9px] font-bold px-1.5 py-0.5 rounded-sm whitespace-nowrap">AI Verified</div>
+                    <div className="text-sm text-gray-500 mb-1 mt-2">Trust</div>
+                    <div className="flex items-center gap-1 justify-center">
+                      <span className="text-2xl font-bold text-blue-600">{trustScore}</span>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-            <div style={{ marginTop: 16 }}>
-              <button style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #2563eb', background: '#2563eb', color: '#fff', cursor: 'pointer' }}>Message</button>
-              <button style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #e5e7eb', background: '#fff', color: '#0f172a', marginLeft: 12, cursor: 'pointer' }}>Share Profile</button>
+            <div className="flex gap-3 mt-6">
+              <Button className="flex items-center gap-2">
+                <MessageCircle size={16} />
+                Message
+              </Button>
+              <Button variant="outline" className="flex items-center gap-2">
+                <Share2 size={16} />
+                Share Profile
+              </Button>
             </div>
           </div>
 
-          <div style={{ ...card, marginTop: 18 }}>
-            <h3 style={{ margin: 0, marginBottom: 12 }}>Ongoing Jobs</h3>
-            <div style={{ display: 'grid', gap: 12 }}>
-              {mock.ongoing.map((job) => (
-                <div key={job.id} style={{ border: '1px solid #eef2ff', borderRadius: 10, padding: 12 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
+            <h3 className="text-xl font-bold text-gray-900 mb-6">Ongoing Jobs</h3>
+            <div className="space-y-4">
+              {ongoingJobs.map((job) => (
+                <div key={job.id} className="border border-gray-200 rounded-xl p-4">
+                  <div className="flex justify-between items-start mb-3">
                     <div>
-                      <div style={{ fontWeight: 700 }}>{job.title}</div>
-                      <div style={{ fontSize: 13, color: '#64748b' }}>{job.note} • {job.eta}</div>
+                      <div className="font-semibold text-gray-900">{job.title}</div>
+                      <div className="text-sm text-gray-500 mt-1">{job.note} • {job.eta}</div>
                     </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: 12, color: '#2563eb', fontWeight: 700 }}>{job.progress}%</div>
-                    </div>
+                    <div className="text-sm font-bold text-blue-600">{job.progress}%</div>
                   </div>
-                  <div style={progressBar(job.progress)}>
-                    <div style={progressFill(job.progress)} />
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-gradient-to-r from-green-500 to-cyan-500 h-2 rounded-full transition-all"
+                      style={{ width: `${job.progress}%` }}
+                    />
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div style={{ ...card, marginTop: 18 }}>
-            <h3 style={{ margin: 0, marginBottom: 12 }}>Past Jobs</h3>
-            <div style={{ display: 'grid', gap: 12 }}>
-              {mock.history.map((h) => (
-                <div key={h.id} style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: 8 }}>
-                  <div style={{ fontWeight: 700 }}>{h.title}</div>
-                  <div style={{ color: '#475569', marginTop: 6 }}>{h.summary}</div>
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
+            <h3 className="text-xl font-bold text-gray-900 mb-6">Past Jobs</h3>
+            <div className="space-y-4">
+              {pastJobs.map((job) => (
+                <div key={job.id} className="border-b border-gray-100 pb-4 last:border-b-0">
+                  <div className="font-semibold text-gray-900">{job.title}</div>
+                  <div className="text-gray-600 mt-2">{job.summary}</div>
                 </div>
               ))}
             </div>
@@ -84,19 +180,32 @@ export default function EmployerProfile() {
         </div>
 
         {/* Right: sidebar summary */}
-        <aside>
-          <div style={card}>
-            <div style={{ fontWeight: 700, marginBottom: 8 }}>Household Details</div>
-            <div style={{ color: '#475569', fontSize: 13 }}>Family size: 4</div>
-            <div style={{ color: '#475569', fontSize: 13, marginTop: 6 }}>Preferred hours: Morning & Afternoon</div>
-            <div style={{ color: '#475569', fontSize: 13, marginTop: 6 }}>Payment method: Online</div>
+        <aside className="space-y-6">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <div className="font-bold text-gray-900 mb-4">Household Details</div>
+            <div className="text-sm text-gray-600 space-y-2">
+              <div>Family size: 4</div>
+              <div>Preferred hours: Morning & Afternoon</div>
+              <div>Payment method: Online</div>
+            </div>
           </div>
 
-          <div style={{ ...card, marginTop: 18 }}>
-            <div style={{ fontWeight: 700, marginBottom: 8 }}>Contact & Actions</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <button style={{ padding: '10px 12px', borderRadius: 8, background: '#2563eb', color: '#fff', border: 'none', cursor: 'pointer' }}>Create New Job</button>
-              <button style={{ padding: '10px 12px', borderRadius: 8, background: '#fff', color: '#0f172a', border: '1px solid #e5e7eb', cursor: 'pointer' }}>View All Jobs</button>
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <div className="font-bold text-gray-900 mb-4">Contact & Actions</div>
+            <div className="space-y-3">
+              <Button 
+                onClick={() => navigate('/employer/post-job')}
+                className="w-full"
+              >
+                Create New Job
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => navigate('/employer/jobs')}
+                className="w-full"
+              >
+                View All Jobs
+              </Button>
             </div>
           </div>
         </aside>

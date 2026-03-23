@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Users, Star, CheckCircle2, UserCheck, Search as SearchIcon } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import { useAuth } from '../../lib/AuthContext';
 
 // Components
@@ -10,20 +11,23 @@ import WorkerFilters from '../../components/employer/WorkerFilters';
 import WorkerProfileModal from '../../components/employer/WorkerProfileModal';
 import InviteModal from '../../components/employer/InviteModal';
 
-// Mock Data APIs
-import { getAllWorkersAPI } from '../../mocks/workerSearchData';
-import { getAllJobsAPI } from '../../mocks/jobData';
-import { sendInviteAPI } from '../../mocks/applicationData';
+// API Services
+import { employerService } from '../../services/employerService';
+import { aiService } from '../../services/aiService';
 
 const SearchWorkers = () => {
   const { t } = useTranslation();
   const { user, updateUser } = useAuth();
 
-
   // Worker Data
   const [workers, setWorkers] = useState([]);
   const [filteredWorkers, setFilteredWorkers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isRecommendationMode, setIsRecommendationMode] = useState(false);
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const targetJobId = queryParams.get('jobId');
 
   // Job Data (Needed for Invite Modal)
   const [jobs, setJobs] = useState([]);
@@ -43,13 +47,10 @@ const SearchWorkers = () => {
     verified: 'all',
   });
 
-
-
   useEffect(() => {
     fetchWorkers();
     fetchJobs();
   }, []);
-
 
   useEffect(() => {
     applyFilters();
@@ -58,15 +59,40 @@ const SearchWorkers = () => {
   const fetchWorkers = async () => {
     setLoading(true);
     try {
-      const result = await getAllWorkersAPI();
-      if (result.success) {
-        setWorkers(result.data);
-        setFilteredWorkers(result.data);
+      let res;
+      if (targetJobId) {
+        setIsRecommendationMode(true);
+        res = await aiService.getRecommendedWorkers(targetJobId);
       } else {
-        toast.error(t('searchWorkers.errors.fetchFailed') || "Failed to load workers");
+        res = await employerService.searchWorkers();
       }
+
+      const mapped = (res.data?.workers || res.data || []).map(w => {
+        const name = w.name || `${w.first_name || ''} ${w.last_name || ''}`.trim() || 'Worker';
+        const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        return {
+          id: w.id || w.user_id,
+          name,
+          initials,
+          verified: w.is_verified ?? w.verified ?? false,
+          availability: w.availability || 'available',
+          location: w.city || w.location || '',
+          age: w.age || '',
+          memberSince: w.created_at ? new Date(w.created_at).getFullYear() : '',
+          rating: w.rating ?? 0,
+          jobs: w.completed_jobs ?? w.jobs ?? 0,
+          bio: w.bio || w.description || '',
+          skills: w.skills || [],
+          category: w.category || (w.skills && w.skills[0]) || '',
+          completionRate: w.completion_rate ?? 0,
+          responseTime: w.response_time || 'N/A',
+          avatar: w.avatar || null,
+        };
+      });
+      setWorkers(mapped);
+      setFilteredWorkers(mapped);
     } catch {
-      toast.error(t('searchWorkers.errors.generic') || "Error loading data");
+      toast.error(t('searchWorkers.errors.fetchFailed') || "Failed to load workers");
     } finally {
       setLoading(false);
     }
@@ -74,16 +100,21 @@ const SearchWorkers = () => {
 
   const fetchJobs = async () => {
     try {
-      const result = await getAllJobsAPI();
-      if (result.success) {
-        setJobs(result.data);
-      }
+      const res = await employerService.getMyJobs();
+      const mapped = (res.data || []).map(j => ({
+        id: j.id,
+        title: j.title,
+        description: j.description || '',
+        location: j.city || '',
+        budget: j.budget,
+        salary: j.budget,
+        duration: j.duration || '',
+      }));
+      setJobs(mapped);
     } catch (error) {
       console.error("Failed to load jobs for invite", error);
     }
   };
-
-
 
   const applyFilters = () => {
     let f = [...workers];
@@ -115,8 +146,6 @@ const SearchWorkers = () => {
     location: 'all', minRating: 'all', verified: 'all'
   });
 
-
-
   const handleInviteClick = (worker) => {
     setWorkerToInvite(worker);
     setInviteModalOpen(true);
@@ -126,9 +155,7 @@ const SearchWorkers = () => {
     const job = jobs.find(j => j.id === jobId);
     if (!job || !workerToInvite) return;
 
-    // Send invite to mock API (Adds to 'Invited' list, hidden from Review list)
     toast.loading("Sending invite...", { id: 'invite' });
-    await sendInviteAPI(jobId, workerToInvite);
 
     // Save mock message to local storage so Messages.jsx can read it
     const storedMessages = JSON.parse(localStorage.getItem('mock_messages')) || [];
@@ -208,10 +235,10 @@ ${user?.name || "Employer"}`;
           <div className="mb-6">
             <h1 className="flex items-center text-3xl md:text-4xl font-bold text-gray-900 mb-2">
               <SearchIcon className="w-8 h-8 md:w-10 md:h-10 mr-3 text-blue-600" />
-              {t('searchWorkers.title') || "Find Workers"}
+              {isRecommendationMode ? 'AI Recommended Workers' : (t('searchWorkers.title') || "Find Workers")}
             </h1>
             <p className="text-gray-600 text-sm md:text-base">
-              {t('searchWorkers.subtitle') || "Browse and invite top talent for your jobs"}
+              {isRecommendationMode ? 'Here are the best matches for your job based on their skills and reputation.' : (t('searchWorkers.subtitle') || "Browse and invite top talent for your jobs")}
             </p>
           </div>
 

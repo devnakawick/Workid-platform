@@ -3,10 +3,7 @@ import json
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect, status, Query
 from sqlalchemy.orm import Session
 from typing import Dict, List, Optional
-from uuid import UUID
 from datetime import datetime
-import uuid
-
 
 from app.database import get_db
 from app.models.user import User
@@ -46,11 +43,7 @@ class LocationResponse(BaseModel):
     employer_location: dict | None
     last_updated: str | None
 
-router = APIRouter(
-    prefix="/api/jobs",
-    tags=["Jobs - Worker Side"]
-)
-router = APIRouter(prefix="/api/jobs", tags=["jobs"])
+router = APIRouter(prefix="/api/jobs", tags=["Jobs"])
 
 # =========== LOCATION TRACKING ==========
 
@@ -353,7 +346,7 @@ async def get_recommended_jobs(
     Get job recommendations for the current worker
     """
     # Get worker profile
-    worker = WorkerService.get_worker_by_user_id(db, current_user.id)
+    worker = WorkerService.get_worker_by_user(db, current_user.id)
     if not worker:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

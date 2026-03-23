@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Briefcase, ArrowLeft } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
-import { getJobByIdAPI, updateJobAPI } from '../../mocks/jobData';
+import { employerService } from '../../services/employerService';
 import JobForm from '../../components/employer/JobForm';
 
 const EditJob = () => {
   const navigate = useNavigate();
-  const { jobId } = useParams();
+  const { id: jobId } = useParams();
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [jobData, setJobData] = useState(null);
@@ -19,17 +19,27 @@ const EditJob = () => {
   const fetchJobData = async () => {
     setFetching(true);
     try {
-      const result = await getJobByIdAPI(jobId);
-      if (result.success) {
-        setJobData(result.data);
-        toast.success('Job data loaded');
-      } else {
-        toast.error('Job not found');
-        navigate('/employer/jobs');
-      }
+      const res = await employerService.getJobDetail(jobId);
+      const job = res.data;
+      // Map backend response to JobForm initialData shape
+      setJobData({
+        title: job.title || '',
+        description: job.description || '',
+        category: job.category || '',
+        customCategory: '',
+        location: job.location || '',
+        city: job.city || '',
+        district: job.district || '',
+        salary: job.budget ? String(job.budget) : '',
+        salaryPeriod: job.payment_type || 'fixed',
+        duration: job.estimated_duration_hours ? String(job.estimated_duration_hours) : '',
+        urgency: job.urgency || 'medium',
+        workersNeeded: 1,
+        requirements: [],
+      });
     } catch (error) {
       console.error('Error fetching job:', error);
-      toast.error('Failed to load job data');
+      toast.error(error.response?.data?.detail || 'Failed to load job data');
       navigate('/employer/jobs');
     } finally {
       setFetching(false);
@@ -39,16 +49,13 @@ const EditJob = () => {
   const handleSubmit = async (updatedJobData) => {
     setLoading(true);
     try {
-      const result = await updateJobAPI(jobId, updatedJobData);
-      if (result.success) {
-        toast.success(result.message);
-        setTimeout(() => navigate('/employer/jobs'), 1500);
-      } else {
-        toast.error(result.error || 'Failed to update job');
-      }
+      await employerService.updateJob(jobId, updatedJobData);
+      toast.success('Job updated successfully!');
+      setTimeout(() => navigate('/employer/jobs'), 1500);
     } catch (error) {
       console.error('Error updating job:', error);
-      toast.error('An error occurred while updating the job');
+      const msg = error.response?.data?.detail || 'Failed to update job';
+      toast.error(typeof msg === 'string' ? msg : JSON.stringify(msg));
     } finally {
       setLoading(false);
     }

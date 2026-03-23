@@ -1,37 +1,78 @@
-import { MapPin, Users, Clock, Edit, Trash2, MessageCircle } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { MapPin, Users, Clock, Edit, Trash2, MessageCircle, Sparkles, ChevronDown } from 'lucide-react';
 
 
-const ManageJobCard = ({ job,  onEdit, onDelete, onViewApplications }) => {
+const ManageJobCard = ({ job, onEdit, onDelete, onViewApplications, onRecommendWorkers, onUpdateStatus }) => {
+
+  const [showStatusMenu, setShowStatusMenu] = useState(false);
+  const statusRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (statusRef.current && !statusRef.current.contains(e.target)) {
+        setShowStatusMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Format date to readable format
   const formatDate = (dateString) =>
     new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
+  const JOB_STATUSES = [
+    { value: 'open', label: 'Open', color: 'text-green-700' },
+    { value: 'in_progress', label: 'In Progress', color: 'text-yellow-700' },
+    { value: 'completed', label: 'Completed', color: 'text-blue-700' },
+    { value: 'cancelled', label: 'Cancelled', color: 'text-red-700' },
+  ];
+
   // Return color classes based on job status
   const getStatusColors = () => {
     if (job.status === 'open')        return 'bg-green-50 text-green-700 border border-green-200';
-    if (job.status === 'in-progress') return 'bg-yellow-50 text-yellow-700 border border-yellow-200';
+    if (job.status === 'in_progress' || job.status === 'in-progress') return 'bg-yellow-50 text-yellow-700 border border-yellow-200';
+    if (job.status === 'cancelled')   return 'bg-red-50 text-red-700 border border-red-200';
     return 'bg-blue-50 text-blue-700 border border-blue-200';
   };
 
   // Return label based on job status
   const getStatusLabel = () => {
-    if (job.status === 'open')        return 'Open';
-    if (job.status === 'in-progress') return 'In Progress';
-    return 'Completed';
+    return JOB_STATUSES.find(s => s.value === job.status)?.label || job.status || 'Open';
   };
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-md hover:shadow-xl border border-gray-100 transition-all duration-300 hover:-translate-y-1">
 
-      {/* Job title, status badge and salary */}
+      {/* Job title, status badge (clickable) and salary */}
       <div className="flex items-start justify-between gap-6 mb-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3 mb-2 flex-wrap">
             <h3 className="text-2xl font-bold text-gray-900 leading-tight">{job.title}</h3>
-            <span className={`px-3 py-1 rounded-lg text-xs font-semibold ${getStatusColors()}`}>
-              {getStatusLabel()}
-            </span>
+            {/* Clickable status badge with dropdown */}
+            <div className="relative" ref={statusRef}>
+              <button
+                onClick={() => setShowStatusMenu(prev => !prev)}
+                className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer transition-all hover:brightness-95 ${getStatusColors()}`}
+              >
+                {getStatusLabel()}
+                <ChevronDown className="w-3 h-3" />
+              </button>
+              {showStatusMenu && (
+                <div className="absolute top-full left-0 mt-1 z-20 bg-white border border-gray-200 rounded-xl shadow-xl min-w-[140px] overflow-hidden">
+                  {JOB_STATUSES.map(({ value, label, color }) => (
+                    <button
+                      key={value}
+                      onClick={() => { onUpdateStatus(job.id, value); setShowStatusMenu(false); }}
+                      className={`w-full text-left px-4 py-2.5 text-sm font-semibold hover:bg-gray-50 transition-colors ${color} ${value === job.status ? 'bg-gray-50 opacity-60 cursor-default' : ''}`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
           <span className="text-sm font-medium text-gray-600">{job.category}</span>
         </div>
@@ -83,6 +124,15 @@ const ManageJobCard = ({ job,  onEdit, onDelete, onViewApplications }) => {
             {job.applicationsCount > 0 && (
               <div className="absolute inset-0 bg-blue-400 rounded-xl animate-ping opacity-20 pointer-events-none" />
             )}
+          </button>
+
+          {/* Match Workers (AI) button */}
+          <button onClick={() => onRecommendWorkers(job.id)} className="relative group/btn">
+            <div className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-50 to-indigo-100/50 hover:from-indigo-100 hover:to-indigo-200 text-indigo-700 border border-indigo-200 rounded-xl font-bold text-sm transition-all duration-200">
+              <Sparkles className="w-4 h-4" />
+              <span>Smart Match</span>
+            </div>
+            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">AI Worker Recommendations</span>
           </button>
 
           {/* Posted date */}

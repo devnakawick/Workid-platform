@@ -3,7 +3,6 @@ from typing import List, Optional
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
-from uuid import UUID
 
 
 class JobStatus(str, Enum):

@@ -7,11 +7,7 @@ import WorkerEarningsChart from '../../components/wallet/WorkerEarningsChart';
 import WorkerTransactionList from '../../components/wallet/WorkerTransactionList';
 import WithdrawForm from '../../components/wallet/WithdrawForm';
 
-import {
-  getWorkerWalletAPI,
-  getWorkerTransactionsAPI,
-  withdrawFromWalletAPI,
-} from '../../mocks/workerWalletData';
+import { walletService } from '../../services/walletService';
 
 const WorkerWallet = () => {
 
@@ -30,16 +26,36 @@ const WorkerWallet = () => {
   // Re-apply filter when transactions or filter changes
   useEffect(() => { applyFilters(); }, [filters, transactions]);
 
-  // Fetch wallet and transactions from mock API
+  // Fetch wallet and transactions from API
   const fetchData = async () => {
     setLoading(true);
     try {
       const [walletRes, txnRes] = await Promise.all([
-        getWorkerWalletAPI(),
-        getWorkerTransactionsAPI(),
+        walletService.getWorkerWallet(),
+        walletService.getWorkerTransactions(),
       ]);
-      if (walletRes.success) setWallet(walletRes.data);
-      if (txnRes.success) setTransactions(txnRes.data);
+      const w = walletRes.data;
+      setWallet({
+        id: w.id || 'wallet',
+        balance: w.balance ?? 0,
+        pending: w.pending ?? w.escrow_balance ?? 0,
+        currency: w.currency || 'LKR',
+        totalEarned: w.total_earned ?? w.totalEarned ?? 0,
+        totalWithdrawn: w.total_withdrawn ?? w.totalWithdrawn ?? 0,
+        lastUpdated: w.updated_at || w.lastUpdated || new Date().toISOString(),
+      });
+      const txns = (txnRes.data || []).map(t => ({
+        id: t.id || t.transaction_id,
+        type: t.type || 'earning',
+        method: t.method || 'wallet',
+        amount: t.amount ?? 0,
+        description: t.description || '',
+        date: t.date || t.created_at || new Date().toISOString(),
+        status: t.status || 'completed',
+        employerName: t.employer_name || t.employerName || null,
+        jobTitle: t.job_title || t.jobTitle || null,
+      }));
+      setTransactions(txns);
     } catch {
       toast.error('Failed to load wallet data');
     } finally {
@@ -62,16 +78,12 @@ const WorkerWallet = () => {
   const handleWithdraw = async (amount, bank) => {
     setWithdrawLoading(true);
     try {
-      const result = await withdrawFromWalletAPI(amount, bank);
-      if (result.success) {
-        await fetchData();
-        toast.success(result.message);
-        setShowWithdrawModal(false);
-      } else {
-        toast.error(result.error || 'Withdrawal failed');
-      }
-    } catch {
-      toast.error('Something went wrong');
+      await walletService.withdrawFunds(Number(amount));
+      await fetchData();
+      toast.success(`LKR ${Number(amount).toLocaleString()} withdrawal requested!`);
+      setShowWithdrawModal(false);
+    } catch (err) {
+      toast.error(err.response?.data?.detail || 'Withdrawal failed');
     } finally {
       setWithdrawLoading(false);
     }
@@ -79,7 +91,6 @@ const WorkerWallet = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-
 
 
       {/* Main content — full width on mobile */}

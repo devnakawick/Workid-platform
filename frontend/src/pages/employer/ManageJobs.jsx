@@ -2,8 +2,14 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Briefcase, Plus, Clock, HourglassIcon, CheckCircle2 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
-import { getAllJobsAPI, deleteJobAPI, categories } from '../../mocks/jobData'; // Added categories import
-import { getAllApplicationsAPI } from '../../mocks/applicationData';
+import { employerService } from '../../services/employerService';
+
+const categories = [
+  'plumbing', 'electrical', 'carpentry',
+  'masonry', 'painting', 'gardening',
+  'cleaning', 'driving', 'general_labor', 'other'
+];
+
 import JobCard from '../../components/employer/ManageJobCard';
 import JobFilters from '../../components/employer/ManageJobFilters';
 import DeleteConfirmModal from '../../components/employer/DeleteConfirmModal';
@@ -30,7 +36,7 @@ const ManageJobs = () => {
   const statistics = {
     total: jobs.length,
     open: jobs.filter(j => j.status === 'open').length,
-    inProgress: jobs.filter(j => j.status === 'in-progress').length,
+    inProgress: jobs.filter(j => j.status === 'in_progress' || j.status === 'assigned').length,
     completed: jobs.filter(j => j.status === 'completed').length,
   };
 
@@ -43,20 +49,36 @@ const ManageJobs = () => {
 
   useEffect(() => { filterJobs(); }, [filters, jobs]);
 
-  // Fetch jobs and real application counts together
+  // Fetch jobs from API
   const fetchJobs = async () => {
     setLoading(true);
     try {
-      const [jobsResult, appsResult] = await Promise.all([getAllJobsAPI(), getAllApplicationsAPI()]);
-      if (jobsResult.success && appsResult.success) {
-        // Attach real application count to each job
-        setJobs(jobsResult.data.map(job => ({
-          ...job,
-          applicationsCount: appsResult.data.filter(app => app.jobId === job.id).length
-        })));
-      } else toast.error('Failed to fetch jobs');
-    } catch { toast.error('An error occurred'); }
-    finally { setLoading(false); }
+      const res = await employerService.getMyJobs();
+      // Map backend response to component expected shape
+      const mapped = (res.data || []).map(job => ({
+        id: job.id,
+        title: job.title,
+        description: job.description || '',
+        category: job.category,
+        location: `${job.city || ''}, ${job.district || ''}`,
+        city: job.city,
+        district: job.district,
+        salary: Number(job.budget) || 0,
+        salaryPeriod: job.payment_type || 'fixed',
+        status: job.status,
+        urgency: job.urgency,
+        workersNeeded: 1,
+        duration: job.estimated_duration_hours ? `${job.estimated_duration_hours}h` : '-',
+        applicationsCount: job.applications_count || 0,
+        postedDate: job.created_at,
+      }));
+      setJobs(mapped);
+    } catch (err) {
+      console.error('Failed to fetch jobs:', err);
+      toast.error(err.response?.data?.detail || 'Failed to fetch jobs');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Apply all active filters to jobs list
@@ -70,9 +92,8 @@ const ManageJobs = () => {
 
     // Category Filter (Updated logic for 'Other')
     if (filters.category !== 'all') {
-      if (filters.category === 'Other') {
-        
-        const standardCategories = categories.filter(c => c !== 'Other');
+      if (filters.category === 'other') {
+        const standardCategories = categories.filter(c => c !== 'other');
         f = f.filter(j => !standardCategories.includes(j.category));
       } else {
         f = f.filter(j => j.category === filters.category);
@@ -126,13 +147,28 @@ const ManageJobs = () => {
   const confirmDelete = async () => {
     setDeleting(true);
     try {
-      const result = await deleteJobAPI(deleteConfirm);
-      if (result.success) {
-        setJobs(prev => prev.filter(j => j.id !== deleteConfirm));
-        toast.success(result.message);
-      } else toast.error(result.error || 'Failed to delete job');
-    } catch { toast.error('An error occurred'); }
-    finally { setDeleting(false); setDeleteConfirm(null); }
+      await employerService.deleteJob(deleteConfirm);
+      setJobs(prev => prev.filter(j => j.id !== deleteConfirm));
+      toast.success('Job deleted successfully');
+    } catch (err) {
+      console.error('Delete failed:', err);
+      toast.error(err.response?.data?.detail || 'Failed to delete job');
+    } finally {
+      setDeleting(false);
+      setDeleteConfirm(null);
+    }
+  };
+
+  // Update job status via real API
+  const handleUpdateJobStatus = async (jobId, newStatus) => {
+    try {
+      await employerService.updateJobStatus(jobId, newStatus);
+      setJobs(prev => prev.map(j => j.id === jobId ? { ...j, status: newStatus } : j));
+      toast.success('Job status updated!');
+    } catch (err) {
+      console.error('Status update failed:', err);
+      toast.error(err.response?.data?.detail || 'Failed to update status');
+    }
   };
 
   return (
@@ -153,7 +189,7 @@ const ManageJobs = () => {
                   </h1>
                   <p className="text-gray-600 text-sm md:text-base">Manage and track all your posted jobs.</p>
                 </div>
-                <button onClick={() => navigate('/employer/jobs/new')}
+                <button onClick={() => navigate('/employer/post-job')}
                   className="flex items-center justify-center w-full md:w-auto px-6 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-base font-semibold shadow-md transition-all">
                   <Plus className="w-5 h-5 mr-2" />Post New Job
                 </button>
@@ -164,7 +200,7 @@ const ManageJobs = () => {
                 {[
                   { label: 'Total Jobs', value: statistics.total, icon: Briefcase, color: 'gray', status: 'all' }, // Changed null to 'all'
                   { label: 'Open Jobs', value: statistics.open, icon: Clock, color: 'green', status: 'open' },
-                  { label: 'In Progress', value: statistics.inProgress, icon: HourglassIcon, color: 'yellow', status: 'in-progress' },
+                  { label: 'In Progress', value: statistics.inProgress, icon: HourglassIcon, color: 'yellow', status: 'in_progress' },
                   { label: 'Completed', value: statistics.completed, icon: CheckCircle2, color: 'blue', status: 'completed' },
                 ].map(({ label, value, icon: Icon, color, status }) => (
                   <div key={label}
@@ -205,14 +241,16 @@ const ManageJobs = () => {
                 <EmptyState
                   hasFilters={hasActiveFilters()}
                   onClearFilters={clearAllFilters}
-                  onPostJob={() => navigate('/employer/jobs/new')}
+                  onPostJob={() => navigate('/employer/post-job')}
                 />
               ) : (
                 filteredJobs.map(job => (
                   <JobCard key={job.id} job={job}
-                    onEdit={(id) => navigate(`/employer/jobs/edit/${id}`)}
+                    onEdit={(id) => navigate(`/employer/edit-job/${id}`)}
                     onDelete={setDeleteConfirm}
                     onViewApplications={(id) => navigate(`/employer/applications?jobId=${id}`)}
+                    onRecommendWorkers={(id) => navigate(`/employer/find-workers?jobId=${id}`)}
+                    onUpdateStatus={handleUpdateJobStatus}
                   />
                 ))
               )}

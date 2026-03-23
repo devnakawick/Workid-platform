@@ -2,10 +2,12 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Briefcase, User, ArrowLeft } from 'lucide-react';
+import { useLanguage } from '@/lib/LanguageContext';
 import logo from '@/images/logo.jpeg';
 
 export default function SignupSelection() {
     const { t } = useTranslation();
+    const { language, changeLanguage } = useLanguage();
     const navigate = useNavigate();
 
     return (
@@ -14,13 +16,34 @@ export default function SignupSelection() {
                 {/* Logo & Header */}
                 <div className="flex flex-col items-center space-y-4">
                     <button
-                        onClick={() => navigate('/landing')}
+                        onClick={() => navigate('/')}
                         className="transition-transform hover:scale-105 active:scale-95"
                     >
                         <img src={logo} alt="WorkID" className="h-28 md:h-36 w-auto" />
                     </button>
                     <div className="space-y-2">
                         <p className="text-slate-500 font-medium text-lg max-w-md mx-auto">{t('landing.getStartedDialogDesc')}</p>
+                    </div>
+                    
+                    {/* Language Switcher */}
+                    <div className="flex justify-center gap-2">
+                        {[
+                            { code: 'en', label: 'English' },
+                            { code: 'si', label: 'සිංහල' },
+                            { code: 'ta', label: 'தமிழ்' }
+                        ].map((lang) => (
+                            <button
+                                key={lang.code}
+                                onClick={() => changeLanguage(lang.code)}
+                                className={`px-3 py-1 text-sm font-medium rounded-full transition-colors ${
+                                    language === lang.code
+                                        ? 'bg-blue-600 text-white'
+                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                }`}
+                            >
+                                {lang.label}
+                            </button>
+                        ))}
                     </div>
                 </div>
 
@@ -78,7 +101,7 @@ export default function SignupSelection() {
                     </div>
 
                     <button
-                        onClick={() => navigate('/landing')}
+                        onClick={() => navigate('/')}
                         className="group inline-flex items-center gap-2 text-slate-400 hover:text-slate-600 font-bold transition-all text-sm uppercase tracking-tighter"
                     >
                         <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />

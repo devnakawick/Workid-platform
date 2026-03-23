@@ -1,10 +1,40 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import or_
 from decimal import Decimal
 
 from app.models.wallet import Wallet
 from app.models.transaction import Transaction
 from app.models.user import User
+
+from fastapi import HTTPException
+
+class WalletService:
+
+    @staticmethod
+    def get_wallet(db: Session, user_id):
+        wallet = db.query(Wallet).filter(Wallet.user_id == user_id).first()
+
+        if not wallet:
+            raise HTTPException(status_code=404, detail="Wallet not found")
+
+        return wallet
+
+    @staticmethod
+    def get_transactions(db: Session, user_id):
+        transactions = (
+            db.query(Transaction)
+            .filter(
+                or_(
+                    Transaction.from_user_id == user_id,
+                    Transaction.to_user_id == user_id
+                )
+            )
+            .order_by(Transaction.created_at.desc())
+            .all()
+        )
+
+        return transactions
 
 def get_wallet(db: Session, user_id):
     """
@@ -18,9 +48,25 @@ def get_wallet(db: Session, user_id):
         wallet = Wallet(user_id=user_id, balance=Decimal("0.00"))
         db.add(wallet)
         db.flush()
-       
 
     return wallet
+
+
+def get_payment_history(db: Session, user_id):
+    transactions = (
+        db.query(Transaction)
+        .filter(
+            or_(
+                Transaction.from_user_id == user_id,
+                Transaction.to_user_id == user_id
+            )
+        )
+        .filter(Transaction.transaction_type == "payment")
+        .order_by(Transaction.created_at.desc())
+        .all()
+    )
+
+    return transactions
 
 
 def credit_wallet(db: Session, user_id, amount: Decimal):
@@ -68,3 +114,5 @@ def debit_wallet(db: Session, user_id, amount: Decimal):
     db.add(transaction)
 
     return wallet
+
+    

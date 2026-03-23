@@ -1,7 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { getActiveJobs } from '@/services/jobProgressApi';
+import { jobService } from '@/services/jobService';
 import ActiveJobsList from '@/components/jobs/ActiveJobsList';
 import { Loader2 } from 'lucide-react';
+
+// Map backend status to display labels
+const STATUS_MAP = {
+    'accepted': 'Accepted',
+    'worker_traveling': 'Traveling',
+    'in_progress': 'In Progress',
+    'waiting_payment': 'Waiting Payment',
+    'completed': 'Finished',
+};
 
 const WorkerCurrentJobsPage = () => {
     const [jobs, setJobs] = useState([]);
@@ -10,8 +19,17 @@ const WorkerCurrentJobsPage = () => {
     useEffect(() => {
         const fetchJobs = async () => {
             try {
-                const data = await getActiveJobs();
-                setJobs(data);
+                const res = await jobService.getActiveJobs();
+                const mapped = (res.data || []).map(job => ({
+                    id: job.job_id,
+                    title: job.title,
+                    status: STATUS_MAP[job.status] || job.status,
+                    employerName: job.employer_name || 'Employer',
+                    description: '',
+                    location: job.location?.address || '',
+                    budget: job.scheduled_time ? new Date(job.scheduled_time).toLocaleDateString() : '',
+                }));
+                setJobs(mapped);
             } catch (error) {
                 console.error("Failed to load jobs:", error);
             } finally {

@@ -1,8 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from uuid import UUID
-import uuid
 
 from app.database import get_db
 from app.models.user import User
@@ -66,8 +64,6 @@ router = APIRouter(
     prefix="/api/employer",
     tags=["Employer"]
 )
-
-router = APIRouter(prefix="/api/employer", tags=["employer"])
 
 # ======= APPLICATION MANAGEMENT =======
 
@@ -407,7 +403,7 @@ async def create_job(
     )
 
     # Update employer's total jobs count
-    employer.total_jobs_posted += 0
+    employer.total_jobs_posted += 1
     db.commit()
 
     return job

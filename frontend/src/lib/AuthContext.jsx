@@ -1,80 +1,263 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+import { verifyOTP, getMe } from '@/services/authService';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [role, setRole] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [isLoadingAuth, setIsLoadingAuth] = useState(true);
-    const [isLoadingPublicSettings, setIsLoadingPublicSettings] = useState(true);
-    const [appPublicSettings, setAppPublicSettings] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const checkAppState = async () => {
-            // Standalone mode: Mocking authentication and app state
-            console.log('Running in standalone mode - skipping API calls');
-            setIsLoadingPublicSettings(false);
-            setIsLoadingAuth(false);
-            setIsAuthenticated(true);
-            const savedUser = localStorage.getItem('user');
-            if (savedUser) {
-                setUser(JSON.parse(savedUser));
-            } else {
-                const defaultUser = {
-                    id: 'demo_user',
-                    name: 'John Doe',
-                    email: 'john.doe@gmail.com',
-                    role: 'Employer',
-                    phone: '077-1234567',
-                    location: 'Colombo 07',
-                    experience: '5 Years Experience',
-                    notificationsCount: 3,
-                    messagesCount: 5,
-                    isAvailable: true,
-                    avatar: null
-                };
-                setUser(defaultUser);
-                localStorage.setItem('user', JSON.stringify(defaultUser));
+        const initializeAuth = async () => {
+            const accessToken = localStorage.getItem('access_token');
+            console.log('Auth init - token exists:', !!accessToken);
+            
+            // Try to load user data from localStorage first
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                try {
+                    const userData = JSON.parse(storedUser);
+                    console.log('Auth init - loaded from localStorage:', userData);
+                    setUser(userData);
+                    setRole(userData.user_type?.toLowerCase() || userData.role?.toLowerCase() || null);
+                    setIsAuthenticated(true);
+                } catch (err) {
+                    console.error('Failed to parse stored user data:', err);
+                    localStorage.removeItem('user');
+                }
             }
-            setAppPublicSettings({ id: 'demo_app', public_settings: {} });
+            
+            if (accessToken) {
+                try {
+                    const res = await getMe();
+                    console.log('Auth init - getMe success:', res.data);
+                    const backendData = res.data;
+                    
+                    // Only update if localStorage doesn't exist or if backend has newer data
+                    const currentStoredUser = localStorage.getItem('user');
+                    if (!currentStoredUser) {
+                        // No stored user, use backend data
+                        setUser(backendData);
+                        setRole(backendData.user_type?.toLowerCase() || null);
+                        setIsAuthenticated(true);
+                        localStorage.setItem('user', JSON.stringify(backendData));
+                    } else {
+                        // Has stored user, merge — backend wins for profile fields
+                        const storedUserData = JSON.parse(currentStoredUser);
+                        const pick = (...vals) => vals.find(v => v != null && v !== '') ?? null;
+                        const mergedData = {
+                            ...storedUserData,
+                            ...backendData,
+                            // Backend full_name takes priority over stale localStorage name
+                            name: pick(backendData.full_name, storedUserData.name, backendData.name),
+                            full_name: pick(backendData.full_name, storedUserData.full_name),
+                            phone: pick(backendData.phone_number, storedUserData.phone, backendData.phone),
+                            location: pick(backendData.city, storedUserData.location, backendData.location),
+                            experience: pick(backendData.experience_years, storedUserData.experience),
+                            avatar: pick(backendData.profile_photo, storedUserData.avatar, backendData.avatar),
+                            // Preserve frontend-only settings
+                            notifications: storedUserData.notifications || backendData.notifications || {
+                                jobAlerts: true,
+                                appUpdates: true,
+                                weeklySummary: true,
+                            },
+                            language: storedUserData.language || backendData.language || 'en',
+                        };
+                        setUser(mergedData);
+                        setRole(mergedData.user_type?.toLowerCase() || null);
+                        setIsAuthenticated(true);
+                        localStorage.setItem('user', JSON.stringify(mergedData));
+                    }
+                } catch (err) {
+                    console.error('Auth check failed:', err.response?.data || err.message);
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('refresh_token');
+                    localStorage.removeItem('user');
+                    setUser(null);
+                    setRole(null);
+                    setIsAuthenticated(false);
+                }
+            }
+            setIsLoading(false);
         };
 
-        checkAppState();
+        initializeAuth();
     }, []);
 
+    const login = async (phone, otp) => {
+        try {
+            console.log('Login attempt:', phone, otp);
+            const res = await verifyOTP(phone, otp);
+            console.log('Login success:', res.data);
+            const { access_token, refresh_token, user_type, user_id } = res.data;
+
+            localStorage.setItem('access_token', access_token);
+            localStorage.setItem('refresh_token', refresh_token);
+
+            // Check if we have existing user data in localStorage to preserve changes
+            const existingUserData = localStorage.getItem('user');
+            let fullUser = { id: user_id, phone_number: phone, user_type };
+            
+            try {
+                const meRes = await getMe();
+                const backendData = meRes.data;
+                
+                if (existingUserData) {
+                    const storedUserData = JSON.parse(existingUserData);
+                    const pick = (...vals) => vals.find(v => v != null && v !== '') ?? null;
+                    fullUser = {
+                        ...storedUserData,
+                        ...backendData,
+                        name: pick(backendData.full_name, storedUserData.name, backendData.name),
+                        full_name: pick(backendData.full_name, storedUserData.full_name),
+                        phone: pick(backendData.phone_number, storedUserData.phone, backendData.phone),
+                        location: pick(backendData.city, storedUserData.location, backendData.location),
+                        experience: pick(backendData.experience_years, storedUserData.experience),
+                        avatar: pick(backendData.profile_photo, storedUserData.avatar, backendData.avatar),
+                        notifications: storedUserData.notifications || backendData.notifications || {
+                            jobAlerts: true,
+                            appUpdates: true,
+                            weeklySummary: true,
+                        },
+                        language: storedUserData.language || backendData.language || 'en',
+                    };
+                } else {
+                    fullUser = { ...backendData, name: backendData.full_name || backendData.name };
+                }
+            } catch (_) { 
+                // Fall back to minimal user but check localStorage
+                if (existingUserData) {
+                    const storedUserData = JSON.parse(existingUserData);
+                    fullUser = { ...fullUser, ...storedUserData };
+                }
+            }
+
+            setUser(fullUser);
+            setRole((fullUser.user_type || user_type)?.toLowerCase() || null);
+            setIsAuthenticated(true);
+            
+            // Save the merged data to localStorage
+            localStorage.setItem('user', JSON.stringify(fullUser));
+
+            return fullUser;
+        } catch (err) {
+            console.error('Login error:', err.response?.data || err);
+            throw err;
+        }
+    };
+
+    const loginWithPassword = async (phone, password) => {
+        try {
+            const { loginWithPassword: apiLoginWithPassword } = await import('@/services/authService');
+            const res = await apiLoginWithPassword(phone, password);
+            const { access_token, refresh_token, user_type, user_id } = res.data;
+
+            localStorage.setItem('access_token', access_token);
+            localStorage.setItem('refresh_token', refresh_token);
+
+            // Check if we have existing user data in localStorage to preserve changes
+            const existingUserData = localStorage.getItem('user');
+            let fullUser = { id: user_id, phone_number: phone, user_type };
+            
+            try {
+                const meRes = await getMe();
+                const backendData = meRes.data;
+                
+                if (existingUserData) {
+                    const storedUserData = JSON.parse(existingUserData);
+                    const pick = (...vals) => vals.find(v => v != null && v !== '') ?? null;
+                    fullUser = {
+                        ...storedUserData,
+                        ...backendData,
+                        name: pick(backendData.full_name, storedUserData.name, backendData.name),
+                        full_name: pick(backendData.full_name, storedUserData.full_name),
+                        phone: pick(backendData.phone_number, storedUserData.phone, backendData.phone),
+                        location: pick(backendData.city, storedUserData.location, backendData.location),
+                        experience: pick(backendData.experience_years, storedUserData.experience),
+                        avatar: pick(backendData.profile_photo, storedUserData.avatar, backendData.avatar),
+                        notifications: storedUserData.notifications || backendData.notifications || {
+                            jobAlerts: true,
+                            appUpdates: true,
+                            weeklySummary: true,
+                        },
+                        language: storedUserData.language || backendData.language || 'en',
+                    };
+                } else {
+                    fullUser = { ...backendData, name: backendData.full_name || backendData.name };
+                }
+            } catch (_) { 
+                // Fall back to minimal user but check localStorage
+                if (existingUserData) {
+                    const storedUserData = JSON.parse(existingUserData);
+                    fullUser = { ...fullUser, ...storedUserData };
+                }
+            }
+
+            setUser(fullUser);
+            setRole((fullUser.user_type || user_type)?.toLowerCase() || null);
+            setIsAuthenticated(true);
+            
+            // Save the merged data to localStorage
+            localStorage.setItem('user', JSON.stringify(fullUser));
+
+            return fullUser;
+        } catch (err) {
+            console.error('Login with password error:', err.response?.data || err);
+            throw err;
+        }
+    };
+
     const logout = () => {
-        // Mock logout - simply refreshing the page in standalone mode
-        localStorage.removeItem('user');
-        window.location.reload();
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        setUser(null);
+        setRole(null);
+        setIsAuthenticated(false);
+        window.location.href = '/login';
     };
 
-    const updateUser = (data) => {
-        setUser(prev => {
-            const updated = { ...prev, ...data };
-            localStorage.setItem('user', JSON.stringify(updated));
-            return updated;
+    const updateUser = (updates) => {
+        if (!updates || Object.keys(updates).length === 0) return;
+
+        setUser((prev) => {
+            // Ensure consistency between 'name' and 'full_name'
+            const syncUpdates = { ...updates };
+            if (updates.full_name && !updates.name) {
+                syncUpdates.name = updates.full_name;
+            } else if (updates.name && !updates.full_name) {
+                syncUpdates.full_name = updates.name;
+            }
+
+            const updatedUser = { ...prev, ...syncUpdates };
+            // Also update localStorage for persistence
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+            return updatedUser;
         });
+        if (updates.role || updates.user_type) {
+            setRole((updates.role || updates.user_type).toLowerCase());
+        }
     };
 
-    return (
-        <AuthContext.Provider value={{
-            user,
-            isAuthenticated,
-            isLoadingAuth,
-            isLoadingPublicSettings,
-            appPublicSettings,
-            logout,
-            updateUser
-        }}>
-            {children}
-        </AuthContext.Provider>
-    );
+    const value = {
+        user,
+        role,
+        isAuthenticated,
+        isLoading,
+        login,
+        loginWithPassword,
+        logout,
+        updateUser,
+    };
+
+    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider');
+        throw new Error('useAuth must be used within AuthProvider');
     }
     return context;
 };

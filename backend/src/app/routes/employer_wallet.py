@@ -11,59 +11,61 @@ from app.utils.dependencies import get_current_employer
 from app.services.wallet_service import credit_wallet
 
 
-router = APIRouter(prefix="/employer", tags=["Employer Wallet"])
+router = APIRouter(prefix="/api/employer", tags=["Employer Wallet"])
 
 @router.get("/wallet")
-def get_employer_wallet(user_id: str, db: Session = Depends(get_db)):
+def get_employer_wallet(
+    current_user: User = Depends(get_current_employer),
+    db: Session = Depends(get_db)
+):
     """
     Get employer wallet details
     """
 
-    # Find user
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user or user.user_type != UserType.EMPLOYER:
-        raise HTTPException(status_code=404, detail="Employer not found")
-
-    # Get wallet
-    wallet = db.query(Wallet).filter(Wallet.user_id == user.id).first()
+    # Get or create wallet
+    wallet = db.query(Wallet).filter(Wallet.user_id == current_user.id).first()
     if not wallet:
-        raise HTTPException(status_code=404, detail="Wallet not found")
+        from decimal import Decimal as Dec
+        wallet = Wallet(user_id=current_user.id, balance=Dec("0.00"))
+        db.add(wallet)
+        db.commit()
+        db.refresh(wallet)
 
     # Calculate totals
     total_spent = db.query(func.coalesce(func.sum(Transaction.amount), 0))\
         .filter(
-            Transaction.from_user_id == user.id,
+            Transaction.from_user_id == current_user.id,
             Transaction.transaction_type == "payment"
         ).scalar()
 
     total_deposited = db.query(func.coalesce(func.sum(Transaction.amount), 0))\
         .filter(
-            Transaction.to_user_id == user.id,
+            Transaction.to_user_id == current_user.id,
             Transaction.transaction_type == "topup"
         ).scalar()
 
     return {
-        "success": True,
-        "data": {
-            "id": str(wallet.id),
-            "balance": float(wallet.balance),
-            "currency": "LKR",
-            "totalSpent": float(total_spent),
-            "totalDeposited": float(total_deposited),
-            "lastUpdated": wallet.updated_at.isoformat() if wallet.updated_at else None
-        }
+        "id": str(wallet.id),
+        "balance": float(wallet.balance),
+        "currency": "LKR",
+        "totalSpent": float(total_spent),
+        "totalDeposited": float(total_deposited),
+        "lastUpdated": wallet.updated_at.isoformat() if wallet.updated_at else None
     }
 
 @router.get("/transactions")
-def get_employer_transactions(user_id: str, db: Session = Depends(get_db)):
+def get_employer_transactions(
+    current_user: User = Depends(get_current_employer),
+    db: Session = Depends(get_db)
+):
     """
     Get employer transactions
     """
 
     transactions = db.query(Transaction)\
         .filter(
-            (Transaction.from_user_id == user_id) |
-            (Transaction.to_user_id == user_id)
+            (Transaction.from_user_id == current_user.id) |
+            (Transaction.to_user_id == current_user.id)
         )\
         .order_by(Transaction.created_at.desc())\
         .all()
@@ -83,10 +85,7 @@ def get_employer_transactions(user_id: str, db: Session = Depends(get_db)):
             "jobTitle": None
         })
 
-    return {
-        "success": True,
-        "data": result
-    }
+    return result
 
 from pydantic import BaseModel
 

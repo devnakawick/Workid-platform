@@ -10,13 +10,27 @@ const DashboardHeader = ({
     subtitle = "Here's what's happening today!",
     hideHeaderInfo = false,
     hideIcons = false,
-    showAvailability = false
+    showAvailability = false,
+    isNewUser = false
 }) => {
-    const { user, updateUser } = useAuth();
+    const { user, role, updateUser } = useAuth();
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const name = user?.name || 'User';
-    const role = user?.role || 'Member';
+    
+    // Get full name from backend, extract first name for greeting
+    const fullName = user?.full_name || user?.name || user?.phone || 'User';
+    const firstName = (user?.full_name || user?.name || '').split(' ')[0] || fullName;
+    const name = firstName;
+    
+    // Get role from user object - prioritize user_type from backend, fall back to role/context
+    const userRole = user?.user_type || user?.role || role || 'Member';
+    const displayRole = userRole.charAt(0).toUpperCase() + userRole.slice(1);
+    
+    // Determine correct paths based on role
+    const isEmployer = userRole?.toLowerCase() === 'employer';
+    const messagesPath = isEmployer ? '/employer/messages' : '/worker/messages';
+    const notificationsPath = isEmployer ? '/employer/notifications' : '/worker/notifications';
+    
     const avatarSeed = name;
     const isAvailable = user?.isAvailable ?? true;
 
@@ -46,7 +60,9 @@ const DashboardHeader = ({
                 {!hideHeaderInfo ? (
                     <div className="min-w-0">
                         <h1 className="text-sm md:text-2xl font-bold text-gray-900 truncate leading-tight">
-                            {t('common.welcomeBack', { name })}
+                            {isNewUser 
+                                ? t('common.welcome', { name }) 
+                                : t('common.welcomeBack', { name })}
                         </h1>
                         <p className="hidden md:block text-gray-500 text-xs md:text-sm mt-0.5 truncate">{subtitle}</p>
                     </div>
@@ -59,7 +75,7 @@ const DashboardHeader = ({
                     <div className="flex items-center gap-2 md:gap-4">
                         <button
                             className="relative p-2 text-gray-400 hover:text-blue-600 transition-colors"
-                            onClick={() => navigate('/Notifications')}
+                            onClick={() => navigate(notificationsPath)}
                         >
                             <Bell size={20} />
                             {(user?.notificationsCount > 0) && (
@@ -68,7 +84,7 @@ const DashboardHeader = ({
                         </button>
                         <button
                             className="relative p-2 text-gray-400 hover:text-blue-600 transition-colors"
-                            onClick={() => navigate('/Messages')}
+                            onClick={() => navigate(messagesPath)}
                         >
                             <Mail size={20} />
                             {(user?.messagesCount > 0) && (
@@ -78,7 +94,7 @@ const DashboardHeader = ({
                     </div>
                 )}
 
-                <div className="flex items-center gap-3 pl-4 md:pl-6 border-l border-gray-100 min-w-max">
+                <div className="flex items-center gap-3 pl-4 md:pl-6 border-l border-gray-100 flex-shrink-0">
                     {/* Availability Toggle - Only for Workers */}
                     {showAvailability && (
                         <button
@@ -89,7 +105,7 @@ const DashboardHeader = ({
                                 }`}
                         >
                             <div className={`w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${isAvailable ? 'bg-emerald-500 animate-pulse' : 'bg-gray-400'}`}></div>
-                            <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider">
+                            <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider whitespace-nowrap">
                                 {isAvailable ? (
                                     <span className="inline md:inline">{t('common.available')}</span>
                                 ) : (
@@ -100,8 +116,8 @@ const DashboardHeader = ({
                     )}
 
                     <div className="text-right ml-1 md:ml-2">
-                        <p className="text-xs md:text-sm font-bold text-gray-900 truncate max-w-[80px] md:max-w-none">{name}</p>
-                        <p className="text-[10px] md:text-xs text-gray-500">{role}</p>
+                        <p className="text-xs md:text-sm font-bold text-gray-900 truncate max-w-[80px] md:max-w-[120px]">{fullName}</p>
+                        <p className="text-[10px] md:text-xs text-gray-500 truncate">{displayRole}</p>
                     </div>
                     <div className="relative flex-shrink-0">
                         {user?.avatar ? (

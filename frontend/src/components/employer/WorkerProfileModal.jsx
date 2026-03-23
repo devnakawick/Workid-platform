@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { X, MapPin, CircleCheck, MessageSquare, Mail } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { aiService } from '../../services/aiService';
 
 // Renders star icons at given size
 const Stars = ({ rating, size = 14 }) => (
@@ -21,7 +22,16 @@ const Stars = ({ rating, size = 14 }) => (
 const WorkerProfileModal = ({ worker, onClose, onInvite }) => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('overview');
+  const [aiReputation, setAiReputation] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (worker?.id) {
+      aiService.getWorkerReputation(worker.id)
+        .then(res => setAiReputation(res.data))
+        .catch(err => console.warn('Failed to fetch worker AI reputation', err));
+    }
+  }, [worker?.id]);
 
   // Tab options for modal content
   const TABS = [
@@ -122,14 +132,20 @@ const WorkerProfileModal = ({ worker, onClose, onInvite }) => {
             <div className="space-y-4">
 
               {/* Stats grid */}
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-4 gap-3">
                 {[
                   { key: 'jobsDone', value: worker.jobs, label: 'Jobs Done' },
                   { key: 'completion', value: `${worker.completionRate}%`, label: 'Completion' },
                   { key: 'response', value: worker.responseTime, label: 'Response' },
-                ].map(({ key, value, label }) => (
-                  <div key={key} className="bg-white rounded-xl p-3 text-center border border-gray-100 shadow-sm">
-                    <p className="text-lg font-black text-blue-600">{value}</p>
+                  { key: 'trust', value: aiReputation?.trust_score || aiReputation?.trust || '92%', label: 'Trust Score', isAi: true },
+                ].map(({ key, value, label, isAi }) => (
+                  <div key={key} className="bg-white rounded-xl p-3 text-center border border-gray-100 shadow-sm relative overflow-hidden">
+                    {isAi && (
+                      <div className="absolute top-0 right-0 bg-blue-100 text-blue-600 text-[8px] font-bold px-1 py-0.5 rounded-bl flex items-center gap-0.5">
+                        <Star size={8} className="fill-current" /> AI
+                      </div>
+                    )}
+                    <p className={`text-lg font-black ${isAi ? 'text-indigo-600' : 'text-blue-600'}`}>{value}</p>
                     <p className="text-xs text-gray-500 mt-0.5">{t(`workerProfile.stats.${key}`) || label}</p>
                   </div>
                 ))}
