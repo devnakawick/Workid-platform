@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 load_dotenv(BASE_DIR / ".env")
 
 class Settings(BaseSettings):
-    DATABASE_URL: str = "postgresql://postgres.pzemdpulzqsxicjpnqun:[YOUR-PASSWORD]@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres"
+    DATABASE_URL: str = "postgresql://postgres.pzemdpulzqsxicjpnqun:Devnaka2006$@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres"
     DATABASE_ECHO: bool = False
  
     
