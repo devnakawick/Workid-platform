@@ -1,5 +1,3 @@
 {
-    "python.analysis.extraPaths": [
-        "./backend/src"
-    ]
+  "python.analysis.extraPaths": ["./src"]
 }
