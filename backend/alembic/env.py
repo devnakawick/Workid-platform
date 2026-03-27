@@ -1,24 +1,30 @@
 from logging.config import fileConfig
-import sys
-import os
-from dotenv import load_dotenv
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
-
-# Load environment variables from .env file
-load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
-
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
 
 from app.database import Base
+
 from app.models.user import User
 from app.models.worker import Worker, WorkerDocument
 from app.models.employer import Employer
 from app.models.job import Job
 from app.models.application import Application
+from app.models.wallet import Wallet
+from app.models.transaction import Transaction
+from app.models.payment import Payment
+from app.models.escrow import Escrow
+from app.models.ticket import SupportTicket
+from app.models.message import Message
+from app.models.job_progress import JobProgress
+from app.models.rating import Rating
+
+target_metadata = Base.metadata
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

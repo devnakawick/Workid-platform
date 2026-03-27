@@ -112,15 +112,15 @@ class WorkerProfileResponse(BaseModel):
     full_name: str
     email: str
     phone_number: str
-    nic_number: str
+    nic_number: Optional[str] = None
     date_of_birth: Optional[date]
 
     address: Optional[str]
-    city: str
-    district: str
+    city: Optional[str] = None
+    district: Optional[str] = None
     postal_code: Optional[str]
 
-    primary_skill: SkillCategory
+    primary_skill: Optional[SkillCategory] = None
     other_skills: List[str]
     experience_years: int
 

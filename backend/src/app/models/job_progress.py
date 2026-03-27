@@ -25,7 +25,7 @@ class JobProgress(Base):
     id = Column(Integer, primary_key=True, index=True)
     job_id = Column(Integer, ForeignKey("jobs.id"), nullable=False, unique=True)
     worker_id = Column(Integer, ForeignKey("workers.id"), nullable=False)
-    
+
     # Job status tracking
     status = Column(
         SQLEnum(JobProgressStatus),

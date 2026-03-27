@@ -1,15 +1,16 @@
-from app.models.user import User
-from app.models.worker import Worker
-from app.models.employer import Employer
-from app.models.job import Job
-from app.models.application import Application
-from app.models.job_progress import JobProgress
-from app.models.rating import Rating
-from app.models.wallet import Wallet
+from .user import User
+from .worker import Worker, WorkerDocument
+from .employer import Employer
+from .job import Job
+from .application import Application
+from .wallet import Wallet
+from .transaction import Transaction
+from .payment import Payment
 from .escrow import Escrow
-from app.models.ticket import SupportTicket
-from app.models.message import Message
-from app.models.transaction import Transaction
+from .ticket import SupportTicket
+from .message import Message
+from .job_progress import JobProgress
+from .rating import Rating
 __all__ = [
     "User",
     "Worker",
@@ -17,10 +18,13 @@ __all__ = [
     "Job",
     "Application",
     "JobProgress",
-    "Rating",
-    "Wallet",
     "Escrow",
     "SupportTicket",
     "Message",
-    "Transaction"
+    "Rating",
+    "Wallet",
+    "Transaction",
+    "Payment",
+    "WorkerDocument",
+    
 ]

@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+import os
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List
 from functools import lru_cache
@@ -5,11 +8,12 @@ from pathlib import Path
 
 
 BASE_DIR = Path(__file__).resolve().parents[2]
-
+load_dotenv(BASE_DIR / ".env")
 
 class Settings(BaseSettings):
-    DATABASE_URL: str
+    DATABASE_URL: str = "postgresql://postgres:Devnaka2006@db.pzemdpulzqsxicjpnqun.supabase.co:5432/postgres"
     DATABASE_ECHO: bool = False
+ 
     
     # JWT
     SECRET_KEY: str = ""
@@ -19,12 +23,7 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     
     # CORS
-    CORS_ORIGINS: List[str] = [
-        "http://localhost:5173", 
-        "http://localhost:3000",
-        "http://127.0.0.1:5173",
-        "http://127.0.0.1:3000"
-    ]
+    CORS_ORIGINS: List[str] = ["http://localhost:5173", "http://localhost:3000"]
     
     # Vonage SMS
     VONAGE_API_KEY: str = ""
@@ -64,3 +63,6 @@ def get_settings():
 
 
 settings = get_settings()
+
+
+print("DATABASE URL:", settings.DATABASE_URL)
