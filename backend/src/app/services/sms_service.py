@@ -13,10 +13,14 @@ def send_otp(phone_number: str, otp_code: str) -> bool:
         logger.info(f"Attempting to send OTP to {phone_number}")
         
         #check if Twilio is configured
-        if not settings.TWILIO_ACCOUNT_SID or not settings.TWILIO_AUTH_TOKEN:
-            logger.warning("Twilio is not properly configured. OTP not sent via SMS.")
-            logger.info(f"DEV MODE - OTP for {phone_number}: {otp_code}")
-            return True 
+        twilio_sid = getattr(settings, "TWILIO_ACCOUNT_SID", None)
+        twilio_token = getattr(settings, "TWILIO_AUTH_TOKEN", None)
+        twilio_phone = getattr(settings, "TWILIO_PHONE_NUMBER", None)
+
+        if not twilio_sid or not twilio_token or not twilio_phone:
+            logger.warning("Twilio not configured → using DEV MODE")
+            logger.info(f"OTP for {phone_number}: {otp_code}")
+            return True
 
         #Initialize Twilio client
         client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
