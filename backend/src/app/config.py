@@ -33,6 +33,9 @@ class Settings(BaseSettings):
     VONAGE_API_KEY: str = ""
     VONAGE_API_SECRET: str = ""
     VONAGE_FROM_NUMBER: str = "WorkID"
+
+    NOTIFY_API_KEY: str | None = None
+    NOTIFY_SENDER_ID: str | None = None
     
     # File Upload
     UPLOAD_DIR: str = "uploads"
