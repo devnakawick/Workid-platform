@@ -356,12 +356,13 @@ async def get_employer_reputation(
     employer_data = {
         'average_rating': float(employer.rating) if employer.rating else 0,
         'jobs_posted': employer.total_jobs_posted or 0,
-        'jobs_completed': employer.total_jobs_completed or 0,
+        'jobs_completed': employer.total_jobs_posted or 0,
         'on_time_payments': employer.total_jobs_completed or 0,  # TODO: Track
         'total_payments': employer.total_jobs_completed or 0,
         'avg_response_time_hours': 8,  # TODO: Calculate
         'is_verified': employer.is_verified or False
     }
+    
     
     reputation = reputation_scorer.calculate_employer_reputation(employer_data)
     
