@@ -19,13 +19,14 @@ def send_otp(phone_number: str, otp_code: str) -> bool:
         url = "https://app.notify.lk/api/v1/send"
 
         payload = {
-            "user_id": settings.NOTIFY_API_KEY,
+            "user_id": settings.NOTIFY_USER_ID,  
+            "api_key": settings.NOTIFY_API_KEY,  
             "sender_id": settings.NOTIFY_SENDER_ID,
             "to": phone_number,
             "message": f"Your WorkID OTP is {otp_code}"
         }
 
-        response = requests.post(url, json=payload)
+        response = requests.post(url, data=payload)
 
         logger.info(f"Notify.lk response: {response.text}")
 
